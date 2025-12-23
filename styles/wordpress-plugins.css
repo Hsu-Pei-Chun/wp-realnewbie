@@ -105,3 +105,32 @@
 .dark .mermaid .note text {
     fill: #1e293b !important;
 }
+
+/*
+ * =============================================================================
+ * YouTube 嵌入影片響應式
+ * =============================================================================
+ *
+ * WordPress 的 YouTube 嵌入會產生 figure.wp-block-embed-youtube 包裹 iframe。
+ * iframe 預設有固定寬度（560px），在手機上會超出容器。
+ * 使用 aspect-ratio 保持 16:9 比例，讓影片自適應容器寬度。
+ */
+
+.wp-block-embed-youtube,
+.wp-block-embed iframe[src*="youtube"] {
+    max-width: 100%;
+}
+
+.wp-block-embed-youtube .wp-block-embed__wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+}
+
+.wp-block-embed-youtube iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
