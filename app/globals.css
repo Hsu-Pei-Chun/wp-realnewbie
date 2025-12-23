@@ -240,3 +240,30 @@
 .wp-block-kevinbatdorf-code-block-pro .code-block-pro-copy-button .without-check {
     visibility: visible;
 }
+
+/* Mermaid dark mode 修正 */
+.dark .mermaid text {
+    fill: #e2e8f0 !important;
+}
+
+.dark .mermaid .actor {
+    fill: #e2e8f0 !important;
+    stroke: #94a3b8 !important;
+}
+
+.dark .mermaid line {
+    stroke: #94a3b8 !important;
+}
+
+.dark .mermaid .arrowhead {
+    fill: #94a3b8 !important;
+}
+
+.dark .mermaid .note {
+    fill: #fef3c7 !important;
+    stroke: #f59e0b !important;
+}
+
+.dark .mermaid .note text {
+    fill: #1e293b !important;
+}

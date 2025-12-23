@@ -1,24 +1,19 @@
 "use client";
 
 import { useEffect } from "react";
-import { useTheme } from "next-themes";
-import mermaid from "mermaid";
 
 export function MermaidRenderer() {
-  const { resolvedTheme } = useTheme();
-
   useEffect(() => {
-    mermaid.initialize({
-      startOnLoad: false,
-      theme: resolvedTheme === "dark" ? "dark" : "default",
-      securityLevel: "loose",
-    });
+    if (!document.querySelector("pre.mermaid")) return;
 
-    // Run mermaid on all pre.mermaid elements
-    mermaid.run({
-      querySelector: "pre.mermaid",
-    });
-  }, [resolvedTheme]);
+    import("mermaid").then(({ default: mermaid }) => {
+      mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: "strict",
+      });
+      mermaid.run({ querySelector: "pre.mermaid" });
+    }).catch(console.error);
+  }, []);
 
   return null;
 }
