@@ -1,0 +1,107 @@
+/**
+ * WordPress 外掛樣式整合
+ *
+ * 此檔案包含所有 WordPress 外掛在前端需要的樣式覆蓋。
+ * 與 components/wordpress/ 中的 JS 整合組件搭配使用。
+ */
+
+/*
+ * =============================================================================
+ * Code Block Pro (WordPress plugin)
+ * =============================================================================
+ *
+ * 為什麼需要這些覆蓋：
+ * - 外掛預設樣式與網站設計不一致（有 border/shadow/border-radius）
+ * - @tailwindcss/typography 會覆蓋 pre 的 margin，造成程式碼區塊頂部間距過大
+ * - 複製按鈕預設被 inline style 隱藏（需搭配 code-block-pro.tsx 的 JS 覆蓋）
+ */
+
+.wp-block-kevinbatdorf-code-block-pro {
+    position: relative;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+/* 外掛的 macOS 視窗裝飾（紅黃綠圓點）下方有多餘間距 */
+.wp-block-kevinbatdorf-code-block-pro > span:first-child:has(svg) {
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+/* typography 外掛會在 pre 上加 margin-top，破壞視窗裝飾與程式碼的視覺連續性 */
+.prose .wp-block-kevinbatdorf-code-block-pro pre,
+.prose .wp-block-kevinbatdorf-code-block-pro pre.shiki,
+.wp-block-kevinbatdorf-code-block-pro > pre.shiki {
+    margin-top: 0 !important;
+    padding-top: 12px !important;
+    border-radius: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* 複製按鈕定位（display 由 JS 處理，因為外掛用 inline style 設定 display:none） */
+.wp-block-kevinbatdorf-code-block-pro .code-block-pro-copy-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.wp-block-kevinbatdorf-code-block-pro .code-block-pro-copy-button:hover {
+    opacity: 1;
+}
+
+/* 外掛在按鈕內放了一個 pre/textarea 來存程式碼，視覺上不需要顯示 */
+.wp-block-kevinbatdorf-code-block-pro .code-block-pro-copy-button-pre {
+    display: none;
+}
+
+/* 複製按鈕有兩個 SVG：一般狀態 (without-check) 和複製成功 (with-check) */
+.wp-block-kevinbatdorf-code-block-pro .code-block-pro-copy-button .with-check {
+    visibility: hidden;
+    position: absolute;
+}
+
+.wp-block-kevinbatdorf-code-block-pro .code-block-pro-copy-button .without-check {
+    visibility: visible;
+}
+
+/*
+ * =============================================================================
+ * Mermaid 圖表
+ * =============================================================================
+ *
+ * Dark mode 修正：Mermaid 預設不支援 dark mode，需要用 CSS 覆蓋 SVG 內的顏色。
+ * 使用 !important 是因為 mermaid 會產生 inline styles。
+ */
+
+.dark .mermaid text {
+    fill: #e2e8f0 !important;
+}
+
+.dark .mermaid .actor {
+    fill: #e2e8f0 !important;
+    stroke: #94a3b8 !important;
+}
+
+.dark .mermaid line {
+    stroke: #94a3b8 !important;
+}
+
+.dark .mermaid .arrowhead {
+    fill: #94a3b8 !important;
+}
+
+.dark .mermaid .note {
+    fill: #fef3c7 !important;
+    stroke: #f59e0b !important;
+}
+
+.dark .mermaid .note text {
+    fill: #1e293b !important;
+}

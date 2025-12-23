@@ -10,7 +10,7 @@ import { useEffect } from "react";
  * 2. 複製功能需要 JS 處理 clipboard API
  * 3. 複製成功的視覺回饋（切換圖示）需要 JS
  *
- * 樣式相關的調整都在 globals.css 處理
+ * 樣式相關的調整都在 styles/wordpress-plugins.css 處理
  */
 export function CodeBlockPro() {
   useEffect(() => {

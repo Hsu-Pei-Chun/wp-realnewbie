@@ -8,14 +8,14 @@ import {
 
 import { Section, Container, Article, Prose } from "@/components/craft";
 import { badgeVariants } from "@/components/ui/badge";
-import { CodeBlockPro } from "@/components/posts/code-block-pro";
+import { CodeBlockPro } from "@/components/wordpress/code-block-pro";
 import { cn } from "@/lib/utils";
 import { siteConfig } from "@/site.config";
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { MermaidRenderer } from "@/components/posts/mermaid-renderer";
+import { MermaidRenderer } from "@/components/wordpress/mermaid-renderer";
 
 export async function generateStaticParams() {
   return await getAllPostSlugs();
