@@ -6,7 +6,7 @@ import {
   getAllPostSlugs,
 } from "@/lib/wordpress";
 
-import { Section, Container, Prose } from "@/components/craft";
+import { Section, Container, Article, Prose } from "@/components/craft";
 import { badgeVariants } from "@/components/ui/badge";
 import { CodeBlockPro } from "@/components/wordpress/code-block-pro";
 import { cn } from "@/lib/utils";
@@ -17,7 +17,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { MermaidRenderer } from "@/components/wordpress/mermaid-renderer";
 import { TableOfContents } from "@/components/posts/table-of-contents";
-import { PostContent } from "@/components/posts/post-content";
+import { processContentWithToc } from "@/lib/toc-utils";
 
 export async function generateStaticParams() {
   return await getAllPostSlugs();
@@ -90,6 +90,11 @@ export default async function Page({
   });
   const category = await getCategoryById(post.categories[0]);
 
+  // Process content once: extract headings and add anchor IDs
+  const { html: processedContent, headings } = processContentWithToc(
+    post.content.rendered
+  );
+
   return (
     <Section>
       <Container>
@@ -135,7 +140,7 @@ export default async function Page({
               )}
             </Prose>
 
-            <PostContent content={post.content.rendered} />
+            <Article dangerouslySetInnerHTML={{ __html: processedContent }} />
             <CodeBlockPro />
             <MermaidRenderer />
           </div>
@@ -153,10 +158,7 @@ export default async function Page({
                 {category.name}
               </Link>
 
-              <TableOfContents
-                contentHtml={post.content.rendered}
-                className="mt-6"
-              />
+              <TableOfContents headings={headings} className="mt-6" />
             </div>
           </aside>
         </div>
