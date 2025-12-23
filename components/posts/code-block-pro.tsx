@@ -2,104 +2,80 @@
 
 import { useEffect } from "react";
 
+/**
+ * WordPress Code Block Pro 外掛整合
+ *
+ * 為什麼需要這個組件：
+ * 1. 外掛用 inline style 設定 display:none 隱藏複製按鈕，CSS 無法覆蓋
+ * 2. 複製功能需要 JS 處理 clipboard API
+ * 3. 複製成功的視覺回饋（切換圖示）需要 JS
+ *
+ * 樣式相關的調整都在 globals.css 處理
+ */
 export function CodeBlockPro() {
   useEffect(() => {
-    // 修正所有 Code Block Pro 區塊
     const codeBlocks = document.querySelectorAll(
       ".wp-block-kevinbatdorf-code-block-pro"
     );
 
+    const cleanupFns: (() => void)[] = [];
+
     codeBlocks.forEach((block) => {
-      const blockEl = block as HTMLElement;
-      blockEl.style.position = "relative";
-
-      // 修正紅黃綠圓點間距
-      const dotsSpan = block.querySelector(":scope > span:first-child");
-      if (dotsSpan) {
-        const dotsEl = dotsSpan as HTMLElement;
-        dotsEl.style.marginBottom = "0";
-        dotsEl.style.paddingBottom = "0";
-      }
-
-      // 修正 pre 樣式
-      const pre = block.querySelector(":scope > pre.shiki") as HTMLElement;
-      if (pre) {
-        pre.style.marginTop = "0";
-        pre.style.paddingTop = "12px";
-        pre.style.border = "none";
-        pre.style.borderRadius = "0";
-        pre.style.boxShadow = "none";
-      }
-
-      // 顯示複製按鈕（移除 inline style 的 display:none）
       const copyBtn = block.querySelector(
         ".code-block-pro-copy-button"
-      ) as HTMLElement;
-      if (copyBtn) {
-        copyBtn.style.display = "flex";
-        copyBtn.style.position = "absolute";
-        copyBtn.style.top = "8px";
-        copyBtn.style.right = "8px";
-        copyBtn.style.cursor = "pointer";
-        copyBtn.style.padding = "4px";
-        copyBtn.style.borderRadius = "4px";
-        copyBtn.style.opacity = "0.6";
-        copyBtn.style.transition = "opacity 0.2s";
+      ) as HTMLElement | null;
 
-        // 隱藏內部的 pre/textarea
-        const preCopy = copyBtn.querySelector(
-          ".code-block-pro-copy-button-pre"
-        ) as HTMLElement;
-        if (preCopy) {
-          preCopy.style.display = "none";
-        }
+      if (!copyBtn) return;
 
-        // Hover 效果
-        copyBtn.addEventListener("mouseenter", () => {
-          copyBtn.style.opacity = "1";
-        });
-        copyBtn.addEventListener("mouseleave", () => {
-          copyBtn.style.opacity = "0.6";
-        });
+      // 唯一需要 JS 的原因：覆蓋 inline style 的 display:none
+      copyBtn.style.display = "flex";
 
-        // 複製功能
-        copyBtn.addEventListener("click", async () => {
-          const textarea = copyBtn.querySelector(
-            ".code-block-pro-copy-button-textarea"
-          ) as HTMLTextAreaElement | null;
+      const handleClick = async () => {
+        const textarea = copyBtn.querySelector(
+          ".code-block-pro-copy-button-textarea"
+        ) as HTMLTextAreaElement | null;
 
-          if (textarea) {
-            try {
-              await navigator.clipboard.writeText(textarea.value);
+        if (!textarea) return;
 
-              // 顯示複製成功的視覺回饋：切換到打勾圖示
-              const withCheck = copyBtn.querySelector(
-                ".with-check"
-              ) as SVGElement | null;
-              const withoutCheck = copyBtn.querySelector(
-                ".without-check"
-              ) as SVGElement | null;
+        try {
+          await navigator.clipboard.writeText(textarea.value);
 
-              if (withCheck && withoutCheck) {
-                withCheck.style.visibility = "visible";
-                withCheck.style.position = "static";
-                withoutCheck.style.visibility = "hidden";
-                withoutCheck.style.position = "absolute";
+          // 複製成功：切換到打勾圖示
+          const withCheck = copyBtn.querySelector(".with-check") as HTMLElement;
+          const withoutCheck = copyBtn.querySelector(
+            ".without-check"
+          ) as HTMLElement;
 
-                setTimeout(() => {
-                  withCheck.style.visibility = "hidden";
-                  withCheck.style.position = "absolute";
-                  withoutCheck.style.visibility = "visible";
-                  withoutCheck.style.position = "static";
-                }, 1500);
-              }
-            } catch (err) {
-              console.error("複製失敗:", err);
-            }
+          if (withCheck && withoutCheck) {
+            withCheck.style.visibility = "visible";
+            withCheck.style.position = "static";
+            withoutCheck.style.visibility = "hidden";
+            withoutCheck.style.position = "absolute";
+
+            setTimeout(() => {
+              withCheck.style.visibility = "hidden";
+              withCheck.style.position = "absolute";
+              withoutCheck.style.visibility = "visible";
+              withoutCheck.style.position = "static";
+            }, 1500);
           }
-        });
-      }
+        } catch (err) {
+          console.error("複製失敗:", err);
+        }
+      };
+
+      copyBtn.addEventListener("click", handleClick);
+
+      // Cleanup function
+      cleanupFns.push(() => {
+        copyBtn.removeEventListener("click", handleClick);
+      });
     });
+
+    // Cleanup on unmount
+    return () => {
+      cleanupFns.forEach((fn) => fn());
+    };
   }, []);
 
   return null;
