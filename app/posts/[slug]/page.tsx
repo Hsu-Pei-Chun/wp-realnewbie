@@ -15,6 +15,7 @@ import { siteConfig } from "@/site.config";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { MermaidRenderer } from "@/components/posts/mermaid-renderer";
 
 export async function generateStaticParams() {
   return await getAllPostSlugs();
@@ -130,6 +131,7 @@ export default async function Page({
 
         <Article dangerouslySetInnerHTML={{ __html: post.content.rendered }} />
         <CodeBlockPro />
+        <MermaidRenderer />
       </Container>
     </Section>
   );
