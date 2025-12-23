@@ -4,42 +4,42 @@ import {
   getAuthorById,
   getCategoryById,
   getAllPostSlugs,
-} from "@/lib/wordpress";
+} from "@/lib/wordpress"
 
-import { Section, Container, Article, Prose } from "@/components/craft";
-import { badgeVariants } from "@/components/ui/badge";
-import { CodeBlockPro } from "@/components/wordpress/code-block-pro";
-import { cn } from "@/lib/utils";
-import { siteConfig } from "@/site.config";
+import { Section, Container, Article, Prose } from "@/components/craft"
+import { badgeVariants } from "@/components/ui/badge"
+import { CodeBlockPro } from "@/components/wordpress/code-block-pro"
+import { cn } from "@/lib/utils"
+import { siteConfig } from "@/site.config"
 
-import Link from "next/link";
-import { notFound } from "next/navigation";
-import type { Metadata } from "next";
-import { MermaidRenderer } from "@/components/wordpress/mermaid-renderer";
-import { TableOfContents } from "@/components/posts/table-of-contents";
-import { processContentWithToc } from "@/lib/toc-utils";
+import Link from "next/link"
+import { notFound } from "next/navigation"
+import type { Metadata } from "next"
+import { MermaidRenderer } from "@/components/wordpress/mermaid-renderer"
+import { TableOfContents } from "@/components/posts/table-of-contents"
+import { processContentWithToc } from "@/lib/toc-utils"
 
 export async function generateStaticParams() {
-  return await getAllPostSlugs();
+  return await getAllPostSlugs()
 }
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string }>
 }): Promise<Metadata> {
-  const { slug } = await params;
-  const post = await getPostBySlug(slug);
+  const { slug } = await params
+  const post = await getPostBySlug(slug)
 
   if (!post) {
-    return {};
+    return {}
   }
 
-  const ogUrl = new URL(`${siteConfig.site_domain}/api/og`);
-  ogUrl.searchParams.append("title", post.title.rendered);
+  const ogUrl = new URL(`${siteConfig.site_domain}/api/og`)
+  ogUrl.searchParams.append("title", post.title.rendered)
   // Strip HTML tags for description
-  const description = post.excerpt.rendered.replace(/<[^>]*>/g, "").trim();
-  ogUrl.searchParams.append("description", description);
+  const description = post.excerpt.rendered.replace(/<[^>]*>/g, "").trim()
+  ogUrl.searchParams.append("description", description)
 
   return {
     title: post.title.rendered,
@@ -64,36 +64,36 @@ export async function generateMetadata({
       description: description,
       images: [ogUrl.toString()],
     },
-  };
+  }
 }
 
 export default async function Page({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string }>
 }) {
-  const { slug } = await params;
-  const post = await getPostBySlug(slug);
+  const { slug } = await params
+  const post = await getPostBySlug(slug)
 
   if (!post) {
-    notFound();
+    notFound()
   }
 
   const featuredMedia = post.featured_media
     ? await getFeaturedMediaById(post.featured_media)
-    : null;
-  const author = await getAuthorById(post.author);
+    : null
+  const author = await getAuthorById(post.author)
   const date = new Date(post.date).toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",
     year: "numeric",
-  });
-  const category = await getCategoryById(post.categories[0]);
+  })
+  const category = await getCategoryById(post.categories[0])
 
   // Process content once: extract headings and add anchor IDs
   const { html: processedContent, headings } = processContentWithToc(
     post.content.rendered
-  );
+  )
 
   return (
     <Section>
@@ -112,7 +112,9 @@ export default async function Page({
                   Published {date} by{" "}
                   {author.name && (
                     <span>
-                      <a href={`/posts/?author=${author.id}`}>{author.name}</a>{" "}
+                      <a href={`/posts/?author=${author.id}`}>
+                        {author.name}
+                      </a>{" "}
                     </span>
                   )}
                 </h5>
@@ -164,5 +166,5 @@ export default async function Page({
         </div>
       </Container>
     </Section>
-  );
+  )
 }

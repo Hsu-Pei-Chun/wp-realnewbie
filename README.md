@@ -4,7 +4,7 @@ A modern headless WordPress starter built with Next.js 16, React 19, and TypeScr
 
 [![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/next-wp?referralCode=AJtQpy&utm_medium=integration&utm_source=template&utm_campaign=generic)
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2F9d8dev%2Fnext-wp&env=WORDPRESS_URL,WORDPRESS_HOSTNAME,WORDPRESS_WEBHOOK_SECRET&envDescription=Add%20WordPress%20URL%20with%20Rest%20API%20enabled%20(ie.%20https%3A%2F%2Fwp.example.com)%2C%20the%20hostname%20for%20Image%20rendering%20in%20Next%20JS%20(ie.%20wp.example.com)%2C%20and%20a%20secret%20key%20for%20secure%20revalidation&project-name=next-wp&repository-name=next-wp&demo-title=Next%20JS%20and%20WordPress%20Starter&demo-url=https%3A%2F%2Fwp.9d8.dev)
+[![Deploy with Vercel](https://vercel.com/button)](<https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2F9d8dev%2Fnext-wp&env=WORDPRESS_URL,WORDPRESS_HOSTNAME,WORDPRESS_WEBHOOK_SECRET&envDescription=Add%20WordPress%20URL%20with%20Rest%20API%20enabled%20(ie.%20https%3A%2F%2Fwp.example.com)%2C%20the%20hostname%20for%20Image%20rendering%20in%20Next%20JS%20(ie.%20wp.example.com)%2C%20and%20a%20secret%20key%20for%20secure%20revalidation&project-name=next-wp&repository-name=next-wp&demo-title=Next%20JS%20and%20WordPress%20Starter&demo-url=https%3A%2F%2Fwp.9d8.dev>)
 
 ![Next WP Screenshot](https://github.com/user-attachments/assets/8b268c36-eb0d-459f-b9f1-b5f129bd29bc)
 
@@ -188,6 +188,7 @@ By default, the template deploys from the `9d8dev/next-wp` repository. To custom
 ![CleanShot 2025-11-27 at 00 01 29@2x](https://github.com/user-attachments/assets/9e89bcc6-fcb8-412b-9611-f2ee85081ccb)
 
 Railway creates a copy of the repository in your GitHub. You can then:
+
 - Clone the repo locally
 - Make customizations (styling, components, pages)
 - Push changes → Railway auto-deploys
@@ -224,6 +225,7 @@ pnpm dev
 All WordPress interactions are centralized in `lib/wordpress.ts`:
 
 ### Posts
+
 ```typescript
 getAllPosts(filters?)        // Get all posts (max 100)
 getPostsPaginated(page, perPage, filters?)  // Paginated posts
@@ -232,34 +234,37 @@ getPostById(id)              // Single post by ID
 ```
 
 ### Taxonomies
+
 ```typescript
-getAllCategories()           // All categories
-getCategoryBySlug(slug)      // Category by slug
-getAllTags()                 // All tags
-getTagBySlug(slug)           // Tag by slug
-getPostsByCategory(id)       // Posts in category
-getPostsByTag(id)            // Posts with tag
+getAllCategories() // All categories
+getCategoryBySlug(slug) // Category by slug
+getAllTags() // All tags
+getTagBySlug(slug) // Tag by slug
+getPostsByCategory(id) // Posts in category
+getPostsByTag(id) // Posts with tag
 ```
 
 ### Authors & Pages
+
 ```typescript
-getAllAuthors()              // All authors
-getAuthorBySlug(slug)        // Author by slug
-getPostsByAuthor(id)         // Posts by author
-getAllPages()                // All pages
-getPageBySlug(slug)          // Page by slug
+getAllAuthors() // All authors
+getAuthorBySlug(slug) // Author by slug
+getPostsByAuthor(id) // Posts by author
+getAllPages() // All pages
+getPageBySlug(slug) // Page by slug
 ```
 
 ### Example Usage
+
 ```typescript
-import { getPostsPaginated } from "@/lib/wordpress";
+import { getPostsPaginated } from "@/lib/wordpress"
 
 const { data: posts, headers } = await getPostsPaginated(1, 9, {
   category: "news",
-  search: "nextjs"
-});
+  search: "nextjs",
+})
 
-console.log(`Found ${headers.total} posts across ${headers.totalPages} pages`);
+console.log(`Found ${headers.total} posts across ${headers.totalPages} pages`)
 ```
 
 ## Cache Revalidation
@@ -285,8 +290,8 @@ Edit `site.config.ts` for site metadata:
 export const siteConfig = {
   site_name: "Your Site",
   site_domain: "yourdomain.com",
-  site_description: "Your site description"
-};
+  site_description: "Your site description",
+}
 ```
 
 ### Navigation
@@ -298,7 +303,7 @@ export const mainMenu = [
   { href: "/", label: "Home" },
   { href: "/posts", label: "Blog" },
   // Add more links...
-];
+]
 ```
 
 ### Theming
@@ -308,20 +313,24 @@ This project uses shadcn/ui with Tailwind CSS. Customize colors in your CSS or u
 ## Troubleshooting
 
 ### REST API not accessible
+
 - Ensure your WordPress site is publicly accessible
 - Check that permalinks are set (Settings > Permalinks)
 - Verify REST API at `your-site.com/wp-json/wp/v2/posts`
 
 ### Images not loading
+
 - Add your WordPress domain to `WORDPRESS_HOSTNAME`
 - Check `next.config.ts` has the correct `remotePatterns`
 
 ### Revalidation not working
+
 - Verify `WORDPRESS_WEBHOOK_SECRET` matches in both WordPress and Next.js
 - Check the plugin is activated in WordPress
 - Test the webhook endpoint at `/api/revalidate`
 
 ### CORS errors
+
 - Install a CORS plugin on WordPress, or
 - Configure your server to allow requests from your Next.js domain
 

@@ -1,13 +1,13 @@
 // Craft Imports
-import { Section, Container, Prose } from "@/components/craft";
+import { Section, Container, Prose } from "@/components/craft"
 
 // Next.js Imports
-import Link from "next/link";
+import Link from "next/link"
 
 // Icons
-import { File, Pen, Tag, Diamond, User, Folder } from "lucide-react";
-import { WordPressIcon } from "@/components/icons/wordpress";
-import { NextJsIcon } from "@/components/icons/nextjs";
+import { File, Pen, Tag, Diamond, User, Folder } from "lucide-react"
+import { WordPressIcon } from "@/components/icons/wordpress"
+import { NextJsIcon } from "@/components/icons/nextjs"
 
 // This page is using the craft.tsx component and design system
 export default function Home() {
@@ -17,7 +17,7 @@ export default function Home() {
         <ToDelete />
       </Container>
     </Section>
-  );
+  )
 }
 
 // This is just some example TSX
@@ -142,5 +142,5 @@ const ToDelete = () => {
         </a>
       </div>
     </main>
-  );
-};
+  )
+}

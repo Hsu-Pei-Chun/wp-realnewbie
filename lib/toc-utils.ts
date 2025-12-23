@@ -1,12 +1,12 @@
 export interface TocHeading {
-  id: string;
-  text: string;
-  level: 2 | 3;
+  id: string
+  text: string
+  level: 2 | 3
 }
 
 export interface ProcessedContent {
-  html: string;
-  headings: TocHeading[];
+  html: string
+  headings: TocHeading[]
 }
 
 /**
@@ -23,7 +23,7 @@ function decodeHtmlEntities(text: string): string {
     .replace(/&gt;/g, ">")
     .replace(/&quot;/g, '"')
     .replace(/&apos;/g, "'")
-    .replace(/&nbsp;/g, " ");
+    .replace(/&nbsp;/g, " ")
 }
 
 /**
@@ -35,7 +35,7 @@ function generateSlug(text: string): string {
     .replace(/[^\w\s\u4e00-\u9fff-]/g, "") // Keep alphanumeric, spaces, Chinese chars, hyphens
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
+    .replace(/^-|-$/g, "")
 }
 
 /**
@@ -45,38 +45,38 @@ function generateSlug(text: string): string {
  * This is intentional for server-side parsing where DOM is unavailable.
  */
 export function processContentWithToc(html: string): ProcessedContent {
-  const headings: TocHeading[] = [];
-  const usedIds = new Set<string>();
+  const headings: TocHeading[] = []
+  const usedIds = new Set<string>()
 
   const processedHtml = html.replace(
     /<h([23])([^>]*)>([\s\S]*?)<\/h[23]>/gi,
     (match, levelStr, attrs, content) => {
-      const level = parseInt(levelStr) as 2 | 3;
-      const rawText = content.replace(/<[^>]*>/g, "").trim();
-      const text = decodeHtmlEntities(rawText);
+      const level = parseInt(levelStr) as 2 | 3
+      const rawText = content.replace(/<[^>]*>/g, "").trim()
+      const text = decodeHtmlEntities(rawText)
 
-      if (!text) return match;
+      if (!text) return match
 
       // Generate unique ID
-      const baseId = generateSlug(text);
-      let id = baseId;
-      let counter = 1;
+      const baseId = generateSlug(text)
+      let id = baseId
+      let counter = 1
       while (usedIds.has(id)) {
-        id = `${baseId}-${counter}`;
-        counter++;
+        id = `${baseId}-${counter}`
+        counter++
       }
-      usedIds.add(id);
+      usedIds.add(id)
 
-      headings.push({ id, text, level });
+      headings.push({ id, text, level })
 
       // Skip if id already exists in attributes
       if (attrs.includes("id=")) {
-        return match;
+        return match
       }
 
-      return `<h${level}${attrs} id="${id}">${content}</h${level}>`;
+      return `<h${level}${attrs} id="${id}">${content}</h${level}>`
     }
-  );
+  )
 
-  return { html: processedHtml, headings };
+  return { html: processedHtml, headings }
 }

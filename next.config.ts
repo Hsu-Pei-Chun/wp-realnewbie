@@ -1,7 +1,7 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from "next"
 
-const wordpressHostname = process.env.WORDPRESS_HOSTNAME;
-const wordpressUrl = process.env.WORDPRESS_URL;
+const wordpressHostname = process.env.WORDPRESS_HOSTNAME
+const wordpressUrl = process.env.WORDPRESS_URL
 
 const nextConfig: NextConfig = {
   output: "standalone",
@@ -19,7 +19,7 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     if (!wordpressUrl) {
-      return [];
+      return []
     }
     return [
       {
@@ -27,8 +27,8 @@ const nextConfig: NextConfig = {
         destination: `${wordpressUrl}/wp-admin`,
         permanent: true,
       },
-    ];
+    ]
   },
-};
+}
 
-export default nextConfig;
+export default nextConfig

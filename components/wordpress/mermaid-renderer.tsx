@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import { useEffect } from "react";
+import { useEffect } from "react"
 
 /**
  * WordPress Mermaid 圖表渲染
@@ -16,16 +16,18 @@ import { useEffect } from "react";
  */
 export function MermaidRenderer() {
   useEffect(() => {
-    if (!document.querySelector("pre.mermaid")) return;
+    if (!document.querySelector("pre.mermaid")) return
 
-    import("mermaid").then(({ default: mermaid }) => {
-      mermaid.initialize({
-        startOnLoad: false,
-        securityLevel: "strict",
-      });
-      mermaid.run({ querySelector: "pre.mermaid" });
-    }).catch(console.error);
-  }, []);
+    import("mermaid")
+      .then(({ default: mermaid }) => {
+        mermaid.initialize({
+          startOnLoad: false,
+          securityLevel: "strict",
+        })
+        mermaid.run({ querySelector: "pre.mermaid" })
+      })
+      .catch(console.error)
+  }, [])
 
-  return null;
+  return null
 }

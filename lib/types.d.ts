@@ -1,5 +1,5 @@
 type NavProps = {
-  className?: string;
-  children?: React.ReactNode;
-  id?: string;
-};
+  className?: string
+  children?: React.ReactNode
+  id?: string
+}

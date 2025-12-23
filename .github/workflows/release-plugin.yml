@@ -4,9 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'wordpress/next-revalidate/**'
+      - "wordpress/next-revalidate/**"
     tags:
-      - 'plugin-v*'
+      - "plugin-v*"
   workflow_dispatch:
 
 jobs:

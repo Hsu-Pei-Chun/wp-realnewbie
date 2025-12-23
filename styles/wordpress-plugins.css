@@ -17,58 +17,60 @@
  */
 
 .wp-block-kevinbatdorf-code-block-pro {
-    position: relative;
-    border: none !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
+  position: relative;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
 }
 
 /* 外掛的 macOS 視窗裝飾（紅黃綠圓點）下方有多餘間距 */
 .wp-block-kevinbatdorf-code-block-pro > span:first-child:has(svg) {
-    margin-bottom: 0;
-    padding-bottom: 0;
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
 
 /* typography 外掛會在 pre 上加 margin-top，破壞視窗裝飾與程式碼的視覺連續性 */
 .prose .wp-block-kevinbatdorf-code-block-pro pre,
 .prose .wp-block-kevinbatdorf-code-block-pro pre.shiki,
 .wp-block-kevinbatdorf-code-block-pro > pre.shiki {
-    margin-top: 0 !important;
-    padding-top: 12px !important;
-    border-radius: 0 !important;
-    border: none !important;
-    box-shadow: none !important;
+  margin-top: 0 !important;
+  padding-top: 12px !important;
+  border-radius: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 /* 複製按鈕定位（display 由 JS 處理，因為外掛用 inline style 設定 display:none） */
 .wp-block-kevinbatdorf-code-block-pro .code-block-pro-copy-button {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    cursor: pointer;
-    padding: 4px;
-    border-radius: 4px;
-    opacity: 0.6;
-    transition: opacity 0.2s;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  opacity: 0.6;
+  transition: opacity 0.2s;
 }
 
 .wp-block-kevinbatdorf-code-block-pro .code-block-pro-copy-button:hover {
-    opacity: 1;
+  opacity: 1;
 }
 
 /* 外掛在按鈕內放了一個 pre/textarea 來存程式碼，視覺上不需要顯示 */
 .wp-block-kevinbatdorf-code-block-pro .code-block-pro-copy-button-pre {
-    display: none;
+  display: none;
 }
 
 /* 複製按鈕有兩個 SVG：一般狀態 (without-check) 和複製成功 (with-check) */
 .wp-block-kevinbatdorf-code-block-pro .code-block-pro-copy-button .with-check {
-    visibility: hidden;
-    position: absolute;
+  visibility: hidden;
+  position: absolute;
 }
 
-.wp-block-kevinbatdorf-code-block-pro .code-block-pro-copy-button .without-check {
-    visibility: visible;
+.wp-block-kevinbatdorf-code-block-pro
+  .code-block-pro-copy-button
+  .without-check {
+  visibility: visible;
 }
 
 /*
@@ -81,29 +83,29 @@
  */
 
 .dark .mermaid text {
-    fill: #e2e8f0 !important;
+  fill: #e2e8f0 !important;
 }
 
 .dark .mermaid .actor {
-    fill: #e2e8f0 !important;
-    stroke: #94a3b8 !important;
+  fill: #e2e8f0 !important;
+  stroke: #94a3b8 !important;
 }
 
 .dark .mermaid line {
-    stroke: #94a3b8 !important;
+  stroke: #94a3b8 !important;
 }
 
 .dark .mermaid .arrowhead {
-    fill: #94a3b8 !important;
+  fill: #94a3b8 !important;
 }
 
 .dark .mermaid .note {
-    fill: #fef3c7 !important;
-    stroke: #f59e0b !important;
+  fill: #fef3c7 !important;
+  stroke: #f59e0b !important;
 }
 
 .dark .mermaid .note text {
-    fill: #1e293b !important;
+  fill: #1e293b !important;
 }
 
 /*
@@ -118,19 +120,19 @@
 
 .wp-block-embed-youtube,
 .wp-block-embed iframe[src*="youtube"] {
-    max-width: 100%;
+  max-width: 100%;
 }
 
 .wp-block-embed-youtube .wp-block-embed__wrapper {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 16 / 9;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
 }
 
 .wp-block-embed-youtube iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }

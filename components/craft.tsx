@@ -1,25 +1,25 @@
 // craft-ds, v0.3.2
 // This is a design system for building responsive layouts in React and handling prose
 
-import React from "react";
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
+import React from "react"
+import { type ClassValue, clsx } from "clsx"
+import { twMerge } from "tailwind-merge"
 
 // Utility function to merge class names
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
+  return twMerge(clsx(inputs))
 }
 
 // Base interface for common props
 export interface BaseProps {
-  children?: React.ReactNode;
-  className?: string;
-  id?: string;
+  children?: React.ReactNode
+  className?: string
+  id?: string
 }
 
 // HTML props interface for dangerouslySetInnerHTML
 export interface HTMLProps {
-  dangerouslySetInnerHTML?: { __html: string };
+  dangerouslySetInnerHTML?: { __html: string }
 }
 
 // Available breakpoints as a const object for better type safety
@@ -30,9 +30,9 @@ export const BREAKPOINTS = {
   lg: "lg",
   xl: "xl",
   "2xl": "2xl",
-} as const;
+} as const
 
-export type Breakpoint = keyof typeof BREAKPOINTS;
+export type Breakpoint = keyof typeof BREAKPOINTS
 
 // Numeric constraints for better type safety
 export const GRID_VALUES = {
@@ -48,7 +48,7 @@ export const GRID_VALUES = {
   10: 10,
   11: 11,
   12: 12,
-} as const;
+} as const
 
 export const GAP_VALUES = {
   0: 0,
@@ -61,25 +61,25 @@ export const GAP_VALUES = {
   8: 8,
   10: 10,
   12: 12,
-} as const;
+} as const
 
-export type GridValue = keyof typeof GRID_VALUES;
-export type GapValue = keyof typeof GAP_VALUES;
+export type GridValue = keyof typeof GRID_VALUES
+export type GapValue = keyof typeof GAP_VALUES
 
 // Responsive property type with better type inference
 export type ResponsiveValue<T> =
   | T
   | {
-      [K in Breakpoint]?: T;
-    };
+      [K in Breakpoint]?: T
+    }
 
 // Box-specific props with improved type safety
 export interface BoxProps extends BaseProps {
-  direction?: ResponsiveValue<"row" | "col">;
-  wrap?: ResponsiveValue<"wrap" | "nowrap">;
-  gap?: ResponsiveValue<GapValue>;
-  cols?: ResponsiveValue<GridValue>;
-  rows?: ResponsiveValue<GridValue>;
+  direction?: ResponsiveValue<"row" | "col">
+  wrap?: ResponsiveValue<"wrap" | "nowrap">
+  gap?: ResponsiveValue<GapValue>
+  cols?: ResponsiveValue<GridValue>
+  rows?: ResponsiveValue<GridValue>
 }
 
 // Style configurations
@@ -183,7 +183,7 @@ const styles = {
     container: "max-w-5xl mx-auto p-6 sm:p-8",
     section: "py-8 md:py-12",
   },
-};
+}
 
 // Combine all typography styles
 const baseTypographyStyles = [
@@ -194,12 +194,12 @@ const baseTypographyStyles = [
   ...styles.typography.tables,
   ...styles.typography.media,
   ...styles.typography.misc,
-];
+]
 
 const articleTypographyStyles = [
   ...baseTypographyStyles,
   ...styles.typography.headerSpacing,
-];
+]
 
 // Components
 export const Layout = ({ children, className }: BaseProps) => (
@@ -210,25 +210,25 @@ export const Layout = ({ children, className }: BaseProps) => (
   >
     {children}
   </html>
-);
+)
 
 export const Main = ({ children, className, id }: BaseProps) => (
   <main className={cn(baseTypographyStyles, className)} id={id}>
     {children}
   </main>
-);
+)
 
 export const Section = ({ children, className, id }: BaseProps) => (
   <section className={cn(styles.layout.section, className)} id={id}>
     {children}
   </section>
-);
+)
 
 export const Container = ({ children, className, id }: BaseProps) => (
   <div className={cn(styles.layout.container, className)} id={id}>
     {children}
   </div>
-);
+)
 
 export const Article = ({
   children,
@@ -242,13 +242,13 @@ export const Article = ({
       articleTypographyStyles,
       styles.layout.spacing,
       styles.layout.article,
-      className,
+      className
     )}
     id={id}
   >
     {children}
   </article>
-);
+)
 
 export const Prose = ({
   children,
@@ -263,25 +263,25 @@ export const Prose = ({
   >
     {children}
   </div>
-);
+)
 
 // Utility function for responsive classes
 const getResponsiveClass = <T extends string | number>(
   value: ResponsiveValue<T> | undefined,
-  classMap: Record<T, string>,
+  classMap: Record<T, string>
 ): string => {
-  if (!value) return "";
+  if (!value) return ""
   if (typeof value === "object") {
     return Object.entries(value)
       .map(([breakpoint, val]) => {
-        const prefix = breakpoint === "base" ? "" : `${breakpoint}:`;
-        return val ? `${prefix}${classMap[val as T]}` : "";
+        const prefix = breakpoint === "base" ? "" : `${breakpoint}:`
+        return val ? `${prefix}${classMap[val as T]}` : ""
       })
       .filter(Boolean)
-      .join(" ");
+      .join(" ")
   }
-  return classMap[value];
-};
+  return classMap[value]
+}
 
 export const Box = ({
   children,
@@ -296,12 +296,12 @@ export const Box = ({
   const directionClasses = {
     row: "flex-row",
     col: "flex-col",
-  };
+  }
 
   const wrapClasses = {
     wrap: "flex-wrap",
     nowrap: "flex-nowrap",
-  };
+  }
 
   const gapClasses = {
     0: "gap-0",
@@ -314,7 +314,7 @@ export const Box = ({
     8: "gap-8",
     10: "gap-10",
     12: "gap-12",
-  };
+  }
 
   const colsClasses = {
     1: "grid-cols-1",
@@ -329,7 +329,7 @@ export const Box = ({
     10: "grid-cols-10",
     11: "grid-cols-11",
     12: "grid-cols-12",
-  };
+  }
 
   return (
     <div
@@ -340,11 +340,11 @@ export const Box = ({
         getResponsiveClass(gap, gapClasses),
         cols && getResponsiveClass(cols, colsClasses),
         rows && getResponsiveClass(rows, colsClasses),
-        className,
+        className
       )}
       id={id}
     >
       {children}
     </div>
-  );
-};
+  )
+}
