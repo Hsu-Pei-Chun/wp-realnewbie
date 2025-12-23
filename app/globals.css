@@ -176,3 +176,60 @@
         @apply bg-background text-foreground;
     }
 }
+
+/* Code Block Pro (WordPress plugin) styles */
+.wp-block-kevinbatdorf-code-block-pro {
+    position: relative;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+/* 移除紅黃綠圓點下方的間距 */
+.wp-block-kevinbatdorf-code-block-pro > span:first-child:has(svg) {
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+/* 修正 pre 樣式（覆蓋 typography 外掛的樣式） */
+.prose .wp-block-kevinbatdorf-code-block-pro pre,
+.prose .wp-block-kevinbatdorf-code-block-pro pre.shiki,
+.wp-block-kevinbatdorf-code-block-pro > pre.shiki {
+    margin-top: 0 !important;
+    padding-top: 12px !important;
+    border-radius: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* 顯示複製按鈕並定位到右上角 */
+.wp-block-kevinbatdorf-code-block-pro .code-block-pro-copy-button {
+    display: flex !important;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.wp-block-kevinbatdorf-code-block-pro .code-block-pro-copy-button:hover {
+    opacity: 1;
+}
+
+/* 隱藏複製按鈕內的 textarea 容器，只顯示 SVG 圖示 */
+.wp-block-kevinbatdorf-code-block-pro .code-block-pro-copy-button-pre {
+    display: none;
+}
+
+/* 預設隱藏打勾圖示，只顯示一般複製圖示 */
+.wp-block-kevinbatdorf-code-block-pro .code-block-pro-copy-button .with-check {
+    visibility: hidden;
+    position: absolute;
+}
+
+.wp-block-kevinbatdorf-code-block-pro .code-block-pro-copy-button .without-check {
+    visibility: visible;
+}

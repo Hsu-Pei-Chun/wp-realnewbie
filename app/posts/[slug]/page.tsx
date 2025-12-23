@@ -8,6 +8,7 @@ import {
 
 import { Section, Container, Article, Prose } from "@/components/craft";
 import { badgeVariants } from "@/components/ui/badge";
+import { CodeBlockPro } from "@/components/posts/code-block-pro";
 import { cn } from "@/lib/utils";
 import { siteConfig } from "@/site.config";
 
@@ -128,6 +129,7 @@ export default async function Page({
         </Prose>
 
         <Article dangerouslySetInnerHTML={{ __html: post.content.rendered }} />
+        <CodeBlockPro />
       </Container>
     </Section>
   );
