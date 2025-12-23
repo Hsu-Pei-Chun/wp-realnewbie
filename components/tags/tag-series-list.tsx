@@ -13,6 +13,13 @@ interface TagSeriesListProps {
   tagDescription?: string | null;
 }
 
+// Safe parseInt with fallback for invalid values
+function parseOrder(value: string | null | undefined): number | null {
+  if (!value) return null;
+  const parsed = parseInt(value, 10);
+  return isNaN(parsed) ? null : parsed;
+}
+
 export function TagSeriesList({
   posts,
   tagName,
@@ -20,17 +27,17 @@ export function TagSeriesList({
 }: TagSeriesListProps) {
   // 排序邏輯：有 sortOrder 的按數字升序，沒有的按日期降序排最後
   const sortedPosts = [...posts].sort((a, b) => {
-    const orderA = a.seriesOrder?.sortOrder;
-    const orderB = b.seriesOrder?.sortOrder;
+    const orderA = parseOrder(a.seriesOrder?.sortOrder);
+    const orderB = parseOrder(b.seriesOrder?.sortOrder);
 
     // 兩者都有 sortOrder，按數字排序
-    if (orderA && orderB) {
-      return parseInt(orderA) - parseInt(orderB);
+    if (orderA !== null && orderB !== null) {
+      return orderA - orderB;
     }
     // 只有 a 有 sortOrder，a 排前面
-    if (orderA && !orderB) return -1;
+    if (orderA !== null && orderB === null) return -1;
     // 只有 b 有 sortOrder，b 排前面
-    if (!orderA && orderB) return 1;
+    if (orderA === null && orderB !== null) return 1;
     // 兩者都沒有，按日期降序
     return new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime();
   });
@@ -52,9 +59,8 @@ export function TagSeriesList({
 
       {/* 文章列表 */}
       <div className="divide-y divide-border">
-        {sortedPosts.map((post, index) => {
-          const sortOrder = post.seriesOrder?.sortOrder;
-          const displayOrder = sortOrder ? parseInt(sortOrder) : null;
+        {sortedPosts.map((post) => {
+          const displayOrder = parseOrder(post.seriesOrder?.sortOrder);
 
           // 格式化日期
           const date = post.date

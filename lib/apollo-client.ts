@@ -1,8 +1,9 @@
 import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client/core";
 
-const GRAPHQL_ENDPOINT = "https://realnewbie.com/graphql";
+const GRAPHQL_ENDPOINT = `${process.env.WORDPRESS_URL}/graphql`;
 
-// Singleton instance for Server Components
+// Creates a fresh Apollo Client instance
+// In Server Components, each request should get its own client to prevent data leakage between users
 function makeClient() {
   return new ApolloClient({
     cache: new InMemoryCache(),
@@ -19,8 +20,8 @@ function makeClient() {
   });
 }
 
-// Export a function that returns the client
-// Each request gets a fresh client in Server Components
+// Returns a new client instance for each call
+// Use with React cache() to deduplicate queries within the same request
 export function getClient() {
   return makeClient();
 }

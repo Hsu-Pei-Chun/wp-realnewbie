@@ -1,7 +1,9 @@
 import type { CodegenConfig } from "@graphql-codegen/cli";
 
 const config: CodegenConfig = {
-  schema: "https://realnewbie.com/graphql",
+  schema: process.env.WORDPRESS_URL
+    ? `${process.env.WORDPRESS_URL}/graphql`
+    : "https://realnewbie.com/graphql",
   documents: ["graphql/**/*.graphql"],
   generates: {
     "./lib/generated/graphql.ts": {

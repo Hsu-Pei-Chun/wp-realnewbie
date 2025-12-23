@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -10,8 +11,22 @@ import {
   GetPostsByTagQuery,
   GetPostsByTagQueryVariables,
 } from "@/lib/generated/graphql";
+import { getAllTags } from "@/lib/wordpress";
 
 export const revalidate = 3600;
+
+export async function generateStaticParams() {
+  const tags = await getAllTags();
+  return tags.map((tag) => ({ slug: tag.slug }));
+}
+
+// Cached query function - deduplicates requests within the same render
+const getTagData = cache(async (slug: string) => {
+  return getClient().query<GetPostsByTagQuery, GetPostsByTagQueryVariables>({
+    query: GetPostsByTagDocument,
+    variables: { tagSlug: slug, tagId: slug },
+  });
+});
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -21,15 +36,7 @@ export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-
-  const { data } = await getClient().query<
-    GetPostsByTagQuery,
-    GetPostsByTagQueryVariables
-  >({
-    query: GetPostsByTagDocument,
-    variables: { tagSlug: slug, tagId: slug },
-  });
-
+  const { data } = await getTagData(slug);
   const tagName = data?.tag?.name || slug;
 
   return {
@@ -43,14 +50,7 @@ export async function generateMetadata({
 
 export default async function TagPage({ params }: PageProps) {
   const { slug } = await params;
-
-  const { data, error } = await getClient().query<
-    GetPostsByTagQuery,
-    GetPostsByTagQueryVariables
-  >({
-    query: GetPostsByTagDocument,
-    variables: { tagSlug: slug, tagId: slug },
-  });
+  const { data, error } = await getTagData(slug);
 
   if (error) {
     console.error("GraphQL Error:", error);
