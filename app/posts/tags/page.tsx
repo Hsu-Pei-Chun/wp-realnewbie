@@ -26,7 +26,7 @@ export default async function Page() {
             <ul className="grid">
               {tags.map((tag: any) => (
                 <li key={tag.id}>
-                  <Link href={`/posts/?tag=${tag.id}`}>{tag.name}</Link>
+                  <Link href={`/posts/tags/${tag.slug}`}>{tag.name}</Link>
                 </li>
               ))}
             </ul>

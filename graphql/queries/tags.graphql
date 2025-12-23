@@ -1,0 +1,25 @@
+query GetPostsByTag($tagSlug: String!, $tagId: ID!) {
+  posts(first: 100, where: { tag: $tagSlug }) {
+    nodes {
+      databaseId
+      title
+      slug
+      excerpt
+      date
+      seriesOrder {
+        sortOrder
+      }
+      categories {
+        nodes {
+          name
+          slug
+        }
+      }
+    }
+  }
+  tag(id: $tagId, idType: SLUG) {
+    name
+    description
+    count
+  }
+}
