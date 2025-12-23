@@ -6,7 +6,7 @@ import {
   getAllPostSlugs,
 } from "@/lib/wordpress";
 
-import { Section, Container, Article, Prose } from "@/components/craft";
+import { Section, Container, Prose } from "@/components/craft";
 import { badgeVariants } from "@/components/ui/badge";
 import { CodeBlockPro } from "@/components/wordpress/code-block-pro";
 import { cn } from "@/lib/utils";
@@ -16,6 +16,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { MermaidRenderer } from "@/components/wordpress/mermaid-renderer";
+import { TableOfContents } from "@/components/posts/table-of-contents";
+import { PostContent } from "@/components/posts/post-content";
 
 export async function generateStaticParams() {
   return await getAllPostSlugs();
@@ -91,47 +93,73 @@ export default async function Page({
   return (
     <Section>
       <Container>
-        <Prose>
-          <h1>
-            <span
-                dangerouslySetInnerHTML={{ __html: post.title.rendered }}
-              ></span>
-          </h1>
-          <div className="flex justify-between items-center gap-4 text-sm mb-4">
-            <h5>
-              Published {date} by{" "}
-              {author.name && (
-                <span>
-                  <a href={`/posts/?author=${author.id}`}>{author.name}</a>{" "}
-                </span>
-              )}
-            </h5>
+        <div className="xl:flex xl:gap-12">
+          {/* Main content */}
+          <div className="flex-1 min-w-0">
+            <Prose>
+              <h1>
+                <span
+                  dangerouslySetInnerHTML={{ __html: post.title.rendered }}
+                ></span>
+              </h1>
+              <div className="flex justify-between items-center gap-4 text-sm mb-4">
+                <h5>
+                  Published {date} by{" "}
+                  {author.name && (
+                    <span>
+                      <a href={`/posts/?author=${author.id}`}>{author.name}</a>{" "}
+                    </span>
+                  )}
+                </h5>
 
-            <Link
-              href={`/posts/?category=${category.id}`}
-              className={cn(
-                badgeVariants({ variant: "outline" }),
-                "no-underline!"
+                {/* Category badge - visible on mobile/tablet only */}
+                <Link
+                  href={`/posts/?category=${category.id}`}
+                  className={cn(
+                    badgeVariants({ variant: "outline" }),
+                    "no-underline! xl:hidden"
+                  )}
+                >
+                  {category.name}
+                </Link>
+              </div>
+              {featuredMedia?.source_url && (
+                <div className="h-96 my-12 md:h-[500px] overflow-hidden flex items-center justify-center border rounded-lg bg-accent/25">
+                  {/* eslint-disable-next-line */}
+                  <img
+                    className="w-full h-full object-cover"
+                    src={featuredMedia.source_url}
+                    alt={post.title.rendered}
+                  />
+                </div>
               )}
-            >
-              {category.name}
-            </Link>
+            </Prose>
+
+            <PostContent content={post.content.rendered} />
+            <CodeBlockPro />
+            <MermaidRenderer />
           </div>
-          {featuredMedia?.source_url && (
-            <div className="h-96 my-12 md:h-[500px] overflow-hidden flex items-center justify-center border rounded-lg bg-accent/25">
-              {/* eslint-disable-next-line */}
-              <img
-                className="w-full h-full object-cover"
-                src={featuredMedia.source_url}
-                alt={post.title.rendered}
+
+          {/* Right sidebar: Category + TOC */}
+          <aside className="hidden xl:block w-56 shrink-0">
+            <div className="sticky top-24">
+              <Link
+                href={`/posts/?category=${category.id}`}
+                className={cn(
+                  badgeVariants({ variant: "outline" }),
+                  "no-underline!"
+                )}
+              >
+                {category.name}
+              </Link>
+
+              <TableOfContents
+                contentHtml={post.content.rendered}
+                className="mt-6"
               />
             </div>
-          )}
-        </Prose>
-
-        <Article dangerouslySetInnerHTML={{ __html: post.content.rendered }} />
-        <CodeBlockPro />
-        <MermaidRenderer />
+          </aside>
+        </div>
       </Container>
     </Section>
   );
