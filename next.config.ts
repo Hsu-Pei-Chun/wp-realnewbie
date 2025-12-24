@@ -19,10 +19,20 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     const redirects = [
-      // 舊 WordPress 分類網址結構重定向到新結構
+      // 2025-12-24: 舊 WordPress 網站遷移
+      // 這是舊站已存在的分類 slug（封閉清單，不會新增）
+      // 目的：讓 Google 索引和外部連結能 301 到新 URL 結構
+      // 單層分類：/:category/:slug
       {
         source:
-          "/:category(api|css|html|javascript|python|seo|basic-concent|uncategorized|architecture|object|money-management|life|diary|coding|perspective|database|pension)/:slug",
+          "/:category(web-api|css|html|javascript|python|seo|basic-concept|uncategorized|architecture|object|money-management|life|diary|coding|perspective|database|pension)/:slug",
+        destination: "/posts/:slug",
+        permanent: true,
+      },
+      // 雙層分類：/:category/:subcategory/:slug
+      {
+        source:
+          "/:category(web-api|css|html|javascript|python|seo|basic-concept|uncategorized|architecture|object|money-management|life|diary|coding|perspective|database|pension)/:subcategory/:slug",
         destination: "/posts/:slug",
         permanent: true,
       },
