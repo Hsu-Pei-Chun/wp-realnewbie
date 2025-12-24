@@ -36,6 +36,12 @@ const nextConfig: NextConfig = {
         destination: "/posts/:slug",
         permanent: true,
       },
+      // 頁面 redirects
+      {
+        source: "/about-me",
+        destination: "/pages/about-me",
+        permanent: true,
+      },
     ];
 
     if (wordpressUrl) {
