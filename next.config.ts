@@ -18,16 +18,25 @@ const nextConfig: NextConfig = {
       : [],
   },
   async redirects() {
-    if (!wordpressUrl) {
-      return [];
-    }
-    return [
+    const redirects = [
+      // 舊 WordPress 分類網址結構重定向到新結構
       {
-        source: "/admin",
-        destination: `${wordpressUrl}/wp-admin`,
+        source:
+          "/:category(api|css|html|javascript|python|seo|basic-concent|uncategorized|architecture|object|money-management|life|diary|coding|perspective|database|pension)/:slug",
+        destination: "/posts/:slug",
         permanent: true,
       },
     ];
+
+    if (wordpressUrl) {
+      redirects.push({
+        source: "/admin",
+        destination: `${wordpressUrl}/wp-admin`,
+        permanent: true,
+      });
+    }
+
+    return redirects;
   },
 };
 
