@@ -54,77 +54,58 @@ export async function POST(request: NextRequest) {
 
     const contentId = data?.id;
     const contentType = data?.type;
-    const action = data?.action;
 
-    try {
-      console.log(
-        `Revalidating: type=${type}, contentType=${contentType}, id=${contentId}, action=${action}`
-      );
+    console.log(
+      `Revalidating: type=${type}, contentType=${contentType}, id=${contentId}`
+    );
 
-      // Revalidate global WordPress tag
-      revalidateTag("wordpress", { expire: 0 });
+    // Collect tags to revalidate
+    const tags: string[] = ["wordpress"];
 
-      if (type === "post") {
-        // Handle post types (post, page, custom post types)
-        revalidateTag("posts", { expire: 0 });
-        if (contentId) {
-          revalidateTag(`post-${contentId}`, { expire: 0 });
-        }
-        // Clear all post pages when any post changes
-        revalidateTag("posts-page-1", { expire: 0 });
-
-        // Handle pages specifically
-        if (contentType === "page") {
-          revalidateTag("pages", { expire: 0 });
-          if (contentId) {
-            revalidateTag(`page-${contentId}`, { expire: 0 });
-          }
-        }
-      } else if (type === "term") {
-        // Handle taxonomy terms (category, tag, custom taxonomies)
-        if (contentType === "category") {
-          revalidateTag("categories", { expire: 0 });
-          if (contentId) {
-            revalidateTag(`posts-category-${contentId}`, { expire: 0 });
-            revalidateTag(`category-${contentId}`, { expire: 0 });
-          }
-        } else if (contentType === "post_tag") {
-          revalidateTag("tags", { expire: 0 });
-          if (contentId) {
-            revalidateTag(`posts-tag-${contentId}`, { expire: 0 });
-            revalidateTag(`tag-${contentId}`, { expire: 0 });
-          }
-        } else {
-          // Custom taxonomy
-          revalidateTag(`taxonomy-${contentType}`, { expire: 0 });
-          if (contentId) {
-            revalidateTag(`term-${contentId}`, { expire: 0 });
-          }
-        }
+    // Handle post types
+    if (type === "post") {
+      tags.push("posts");
+      if (contentId) tags.push(`post-${contentId}`);
+      if (contentType === "page") {
+        tags.push("pages");
+        if (contentId) tags.push(`page-${contentId}`);
       }
-
-      // Also revalidate the entire layout for safety
-      revalidatePath("/", "layout");
-
-      return NextResponse.json({
-        revalidated: true,
-        message: `Revalidated ${type}${contentType ? ` (${contentType})` : ""}${
-          contentId ? ` ID: ${contentId}` : ""
-        }`,
-        timestamp: new Date().toISOString(),
-      });
-    } catch (error) {
-      console.error("Error revalidating:", error);
-      return NextResponse.json(
-        {
-          revalidated: false,
-          message: "Failed to revalidate",
-          error: (error as Error).message,
-          timestamp: new Date().toISOString(),
-        },
-        { status: 500 }
-      );
     }
+
+    // Handle taxonomy terms
+    if (type === "term") {
+      switch (contentType) {
+        case "category":
+          tags.push("categories");
+          if (contentId) tags.push(`posts-category-${contentId}`, `category-${contentId}`);
+          break;
+        case "post_tag":
+          tags.push("tags");
+          if (contentId) tags.push(`posts-tag-${contentId}`, `tag-${contentId}`);
+          break;
+        default:
+          // Custom taxonomy
+          if (contentType) tags.push(`taxonomy-${contentType}`);
+          if (contentId) tags.push(`term-${contentId}`);
+      }
+    }
+
+    // Revalidate all collected tags
+    for (const tag of tags) {
+      revalidateTag(tag, { expire: 0 });
+    }
+
+    // Also revalidate the entire layout for safety
+    revalidatePath("/", "layout");
+
+    return NextResponse.json({
+      revalidated: true,
+      message: `Revalidated ${type}${contentType ? ` (${contentType})` : ""}${
+        contentId ? ` ID: ${contentId}` : ""
+      }`,
+      tags,
+      timestamp: new Date().toISOString(),
+    });
   } catch (error) {
     console.error("Revalidation error:", error);
     return NextResponse.json(
