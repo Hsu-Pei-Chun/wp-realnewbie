@@ -176,3 +176,5 @@
     @apply bg-background text-foreground;
   }
 }
+
+@import "../styles/heading-counter.css";

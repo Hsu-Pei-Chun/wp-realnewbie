@@ -1,0 +1,96 @@
+/**
+ * Heading Counter Styles
+ * 為文章標題自動編號：H2-H5
+ */
+
+/* 在 article 層級初始化所有 counter */
+article {
+  counter-reset: chapter section subsection subsubsection;
+}
+
+/* ===== H2：章節編號 (1, 2, 3...) - Badge 樣式 ===== */
+article h2 {
+  counter-increment: chapter;
+  counter-set: section 0 subsection 0 subsubsection 0;
+}
+
+article h2::before {
+  content: counter(chapter);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.75rem;
+  height: 1.75rem;
+  padding-inline: 0.5rem;
+  margin-right: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1;
+  color: hsl(var(--primary-foreground));
+  background-color: hsl(var(--primary));
+  border-radius: var(--radius);
+  vertical-align: middle;
+}
+
+/* ===== H3：次級編號 (1.1, 1.2...) - Badge 樣式（有邊框） ===== */
+article h3 {
+  counter-increment: section;
+  counter-set: subsection 0 subsubsection 0;
+}
+
+article h3::before {
+  content: counter(chapter) "." counter(section);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.25rem;
+  height: 1.5rem;
+  padding-inline: 0.5rem;
+  margin-right: 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  color: hsl(var(--foreground));
+  background-color: hsl(var(--background));
+  border: 1.5px solid hsl(var(--foreground) / 0.3);
+  border-radius: var(--radius);
+  vertical-align: middle;
+}
+
+/* ===== H4：三級編號 (1.1.1...) - 深色文字 ===== */
+article h4 {
+  counter-increment: subsection;
+  counter-set: subsubsection 0;
+}
+
+article h4::before {
+  content: counter(chapter) "." counter(section) "." counter(subsection);
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  margin-right: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: hsl(var(--foreground) / 0.7);
+  background-color: hsl(var(--foreground) / 0.1);
+  border-radius: calc(var(--radius) - 2px);
+  vertical-align: middle;
+}
+
+/* ===== H5：四級編號 (1.1.1.1...) - 底線樣式 ===== */
+article h5 {
+  counter-increment: subsubsection;
+}
+
+article h5::before {
+  content: counter(chapter) "." counter(section) "." counter(subsection) "." counter(subsubsection);
+  display: inline-block;
+  padding-bottom: 0.125rem;
+  margin-right: 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1;
+  color: hsl(var(--foreground) / 0.6);
+  border-bottom: 1.5px solid hsl(var(--foreground) / 0.3);
+  vertical-align: baseline;
+}
