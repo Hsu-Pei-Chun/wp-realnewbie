@@ -83,7 +83,8 @@ article h5 {
 }
 
 article h5::before {
-  content: counter(chapter) "." counter(section) "." counter(subsection) "." counter(subsubsection);
+  content: counter(chapter) "." counter(section) "." counter(subsection) "."
+    counter(subsubsection);
   display: inline-block;
   padding-bottom: 0.125rem;
   margin-right: 0.5rem;
