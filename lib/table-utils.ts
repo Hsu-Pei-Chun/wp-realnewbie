@@ -121,10 +121,7 @@ export function processTablesInContent(html: string): ContentPart[] {
     }
 
     // Extract the table HTML (between markers, excluding markers)
-    const tableHtml = modifiedHtml.slice(
-      startPos + startMarker.length,
-      endPos
-    );
+    const tableHtml = modifiedHtml.slice(startPos + startMarker.length, endPos);
 
     // Parse the table and add it
     parts.push({
