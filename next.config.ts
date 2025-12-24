@@ -6,16 +6,26 @@ const wordpressUrl = process.env.WORDPRESS_URL;
 const nextConfig: NextConfig = {
   output: "standalone",
   images: {
-    remotePatterns: wordpressHostname
-      ? [
-          {
-            protocol: "https",
-            hostname: wordpressHostname,
-            port: "",
-            pathname: "/**",
-          },
-        ]
-      : [],
+    remotePatterns: [
+      // WordPress Jetpack CDN (for logo/favicon)
+      {
+        protocol: "https",
+        hostname: "i0.wp.com",
+        port: "",
+        pathname: "/**",
+      },
+      // WordPress media
+      ...(wordpressHostname
+        ? [
+            {
+              protocol: "https" as const,
+              hostname: wordpressHostname,
+              port: "",
+              pathname: "/**",
+            },
+          ]
+        : []),
+    ],
   },
   async redirects() {
     const redirects = [

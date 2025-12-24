@@ -1,146 +1,109 @@
-// Craft Imports
 import { Section, Container, Prose } from "@/components/craft";
-
-// Next.js Imports
+import { getAllTags, getPostsPaginated } from "@/lib/wordpress";
+import { PostCard } from "@/components/posts/post-card";
+import { Tag, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
-// Icons
-import { File, Pen, Tag, Diamond, User, Folder } from "lucide-react";
-import { WordPressIcon } from "@/components/icons/wordpress";
-import { NextJsIcon } from "@/components/icons/nextjs";
+// 首頁自訂文字（不影響 Header/Footer）
+const homeContent = {
+  title: "難得來了，坐一下再走🍵",
+  description:
+    "你隨便看看，這裡主要是我整理的一些技術筆記，看到什麼有用的就拿去用。",
+};
 
-// This page is using the craft.tsx component and design system
-export default function Home() {
+export const revalidate = 3600;
+
+export default async function Home() {
+  const [tags, postsResponse] = await Promise.all([
+    getAllTags(),
+    getPostsPaginated(1, 6),
+  ]);
+
+  const { data: latestPosts } = postsResponse;
+
+  // 過濾掉文章數為 0 的 tag，並按文章數排序
+  const popularTags = tags
+    .filter((tag) => tag.count > 0)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 9);
+
   return (
     <Section>
       <Container>
-        <ToDelete />
+        <main className="space-y-12">
+          {/* 歡迎區塊 */}
+          <Prose>
+            <h1>{homeContent.title}</h1>
+            <p className="text-lg text-muted-foreground">
+              {homeContent.description}
+            </p>
+          </Prose>
+
+          {/* 系列文章區塊 */}
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold tracking-tight">系列文章</h2>
+              <Link
+                href="/posts/tags"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+              >
+                查看全部
+                <ArrowRight size={14} />
+              </Link>
+            </div>
+
+            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {popularTags.map((tag) => (
+                <Link
+                  key={tag.id}
+                  href={`/posts/tags/${tag.slug}`}
+                  className="group border rounded-lg p-4 hover:border-foreground/20 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 dark:hover:shadow-foreground/5"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <Tag size={20} className="text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold group-hover:text-primary transition-colors truncate">
+                        {tag.name}
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        {tag.count} 篇文章
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* 最新文章區塊 */}
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold tracking-tight">最新文章</h2>
+              <Link
+                href="/posts"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+              >
+                查看全部
+                <ArrowRight size={14} />
+              </Link>
+            </div>
+
+            {latestPosts.length > 0 ? (
+              <div className="grid sm:grid-cols-2 gap-6">
+                {latestPosts.map((post) => (
+                  <PostCard key={post.id} post={post} />
+                ))}
+              </div>
+            ) : (
+              <div className="h-24 w-full border rounded-lg bg-accent/25 flex items-center justify-center">
+                <p className="text-muted-foreground">目前沒有文章</p>
+              </div>
+            )}
+          </div>
+        </main>
       </Container>
     </Section>
   );
 }
-
-// This is just some example TSX
-const ToDelete = () => {
-  return (
-    <main className="space-y-6">
-      <Prose>
-        <h1>Headless WordPress built with the Next.js</h1>
-
-        <p>
-          This is <a href="https://github.com/9d8dev/next-wp">next-wp</a>,
-          created as a way to build WordPress sites with Next.js at rapid speed.
-          This starter is designed with{" "}
-          <a href="https://ui.shadcn.com">shadcn/ui</a>,{" "}
-          <a href="https://craft-ds.com">craft-ds</a>, and Tailwind CSS. Use{" "}
-          <a href="https://components.work">brijr/components</a> to build your
-          site with prebuilt components. The data fetching and typesafety is
-          handled in <code>lib/wordpress.ts</code> and{" "}
-          <code>lib/wordpress.d.ts</code>.
-        </p>
-      </Prose>
-
-      <div className="flex justify-between items-center gap-4">
-        {/* Vercel Clone Starter */}
-        <div className="flex items-center gap-3">
-          <a
-            className="h-auto block"
-            href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2F9d8dev%2Fnext-wp&env=WORDPRESS_URL,WORDPRESS_HOSTNAME&envDescription=Add%20WordPress%20URL%20with%20Rest%20API%20enabled%20(ie.%20https%3A%2F%2Fwp.example.com)%20abd%20the%20hostname%20for%20Image%20rendering%20in%20Next%20JS%20(ie.%20wp.example.com)&project-name=next-wp&repository-name=next-wp&demo-title=Next%20JS%20and%20WordPress%20Starter&demo-url=https%3A%2F%2Fwp.9d8.dev"
-          >
-            {/* eslint-disable-next-line */}
-            <img
-              className="not-prose my-4"
-              src="https://vercel.com/button"
-              alt="Deploy with Vercel"
-              width={105}
-              height={32.62}
-            />
-          </a>
-          <p className="text-sm! sr-only sm:not-sr-only text-muted-foreground">
-            Deploy with Vercel in seconds.
-          </p>
-        </div>
-
-        <div className="flex gap-2 items-center">
-          <WordPressIcon className="text-foreground" width={32} height={32} />
-          <NextJsIcon className="text-foreground" width={32} height={32} />
-        </div>
-      </div>
-
-      <div className="grid md:grid-cols-3 gap-4 mt-6">
-        <Link
-          className="border h-48 bg-accent/50 rounded-lg p-4 flex flex-col justify-between hover:scale-[1.02] transition-all"
-          href="/posts"
-        >
-          <Pen size={32} />
-          <span>
-            Posts{" "}
-            <span className="block text-sm text-muted-foreground">
-              All posts from your WordPress
-            </span>
-          </span>
-        </Link>
-        <Link
-          className="border h-48 bg-accent/50 rounded-lg p-4 flex flex-col justify-between hover:scale-[1.02] transition-all"
-          href="/pages"
-        >
-          <File size={32} />
-          <span>
-            Pages{" "}
-            <span className="block text-sm text-muted-foreground">
-              Custom pages from your WordPress
-            </span>
-          </span>
-        </Link>
-        <Link
-          className="border h-48 bg-accent/50 rounded-lg p-4 flex flex-col justify-between hover:scale-[1.02] transition-all"
-          href="/posts/authors"
-        >
-          <User size={32} />
-          <span>
-            Authors{" "}
-            <span className="block text-sm text-muted-foreground">
-              List of the authors from your WordPress
-            </span>
-          </span>
-        </Link>
-        <Link
-          className="border h-48 bg-accent/50 rounded-lg p-4 flex flex-col justify-between hover:scale-[1.02] transition-all"
-          href="/posts/tags"
-        >
-          <Tag size={32} />
-          <span>
-            Tags{" "}
-            <span className="block text-sm text-muted-foreground">
-              Content by tags from your WordPress
-            </span>
-          </span>
-        </Link>
-        <Link
-          className="border h-48 bg-accent/50 rounded-lg p-4 flex flex-col justify-between hover:scale-[1.02] transition-all"
-          href="/posts/categories"
-        >
-          <Diamond size={32} />
-          <span>
-            Categories{" "}
-            <span className="block text-sm text-muted-foreground">
-              Categories from your WordPress
-            </span>
-          </span>
-        </Link>
-        <a
-          className="border h-48 bg-accent/50 rounded-lg p-4 flex flex-col justify-between hover:scale-[1.02] transition-all"
-          href="https://github.com/9d8dev/next-wp/blob/main/README.md"
-        >
-          <Folder size={32} />
-          <span>
-            Documentation{" "}
-            <span className="block text-sm text-muted-foreground">
-              How to use `next-wp`
-            </span>
-          </span>
-        </a>
-      </div>
-    </main>
-  );
-};

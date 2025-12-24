@@ -12,7 +12,6 @@ import { mainMenu, contentMenu } from "@/menu.config";
 import { siteConfig } from "@/site.config";
 import { cn } from "@/lib/utils";
 
-import Logo from "@/public/logo.svg";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -24,12 +23,16 @@ const font = FontSans({
 });
 
 export const metadata: Metadata = {
-  title: "WordPress & Next.js Starter by 9d8",
-  description:
-    "A starter template for Next.js with WordPress as a headless CMS.",
+  title: siteConfig.site_name,
+  description: siteConfig.site_description,
   metadataBase: new URL(siteConfig.site_domain),
   alternates: {
     canonical: "/",
+  },
+  icons: {
+    icon: "https://i0.wp.com/realnewbie.com/wp-content/uploads/2021/07/cropped-AnyConv.com__200679427_510369786959317_7768533953661600206_n.jpg?w=32&ssl=1",
+    apple:
+      "https://i0.wp.com/realnewbie.com/wp-content/uploads/2021/07/cropped-AnyConv.com__200679427_510369786959317_7768533953661600206_n.jpg?w=180&ssl=1",
   },
 };
 
@@ -73,12 +76,12 @@ const Nav = ({ className, children, id }: NavProps) => {
           href="/"
         >
           <Image
-            src={Logo}
+            src="https://i0.wp.com/realnewbie.com/wp-content/uploads/2021/07/cropped-AnyConv.com__200679427_510369786959317_7768533953661600206_n.jpg?w=42&ssl=1"
             alt="Logo"
             loading="eager"
-            className="dark:invert"
+            className="rounded-full"
             width={42}
-            height={26.44}
+            height={42}
           ></Image>
           <h2 className="text-sm">{siteConfig.site_name}</h2>
         </Link>
@@ -109,11 +112,11 @@ const Footer = () => {
             <Link href="/">
               <h3 className="sr-only">{siteConfig.site_name}</h3>
               <Image
-                src={Logo}
+                src="https://i0.wp.com/realnewbie.com/wp-content/uploads/2021/07/cropped-AnyConv.com__200679427_510369786959317_7768533953661600206_n.jpg?w=42&ssl=1"
                 alt="Logo"
-                className="dark:invert"
+                className="rounded-full"
                 width={42}
-                height={26.44}
+                height={42}
               ></Image>
             </Link>
             <p>{siteConfig.site_description}</p>
