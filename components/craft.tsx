@@ -4,6 +4,8 @@
 import React from "react"
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { processTablesInContent } from "@/lib/table-utils"
+import { ResponsiveTable } from "@/components/wordpress/responsive-table"
 
 // Utility function to merge class names
 export function cn(...inputs: ClassValue[]) {
@@ -201,6 +203,7 @@ const articleTypographyStyles = [
   ...styles.typography.headerSpacing,
 ]
 
+
 // Components
 export const Layout = ({ children, className }: BaseProps) => (
   <html
@@ -230,25 +233,65 @@ export const Container = ({ children, className, id }: BaseProps) => (
   </div>
 )
 
-export const Article = ({
-  children,
-  className,
-  id,
-  dangerouslySetInnerHTML,
-}: BaseProps & HTMLProps) => (
-  <article
-    dangerouslySetInnerHTML={dangerouslySetInnerHTML}
-    className={cn(
-      articleTypographyStyles,
-      styles.layout.spacing,
-      styles.layout.article,
-      className
-    )}
-    id={id}
-  >
-    {children}
-  </article>
-)
+// Article props with html for responsive table support
+export interface ArticleProps extends BaseProps {
+  html?: string
+}
+
+export function Article({ children, className, id, html }: ArticleProps) {
+  const articleClasses = cn(
+    articleTypographyStyles,
+    styles.layout.spacing,
+    styles.layout.article,
+    className
+  )
+
+  // If no html provided, render children directly
+  if (!html) {
+    return (
+      <article className={articleClasses} id={id}>
+        {children}
+      </article>
+    )
+  }
+
+  // Parse tables for responsive handling
+  const parts = processTablesInContent(html)
+  const hasTables = parts.some((part) => part.type === "table")
+
+  // No tables: simple dangerouslySetInnerHTML
+  if (!hasTables) {
+    return (
+      <article
+        className={articleClasses}
+        id={id}
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
+    )
+  }
+
+  // With tables: render parts with ResponsiveTable for each table
+  // Use display:contents on wrapper divs to avoid breaking CSS selectors like [&>*+*]:mt-6
+  return (
+    <article className={articleClasses} id={id}>
+      {parts.map((part, index) =>
+        part.type === "table" && part.tableData ? (
+          <ResponsiveTable
+            key={index}
+            tableHtml={part.content}
+            tableData={part.tableData}
+          />
+        ) : (
+          <div
+            key={index}
+            className="contents"
+            dangerouslySetInnerHTML={{ __html: part.content }}
+          />
+        )
+      )}
+    </article>
+  )
+}
 
 export const Prose = ({
   children,

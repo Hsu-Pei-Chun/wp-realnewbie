@@ -6,7 +6,7 @@ import {
   getAllPostSlugs,
 } from "@/lib/wordpress"
 
-import { Section, Container, Prose } from "@/components/craft"
+import { Section, Container, Prose, Article } from "@/components/craft"
 import { badgeVariants } from "@/components/ui/badge"
 import { CodeBlockPro } from "@/components/wordpress/code-block-pro"
 import { cn } from "@/lib/utils"
@@ -16,7 +16,6 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import { MermaidRenderer } from "@/components/wordpress/mermaid-renderer"
-import { ArticleContent } from "@/components/wordpress/responsive-table-wrapper"
 import { TableOfContents } from "@/components/posts/table-of-contents"
 import { processContentWithToc } from "@/lib/toc-utils"
 
@@ -143,7 +142,7 @@ export default async function Page({
               )}
             </Prose>
 
-            <ArticleContent html={processedContent} />
+            <Article html={processedContent} />
             <CodeBlockPro />
             <MermaidRenderer />
           </div>
