@@ -25,14 +25,14 @@ const nextConfig: NextConfig = {
       // 單層分類：/:category/:slug
       {
         source:
-          "/:category(web-api|css|html|javascript|python|seo|basic-concept|uncategorized|architecture|object|money-management|life|diary|coding|perspective|database|pension)/:slug",
+          "/:category(web-api|css|html|javascript|python|seo|basic-concept|basic-concent|uncategorized|architecture|object|money-management|life|diary|coding|perspective|database|pension)/:slug",
         destination: "/posts/:slug",
         permanent: true,
       },
       // 雙層分類：/:category/:subcategory/:slug
       {
         source:
-          "/:category(web-api|css|html|javascript|python|seo|basic-concept|uncategorized|architecture|object|money-management|life|diary|coding|perspective|database|pension)/:subcategory/:slug",
+          "/:category(web-api|css|html|javascript|python|seo|basic-concept|basic-concent|uncategorized|architecture|object|money-management|life|diary|coding|perspective|database|pension)/:subcategory/:slug",
         destination: "/posts/:slug",
         permanent: true,
       },
