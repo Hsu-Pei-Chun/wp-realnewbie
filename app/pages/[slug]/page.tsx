@@ -1,9 +1,14 @@
 import { getPageBySlug, getAllPages } from "@/lib/wordpress";
-import { Section, Container, Prose } from "@/components/craft";
+import { Section, Container, Article, Prose } from "@/components/craft";
+import { TableOfContents } from "@/components/posts/table-of-contents";
+import { processContentWithToc, stripHtml } from "@/lib/toc-utils";
 import { siteConfig } from "@/site.config";
 import { notFound } from "next/navigation";
 
 import type { Metadata } from "next";
+
+/** Pages that should display a Table of Contents */
+const PAGES_WITH_TOC = ["about-me"];
 
 // Revalidate pages every hour
 export const revalidate = 3600;
@@ -30,13 +35,9 @@ export async function generateMetadata({
 
   const ogUrl = new URL(`${siteConfig.site_domain}/api/og`);
   ogUrl.searchParams.append("title", page.title.rendered);
-  // Strip HTML tags for description and limit length
   const description = page.excerpt?.rendered
-    ? page.excerpt.rendered.replace(/<[^>]*>/g, "").trim()
-    : page.content.rendered
-        .replace(/<[^>]*>/g, "")
-        .trim()
-        .slice(0, 200) + "...";
+    ? stripHtml(page.excerpt.rendered)
+    : stripHtml(page.content.rendered, { maxLength: 200 });
   ogUrl.searchParams.append("description", description);
 
   return {
@@ -77,11 +78,42 @@ export default async function Page({
     notFound();
   }
 
+  const showToc = PAGES_WITH_TOC.includes(slug);
+  const { html: processedContent, headings } = showToc
+    ? processContentWithToc(page.content.rendered)
+    : { html: page.content.rendered, headings: [] };
+
+  // Decode HTML entities in title (e.g., &amp; → &, &#8217; → ')
+  const title = stripHtml(page.title.rendered);
+
+  if (showToc) {
+    return (
+      <Section>
+        <Container>
+          <div className="xl:flex xl:gap-12">
+            <div className="flex-1 min-w-0">
+              <Prose className="mb-8">
+                <h1>{title}</h1>
+              </Prose>
+              <Article html={processedContent} />
+            </div>
+
+            <aside className="hidden xl:block w-56 shrink-0">
+              <div className="sticky top-24">
+                <TableOfContents headings={headings} />
+              </div>
+            </aside>
+          </div>
+        </Container>
+      </Section>
+    );
+  }
+
   return (
     <Section>
       <Container>
         <Prose>
-          <h2>{page.title.rendered}</h2>
+          <h1>{title}</h1>
           <div dangerouslySetInnerHTML={{ __html: page.content.rendered }} />
         </Prose>
       </Container>

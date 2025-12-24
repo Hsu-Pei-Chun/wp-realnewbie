@@ -2,6 +2,7 @@
 // Used to fetch data from a WordPress site using the WordPress REST API
 // Types are imported from `wp.d.ts`
 
+import { cache } from "react";
 import querystring from "query-string";
 import type {
   Post,
@@ -287,14 +288,16 @@ export async function getPageById(id: number): Promise<Page> {
   return wordpressFetch<Page>(`/wp-json/wp/v2/pages/${id}`);
 }
 
-export async function getPageBySlug(slug: string): Promise<Page | undefined> {
-  const pages = await wordpressFetchGraceful<Page[]>(
-    "/wp-json/wp/v2/pages",
-    [],
-    { slug }
-  );
-  return pages[0];
-}
+export const getPageBySlug = cache(
+  async (slug: string): Promise<Page | undefined> => {
+    const pages = await wordpressFetchGraceful<Page[]>(
+      "/wp-json/wp/v2/pages",
+      [],
+      { slug }
+    );
+    return pages[0];
+  }
+);
 
 export async function getAllAuthors(): Promise<Author[]> {
   return wordpressFetchGraceful<Author[]>(
