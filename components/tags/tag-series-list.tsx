@@ -3,9 +3,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import type { GetPostsByTagQuery } from "@/lib/generated/graphql";
 
-type Post = NonNullable<
-  GetPostsByTagQuery["posts"]
->["nodes"][number];
+type Post = NonNullable<GetPostsByTagQuery["posts"]>["nodes"][number];
 
 interface TagSeriesListProps {
   posts: Post[];

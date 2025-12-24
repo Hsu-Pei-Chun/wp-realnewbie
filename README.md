@@ -236,35 +236,35 @@ getPostById(id)              // Single post by ID
 ### Taxonomies
 
 ```typescript
-getAllCategories() // All categories
-getCategoryBySlug(slug) // Category by slug
-getAllTags() // All tags
-getTagBySlug(slug) // Tag by slug
-getPostsByCategory(id) // Posts in category
-getPostsByTag(id) // Posts with tag
+getAllCategories(); // All categories
+getCategoryBySlug(slug); // Category by slug
+getAllTags(); // All tags
+getTagBySlug(slug); // Tag by slug
+getPostsByCategory(id); // Posts in category
+getPostsByTag(id); // Posts with tag
 ```
 
 ### Authors & Pages
 
 ```typescript
-getAllAuthors() // All authors
-getAuthorBySlug(slug) // Author by slug
-getPostsByAuthor(id) // Posts by author
-getAllPages() // All pages
-getPageBySlug(slug) // Page by slug
+getAllAuthors(); // All authors
+getAuthorBySlug(slug); // Author by slug
+getPostsByAuthor(id); // Posts by author
+getAllPages(); // All pages
+getPageBySlug(slug); // Page by slug
 ```
 
 ### Example Usage
 
 ```typescript
-import { getPostsPaginated } from "@/lib/wordpress"
+import { getPostsPaginated } from "@/lib/wordpress";
 
 const { data: posts, headers } = await getPostsPaginated(1, 9, {
   category: "news",
   search: "nextjs",
-})
+});
 
-console.log(`Found ${headers.total} posts across ${headers.totalPages} pages`)
+console.log(`Found ${headers.total} posts across ${headers.totalPages} pages`);
 ```
 
 ## Cache Revalidation
@@ -291,7 +291,7 @@ export const siteConfig = {
   site_name: "Your Site",
   site_domain: "yourdomain.com",
   site_description: "Your site description",
-}
+};
 ```
 
 ### Navigation
@@ -303,7 +303,7 @@ export const mainMenu = [
   { href: "/", label: "Home" },
   { href: "/posts", label: "Blog" },
   // Add more links...
-]
+];
 ```
 
 ### Theming

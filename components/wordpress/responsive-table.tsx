@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { ChevronDown, ChevronRight } from "lucide-react"
-import { cn } from "@/lib/utils"
-import type { TableData } from "@/lib/table-utils"
+import { useState } from "react";
+import { ChevronDown, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
+import type { TableData } from "@/lib/table-utils";
 
 interface ResponsiveTableProps {
-  tableHtml: string
-  tableData: TableData
-  className?: string
+  tableHtml: string;
+  tableData: TableData;
+  className?: string;
 }
 
 function TableRow({
@@ -16,15 +16,15 @@ function TableRow({
   headers,
   rowIndex,
 }: {
-  row: string[]
-  headers: string[]
-  rowIndex: number
+  row: string[];
+  headers: string[];
+  rowIndex: number;
 }) {
-  const [isExpanded, setIsExpanded] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(false);
 
-  const firstCell = row[0] || ""
-  const restCells = row.slice(1)
-  const restHeaders = headers.slice(1)
+  const firstCell = row[0] || "";
+  const restCells = row.slice(1);
+  const restHeaders = headers.slice(1);
 
   return (
     <div
@@ -73,7 +73,10 @@ function TableRow({
           <div className="overflow-hidden">
             <div className="px-4 pb-3 pt-1 border-t bg-muted/30 divide-y divide-border">
               {restCells.map((cell, cellIndex) => (
-                <div key={cellIndex} className="flex flex-col gap-0.5 py-2 first:pt-0 last:pb-0">
+                <div
+                  key={cellIndex}
+                  className="flex flex-col gap-0.5 py-2 first:pt-0 last:pb-0"
+                >
                   {restHeaders[cellIndex] && (
                     <span className="text-xs font-medium text-muted-foreground">
                       {restHeaders[cellIndex]}
@@ -87,7 +90,7 @@ function TableRow({
         </div>
       )}
     </div>
-  )
+  );
 }
 
 export function ResponsiveTable({
@@ -95,7 +98,7 @@ export function ResponsiveTable({
   tableData,
   className,
 }: ResponsiveTableProps) {
-  const { headers, rows } = tableData
+  const { headers, rows } = tableData;
 
   return (
     <div className={cn("my-4", className)}>
@@ -117,5 +120,5 @@ export function ResponsiveTable({
         ))}
       </div>
     </div>
-  )
+  );
 }

@@ -1,15 +1,15 @@
-import { ImageResponse } from "next/og"
-import { NextRequest } from "next/server"
+import { ImageResponse } from "next/og";
+import { NextRequest } from "next/server";
 
-export const runtime = "edge"
+export const runtime = "edge";
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
+    const { searchParams } = new URL(request.url);
 
     // Get title and description from the URL query params
-    const title = searchParams.get("title")
-    const description = searchParams.get("description")
+    const title = searchParams.get("title");
+    const description = searchParams.get("description");
 
     return new ImageResponse(
       <div
@@ -65,11 +65,11 @@ export async function GET(request: NextRequest) {
         width: 1200,
         height: 630,
       }
-    )
+    );
   } catch (e: any) {
-    console.log(`${e.message}`)
+    console.log(`${e.message}`);
     return new Response(`Failed to generate the image`, {
       status: 500,
-    })
+    });
   }
 }

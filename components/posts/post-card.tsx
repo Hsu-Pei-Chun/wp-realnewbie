@@ -1,7 +1,7 @@
-import Link from "next/link"
+import Link from "next/link";
 
-import { Post } from "@/lib/wordpress.d"
-import { getCategoryById } from "@/lib/wordpress"
+import { Post } from "@/lib/wordpress.d";
+import { getCategoryById } from "@/lib/wordpress";
 
 import {
   Card,
@@ -9,19 +9,19 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
-} from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 export async function PostCard({ post }: { post: Post }) {
   const date = new Date(post.date).toLocaleDateString("zh-TW", {
     year: "numeric",
     month: "long",
     day: "numeric",
-  })
+  });
 
   const category = post.categories?.[0]
     ? await getCategoryById(post.categories[0])
-    : null
+    : null;
 
   // Extract plain text excerpt and limit to ~100 characters
   const excerptText = post.excerpt?.rendered
@@ -30,12 +30,12 @@ export async function PostCard({ post }: { post: Post }) {
         .replace(/&hellip;/g, "...")
         .replace(/&nbsp;/g, " ")
         .trim()
-    : ""
+    : "";
 
   const truncatedExcerpt =
     excerptText.length > 100
       ? excerptText.slice(0, 100).trim() + "..."
-      : excerptText
+      : excerptText;
 
   return (
     <Link href={`/posts/${post.slug}`} className="group block h-full">
@@ -63,5 +63,5 @@ export async function PostCard({ post }: { post: Post }) {
         </CardContent>
       </Card>
     </Link>
-  )
+  );
 }

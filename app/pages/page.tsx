@@ -1,10 +1,10 @@
-import { getAllPages } from "@/lib/wordpress"
-import { Section, Container, Prose } from "@/components/craft"
-import { Metadata } from "next"
-import BackButton from "@/components/back"
-import Link from "next/link"
+import { getAllPages } from "@/lib/wordpress";
+import { Section, Container, Prose } from "@/components/craft";
+import { Metadata } from "next";
+import BackButton from "@/components/back";
+import Link from "next/link";
 
-export const revalidate = 3600
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "All Pages",
@@ -12,10 +12,10 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/posts/pages",
   },
-}
+};
 
 export default async function Page() {
-  const pages = await getAllPages()
+  const pages = await getAllPages();
 
   return (
     <Section>
@@ -39,5 +39,5 @@ export default async function Page() {
         <BackButton />
       </Container>
     </Section>
-  )
+  );
 }

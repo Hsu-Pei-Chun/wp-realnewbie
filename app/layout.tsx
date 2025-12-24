@@ -1,27 +1,27 @@
-import "./globals.css"
+import "./globals.css";
 
-import { Section, Container } from "@/components/craft"
-import { Inter as FontSans } from "next/font/google"
-import { ThemeProvider } from "@/components/theme/theme-provider"
-import { ThemeToggle } from "@/components/theme/theme-toggle"
-import { MobileNav } from "@/components/nav/mobile-nav"
-import { Analytics } from "@vercel/analytics/react"
-import { Button } from "@/components/ui/button"
+import { Section, Container } from "@/components/craft";
+import { Inter as FontSans } from "next/font/google";
+import { ThemeProvider } from "@/components/theme/theme-provider";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { MobileNav } from "@/components/nav/mobile-nav";
+import { Analytics } from "@vercel/analytics/react";
+import { Button } from "@/components/ui/button";
 
-import { mainMenu, contentMenu } from "@/menu.config"
-import { siteConfig } from "@/site.config"
-import { cn } from "@/lib/utils"
+import { mainMenu, contentMenu } from "@/menu.config";
+import { siteConfig } from "@/site.config";
+import { cn } from "@/lib/utils";
 
-import Logo from "@/public/logo.svg"
-import Image from "next/image"
-import Link from "next/link"
+import Logo from "@/public/logo.svg";
+import Image from "next/image";
+import Link from "next/link";
 
-import type { Metadata } from "next"
+import type { Metadata } from "next";
 
 const font = FontSans({
   subsets: ["latin"],
   variable: "--font-sans",
-})
+});
 
 export const metadata: Metadata = {
   title: "WordPress & Next.js Starter by 9d8",
@@ -31,12 +31,12 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
-}
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
@@ -55,7 +55,7 @@ export default function RootLayout({
         <Analytics />
       </body>
     </html>
-  )
+  );
 }
 
 const Nav = ({ className, children, id }: NavProps) => {
@@ -100,8 +100,8 @@ const Nav = ({ className, children, id }: NavProps) => {
         </div>
       </div>
     </nav>
-  )
-}
+  );
+};
 
 const Footer = () => {
   return (
@@ -155,5 +155,5 @@ const Footer = () => {
         </Container>
       </Section>
     </footer>
-  )
-}
+  );
+};

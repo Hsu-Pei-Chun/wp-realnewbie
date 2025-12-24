@@ -1,10 +1,10 @@
-import { getAllCategories } from "@/lib/wordpress"
-import { Section, Container, Prose } from "@/components/craft"
-import { Metadata } from "next"
-import BackButton from "@/components/back"
-import Link from "next/link"
+import { getAllCategories } from "@/lib/wordpress";
+import { Section, Container, Prose } from "@/components/craft";
+import { Metadata } from "next";
+import BackButton from "@/components/back";
+import Link from "next/link";
 
-export const revalidate = 3600
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "All Categories",
@@ -12,10 +12,10 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/posts/categories",
   },
-}
+};
 
 export default async function Page() {
-  const categories = await getAllCategories()
+  const categories = await getAllCategories();
 
   return (
     <Section>
@@ -41,5 +41,5 @@ export default async function Page() {
         <BackButton />
       </Container>
     </Section>
-  )
+  );
 }
