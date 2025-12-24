@@ -30,9 +30,8 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   icons: {
-    icon: "https://i0.wp.com/realnewbie.com/wp-content/uploads/2021/07/cropped-AnyConv.com__200679427_510369786959317_7768533953661600206_n.jpg?w=32&ssl=1",
-    apple:
-      "https://i0.wp.com/realnewbie.com/wp-content/uploads/2021/07/cropped-AnyConv.com__200679427_510369786959317_7768533953661600206_n.jpg?w=180&ssl=1",
+    icon: "/favicon.png",
+    apple: "/logo.png",
   },
 };
 
@@ -76,13 +75,13 @@ const Nav = ({ className, children, id }: NavProps) => {
           href="/"
         >
           <Image
-            src="https://i0.wp.com/realnewbie.com/wp-content/uploads/2021/07/cropped-AnyConv.com__200679427_510369786959317_7768533953661600206_n.jpg?w=42&ssl=1"
+            src="/logo.png"
             alt="Logo"
             loading="eager"
             className="rounded-full"
             width={42}
             height={42}
-          ></Image>
+          />
           <h2 className="text-sm">{siteConfig.site_name}</h2>
         </Link>
         {children}
@@ -112,12 +111,12 @@ const Footer = () => {
             <Link href="/">
               <h3 className="sr-only">{siteConfig.site_name}</h3>
               <Image
-                src="https://i0.wp.com/realnewbie.com/wp-content/uploads/2021/07/cropped-AnyConv.com__200679427_510369786959317_7768533953661600206_n.jpg?w=42&ssl=1"
+                src="/logo.png"
                 alt="Logo"
                 className="rounded-full"
                 width={42}
                 height={42}
-              ></Image>
+              />
             </Link>
             <p>{siteConfig.site_description}</p>
           </div>

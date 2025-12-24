@@ -85,11 +85,7 @@ export function FilterPosts({
         onValueChange={(value) => handleFilterChange("category", value)}
       >
         <SelectTrigger disabled={!hasCategories}>
-          {hasCategories ? (
-            <SelectValue placeholder="所有分類" />
-          ) : (
-            "無分類"
-          )}
+          {hasCategories ? <SelectValue placeholder="所有分類" /> : "無分類"}
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">所有分類</SelectItem>
@@ -106,11 +102,7 @@ export function FilterPosts({
         onValueChange={(value) => handleFilterChange("author", value)}
       >
         <SelectTrigger disabled={!hasAuthors} className="text-center">
-          {hasAuthors ? (
-            <SelectValue placeholder="所有作者" />
-          ) : (
-            "無作者"
-          )}
+          {hasAuthors ? <SelectValue placeholder="所有作者" /> : "無作者"}
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">所有作者</SelectItem>

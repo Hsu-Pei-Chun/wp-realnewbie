@@ -4,13 +4,6 @@ import { PostCard } from "@/components/posts/post-card";
 import { Tag, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
-// 首頁自訂文字（不影響 Header/Footer）
-const homeContent = {
-  title: "難得來了，坐一下再走🍵",
-  description:
-    "你隨便看看，這裡主要是我整理的一些技術筆記，看到什麼有用的就拿去用。",
-};
-
 export const revalidate = 3600;
 
 export default async function Home() {
@@ -33,9 +26,9 @@ export default async function Home() {
         <main className="space-y-12">
           {/* 歡迎區塊 */}
           <Prose>
-            <h1>{homeContent.title}</h1>
+            <h1>難得來了，坐一下再走🍵</h1>
             <p className="text-lg text-muted-foreground">
-              {homeContent.description}
+              你隨便看看，這裡主要是我整理的一些技術筆記，看到什麼有用的就拿去用。
             </p>
           </Prose>
 
