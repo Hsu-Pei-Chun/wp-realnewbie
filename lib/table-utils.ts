@@ -95,8 +95,20 @@ export interface ContentPart {
 }
 
 /**
+ * Check if a position in HTML is inside a <details> element
+ * by counting unclosed <details> tags before that position
+ */
+function isInsideDetails(html: string, position: number): boolean {
+  const beforePosition = html.slice(0, position);
+  const openTags = (beforePosition.match(/<details[^>]*>/gi) || []).length;
+  const closeTags = (beforePosition.match(/<\/details>/gi) || []).length;
+  return openTags > closeTags;
+}
+
+/**
  * Split HTML content by tables and parse table data
  * This is done server-side to decode HTML entities
+ * Note: Tables inside <details> elements are NOT split out to preserve HTML structure
  */
 export function processTablesInContent(html: string): ContentPart[] {
   const parts: ContentPart[] = [];
@@ -106,6 +118,11 @@ export function processTablesInContent(html: string): ContentPart[] {
   let match;
 
   while ((match = tableRegex.exec(html)) !== null) {
+    // Skip tables inside <details> to preserve HTML structure
+    if (isInsideDetails(html, match.index)) {
+      continue;
+    }
+
     // Add HTML before this table
     if (match.index > lastIndex) {
       const beforeHtml = html.slice(lastIndex, match.index);
