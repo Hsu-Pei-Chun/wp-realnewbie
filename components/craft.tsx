@@ -239,6 +239,7 @@ export interface ArticleProps extends BaseProps {
 
 export function Article({ children, className, id, html }: ArticleProps) {
   const articleClasses = cn(
+    "article-content", // Used by heading-counter.css for scoping
     articleTypographyStyles,
     styles.layout.spacing,
     styles.layout.article,

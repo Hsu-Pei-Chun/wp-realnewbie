@@ -26,9 +26,9 @@ export default async function Home() {
         <main className="space-y-12">
           {/* 歡迎區塊 */}
           <Prose>
-            <h1>難得來了，坐一下再走🍵</h1>
+            <h1>來都來了，坐一下再走🍵</h1>
             <p className="text-lg text-muted-foreground">
-              你隨便看看，這裡主要是我整理的一些技術筆記，看到什麼有用的就拿去用。
+              隨便看看，這裡是我整理的一些技術筆記，看到覺得有用的就拿去用吧。
             </p>
           </Prose>
 
@@ -45,18 +45,18 @@ export default async function Home() {
               </Link>
             </div>
 
-            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {popularTags.map((tag) => (
                 <Link
                   key={tag.id}
                   href={`/posts/tags/${tag.slug}`}
                   className="group border rounded-lg p-4 hover:border-foreground/20 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 dark:hover:shadow-foreground/5"
                 >
-                  <div className="flex items-start gap-3">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <div className="flex items-center gap-3">
+                    <div className="shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
                       <Tag size={20} className="text-primary" />
                     </div>
-                    <div className="flex-1 min-w-0">
+                    <div className="min-w-0 flex-1">
                       <h3 className="font-semibold group-hover:text-primary transition-colors truncate">
                         {tag.name}
                       </h3>
