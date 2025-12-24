@@ -93,9 +93,6 @@ const Nav = ({ className, children, id }: NavProps) => {
               </Button>
             ))}
           </div>
-          <Button asChild className="hidden sm:flex">
-            <Link href="https://dub.sh/next-wp">Get Started</Link>
-          </Button>
           <MobileNav />
         </div>
       </div>
