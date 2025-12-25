@@ -231,7 +231,7 @@ export async function getAllCategories(): Promise<Category[]> {
   return wordpressFetchGraceful<Category[]>(
     "/wp-json/wp/v2/categories",
     [],
-    undefined,
+    { per_page: 100 },
     ["wordpress", "categories"]
   );
 }
@@ -261,10 +261,12 @@ export async function getTagsByPost(postId: number): Promise<Tag[]> {
 }
 
 export async function getAllTags(): Promise<Tag[]> {
-  return wordpressFetchGraceful<Tag[]>("/wp-json/wp/v2/tags", [], undefined, [
-    "wordpress",
-    "tags",
-  ]);
+  return wordpressFetchGraceful<Tag[]>(
+    "/wp-json/wp/v2/tags",
+    [],
+    { per_page: 100 },
+    ["wordpress", "tags"]
+  );
 }
 
 export async function getTagById(id: number): Promise<Tag> {
@@ -303,7 +305,7 @@ export async function getAllAuthors(): Promise<Author[]> {
   return wordpressFetchGraceful<Author[]>(
     "/wp-json/wp/v2/users",
     [],
-    undefined,
+    { per_page: 100 },
     ["wordpress", "authors"]
   );
 }
