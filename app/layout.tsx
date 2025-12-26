@@ -22,6 +22,10 @@ const font = FontSans({
   variable: "--font-sans",
 });
 
+const ogUrl = new URL(`${siteConfig.site_domain}/api/og`);
+ogUrl.searchParams.append("title", siteConfig.site_name);
+ogUrl.searchParams.append("description", siteConfig.site_description);
+
 export const metadata: Metadata = {
   title: siteConfig.site_name,
   description: siteConfig.site_description,
@@ -32,6 +36,27 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.png",
     apple: "/logo.png",
+  },
+  openGraph: {
+    title: siteConfig.site_name,
+    description: siteConfig.site_description,
+    url: siteConfig.site_domain,
+    siteName: siteConfig.site_name,
+    images: [
+      {
+        url: ogUrl.toString(),
+        width: 1200,
+        height: 630,
+        alt: siteConfig.site_name,
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteConfig.site_name,
+    description: siteConfig.site_description,
+    images: [ogUrl.toString()],
   },
 };
 
