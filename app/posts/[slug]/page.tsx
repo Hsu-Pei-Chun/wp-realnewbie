@@ -149,12 +149,12 @@ export default async function Page({
 
           {/* Right sidebar: Category + TOC */}
           <aside className="hidden xl:block w-56 shrink-0">
-            <div className="sticky top-24 max-h-[calc(100vh-8rem)] flex flex-col">
+            <div className="sticky top-24 max-h-[calc(100vh-8rem)] flex flex-col items-start">
               <Link
                 href={`/posts/?category=${category.id}`}
                 className={cn(
                   badgeVariants({ variant: "outline" }),
-                  "no-underline!"
+                  "no-underline! self-start"
                 )}
               >
                 {category.name}
