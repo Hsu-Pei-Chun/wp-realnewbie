@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { cn } from "@/lib/utils";
 import type { TocHeading } from "@/lib/toc-utils";
 
@@ -19,6 +19,7 @@ const OBSERVER_ROOT_MARGIN = "-80px 0px -70% 0px";
 
 export function TableOfContents({ headings, className }: TableOfContentsProps) {
   const [activeId, setActiveId] = useState<string>("");
+  const activeItemRef = useRef<HTMLLIElement>(null);
 
   // Set up Intersection Observer for scrollspy
   useEffect(() => {
@@ -58,6 +59,17 @@ export function TableOfContents({ headings, className }: TableOfContentsProps) {
     return () => observer.disconnect();
   }, [headings]);
 
+  // Auto-scroll TOC to keep active item visible
+  // Note: Avoid smooth scrolling here to prevent conflicts with page scroll
+  // See: https://github.com/facebook/docusaurus/pull/6317
+  useEffect(() => {
+    if (activeItemRef.current) {
+      activeItemRef.current.scrollIntoView({
+        block: "nearest",
+      });
+    }
+  }, [activeId]);
+
   // Handle click for smooth scrolling
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
@@ -85,33 +97,32 @@ export function TableOfContents({ headings, className }: TableOfContentsProps) {
 
   return (
     <nav className={cn(className)} aria-label="Table of contents">
-      <div>
-        <h2 className="text-sm font-semibold text-muted-foreground mb-4">
-          目錄
-        </h2>
-        <ul className="space-y-1 text-sm list-none pl-0">
-          {headings.map((heading) => (
-            <li
-              key={heading.id}
-              className={cn("before:hidden", heading.level === 3 && "pl-3")}
+      <h2 className="text-sm font-semibold text-muted-foreground mb-4">
+        目錄
+      </h2>
+      <ul className="space-y-1 text-sm list-none pl-0">
+        {headings.map((heading) => (
+          <li
+            key={heading.id}
+            ref={activeId === heading.id ? activeItemRef : null}
+            className={cn("before:hidden", heading.level === 3 && "pl-3")}
+          >
+            <a
+              href={`#${heading.id}`}
+              onClick={(e) => handleClick(e, heading.id)}
+              className={cn(
+                "block py-1 transition-colors duration-200",
+                "hover:text-primary",
+                activeId === heading.id
+                  ? "text-primary font-medium"
+                  : "text-muted-foreground"
+              )}
             >
-              <a
-                href={`#${heading.id}`}
-                onClick={(e) => handleClick(e, heading.id)}
-                className={cn(
-                  "block py-1 transition-colors duration-200",
-                  "hover:text-primary",
-                  activeId === heading.id
-                    ? "text-primary font-medium"
-                    : "text-muted-foreground"
-                )}
-              >
-                {heading.text}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
+              {heading.text}
+            </a>
+          </li>
+        ))}
+      </ul>
     </nav>
   );
 }

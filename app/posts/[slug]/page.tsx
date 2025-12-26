@@ -149,7 +149,7 @@ export default async function Page({
 
           {/* Right sidebar: Category + TOC */}
           <aside className="hidden xl:block w-56 shrink-0">
-            <div className="sticky top-24">
+            <div className="sticky top-24 max-h-[calc(100vh-8rem)] flex flex-col">
               <Link
                 href={`/posts/?category=${category.id}`}
                 className={cn(
@@ -160,7 +160,7 @@ export default async function Page({
                 {category.name}
               </Link>
 
-              <TableOfContents headings={headings} className="mt-6" />
+              <TableOfContents headings={headings} className="mt-6 overflow-y-auto scrollbar-thin" />
             </div>
           </aside>
         </div>
