@@ -5,15 +5,18 @@
  * 與 components/wordpress/ 中的 JS 整合組件搭配使用。
  */
 
+:root {
+  --wp-gallery-gap: 0.5rem;
+}
+
 /*
  * =============================================================================
  * Code Block Pro (WordPress plugin)
  * =============================================================================
  *
- * 為什麼需要這些覆蓋：
- * - 外掛預設樣式與網站設計不一致（有 border/shadow/border-radius）
- * - @tailwindcss/typography 會覆蓋 pre 的 margin，造成程式碼區塊頂部間距過大
- * - 複製按鈕預設被 inline style 隱藏（需搭配 code-block-pro.tsx 的 JS 覆蓋）
+ * 覆蓋外掛預設樣式，使用 !important 是因為：
+ * - 外掛 CSS 有較高的特異性
+ * - CSS 優先於 JS（效能、避免 FOUC）
  */
 
 .wp-block-kevinbatdorf-code-block-pro {
@@ -23,16 +26,14 @@
   box-shadow: none !important;
 }
 
-/* 外掛的 macOS 視窗裝飾（紅黃綠圓點）下方有多餘間距 */
+/* macOS 視窗裝飾下方多餘間距 */
 .wp-block-kevinbatdorf-code-block-pro > span:first-child:has(svg) {
   margin-bottom: 0;
   padding-bottom: 0;
 }
 
-/* typography 外掛會在 pre 上加 margin-top，破壞視窗裝飾與程式碼的視覺連續性 */
-.prose .wp-block-kevinbatdorf-code-block-pro pre,
-.prose .wp-block-kevinbatdorf-code-block-pro pre.shiki,
-.wp-block-kevinbatdorf-code-block-pro > pre.shiki {
+/* 覆蓋外掛預設的 pre 樣式 */
+.wp-block-kevinbatdorf-code-block-pro pre {
   margin-top: 0 !important;
   padding-top: 12px !important;
   border-radius: 0 !important;
@@ -40,14 +41,14 @@
   box-shadow: none !important;
 }
 
-/* 複製按鈕定位（display 由 JS 處理，因為外掛用 inline style 設定 display:none） */
+/* 複製按鈕定位（display 由 JS 處理，因為外掛用 inline style） */
 .wp-block-kevinbatdorf-code-block-pro .code-block-pro-copy-button {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: 0.5rem;
+  right: 0.5rem;
   cursor: pointer;
-  padding: 4px;
-  border-radius: 4px;
+  padding: 0.25rem;
+  border-radius: calc(var(--radius) / 2);
   opacity: 0.6;
   transition: opacity 0.2s;
 }
@@ -56,12 +57,10 @@
   opacity: 1;
 }
 
-/* 外掛在按鈕內放了一個 pre/textarea 來存程式碼，視覺上不需要顯示 */
 .wp-block-kevinbatdorf-code-block-pro .code-block-pro-copy-button-pre {
   display: none;
 }
 
-/* 複製按鈕有兩個 SVG：一般狀態 (without-check) 和複製成功 (with-check) */
 .wp-block-kevinbatdorf-code-block-pro .code-block-pro-copy-button .with-check {
   visibility: hidden;
   position: absolute;
@@ -78,8 +77,7 @@
  * Mermaid 圖表
  * =============================================================================
  *
- * Dark mode 修正：Mermaid 預設不支援 dark mode，需要用 CSS 覆蓋 SVG 內的顏色。
- * 使用 !important 是因為 mermaid 會產生 inline styles。
+ * 覆蓋 mermaid 產生的 inline styles，使用 !important 是必要的。
  */
 
 .dark .mermaid text {
@@ -154,7 +152,6 @@
   margin-block: 1.5rem;
 }
 
-/* 第一個段落作為標題，用較小字體和 muted 顏色 */
 .wp-block-group > p:first-child {
   font-size: 0.875rem;
   font-weight: 500;
@@ -162,7 +159,6 @@
   margin-bottom: 0.75rem;
 }
 
-/* 列表樣式調整 */
 .wp-block-group > ol,
 .wp-block-group > ul {
   margin: 0;
@@ -175,7 +171,6 @@
   padding-block: 0.25rem;
 }
 
-/* 連結樣式 */
 .wp-block-group a {
   color: hsl(var(--foreground));
   text-decoration: underline;
@@ -188,7 +183,6 @@
   text-decoration-color: hsl(var(--primary));
 }
 
-/* Dark mode 微調 */
 .dark .wp-block-group {
   background-color: hsl(var(--muted) / 0.2);
 }
@@ -200,12 +194,10 @@
  *
  * Jetpack 的相片牆區塊，支援多欄並排顯示圖片。
  * WordPress 前端需要 Jetpack 的 CSS 才能正確顯示，這裡手動實作必要樣式。
- *
- * --gallery-gap: 共用間距變數，與 WordPress Gallery Block 統一
  */
 
 .wp-block-jetpack-tiled-gallery {
-  --gallery-gap: 8px;
+  --gallery-gap: var(--wp-gallery-gap);
   margin-block: 1.5rem;
 }
 
@@ -249,12 +241,10 @@
  *
  * 基於 WordPress Core 的 gallery/style.css 精簡版。
  * 支援 columns-N class 和 is-cropped 模式，保持與 WP 編輯器設定一致。
- *
- * --gallery-gap: 共用間距變數，與 Jetpack Tiled Gallery 統一
  */
 
 .wp-block-gallery {
-  --gallery-gap: 8px;
+  --gallery-gap: var(--wp-gallery-gap);
   display: flex;
   flex-wrap: wrap;
   gap: var(--gallery-gap);
@@ -267,12 +257,10 @@
   margin: 0;
   overflow: hidden;
   border-radius: var(--radius);
-  /* 手機優先：預設 2 欄 */
   width: calc(50% - var(--gallery-gap) / 2);
 }
 
-/* 桌面：根據 columns class 調整 */
-@media (min-width: 600px) {
+@media (min-width: 640px) {
   .wp-block-gallery.columns-1 > figure {
     width: 100%;
   }
@@ -289,14 +277,12 @@
     width: calc(25% - var(--gallery-gap) * 0.75);
   }
 
-  /* 預設 3 欄（當沒有指定 columns 時） */
   .wp-block-gallery:not([class*="columns-"]) > figure,
   .wp-block-gallery.columns-default > figure {
     width: calc(33.333% - var(--gallery-gap) * 0.667);
   }
 }
 
-/* 裁切模式：強制正方形比例 */
 .wp-block-gallery.is-cropped > figure {
   aspect-ratio: 1 / 1;
 }
@@ -307,7 +293,6 @@
   object-fit: cover;
 }
 
-/* 非裁切模式：保留原始比例 */
 .wp-block-gallery:not(.is-cropped) > figure img {
   width: 100%;
   height: auto;
