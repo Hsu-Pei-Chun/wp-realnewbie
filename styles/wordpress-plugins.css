@@ -5,10 +5,6 @@
  * 與 components/wordpress/ 中的 JS 整合組件搭配使用。
  */
 
-:root {
-  --wp-gallery-gap: 0.5rem;
-}
-
 /*
  * =============================================================================
  * Code Block Pro (WordPress plugin)
@@ -197,7 +193,7 @@
  */
 
 .wp-block-jetpack-tiled-gallery {
-  --gallery-gap: var(--wp-gallery-gap);
+  --gallery-gap: 0.5rem;
   margin-block: 1.5rem;
 }
 
@@ -244,7 +240,7 @@
  */
 
 .wp-block-gallery {
-  --gallery-gap: var(--wp-gallery-gap);
+  --gallery-gap: 0.5rem;
   display: flex;
   flex-wrap: wrap;
   gap: var(--gallery-gap);
