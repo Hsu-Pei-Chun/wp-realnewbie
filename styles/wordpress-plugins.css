@@ -200,27 +200,30 @@
  *
  * Jetpack 的相片牆區塊，支援多欄並排顯示圖片。
  * WordPress 前端需要 Jetpack 的 CSS 才能正確顯示，這裡手動實作必要樣式。
+ *
+ * --gallery-gap: 共用間距變數，與 WordPress Gallery Block 統一
  */
 
 .wp-block-jetpack-tiled-gallery {
+  --gallery-gap: 8px;
   margin-block: 1.5rem;
 }
 
 .wp-block-jetpack-tiled-gallery .tiled-gallery__gallery {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--gallery-gap);
 }
 
 .wp-block-jetpack-tiled-gallery .tiled-gallery__row {
   display: flex;
-  gap: 4px;
+  gap: var(--gallery-gap);
 }
 
 .wp-block-jetpack-tiled-gallery .tiled-gallery__col {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--gallery-gap);
 }
 
 .wp-block-jetpack-tiled-gallery .tiled-gallery__item {
@@ -237,4 +240,75 @@
   margin: 0;
   border: none;
   border-radius: 0;
+}
+
+/*
+ * =============================================================================
+ * WordPress Gallery Block
+ * =============================================================================
+ *
+ * 基於 WordPress Core 的 gallery/style.css 精簡版。
+ * 支援 columns-N class 和 is-cropped 模式，保持與 WP 編輯器設定一致。
+ *
+ * --gallery-gap: 共用間距變數，與 Jetpack Tiled Gallery 統一
+ */
+
+.wp-block-gallery {
+  --gallery-gap: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gallery-gap);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.wp-block-gallery > figure {
+  margin: 0;
+  overflow: hidden;
+  border-radius: var(--radius);
+  /* 手機優先：預設 2 欄 */
+  width: calc(50% - var(--gallery-gap) / 2);
+}
+
+/* 桌面：根據 columns class 調整 */
+@media (min-width: 600px) {
+  .wp-block-gallery.columns-1 > figure {
+    width: 100%;
+  }
+
+  .wp-block-gallery.columns-2 > figure {
+    width: calc(50% - var(--gallery-gap) / 2);
+  }
+
+  .wp-block-gallery.columns-3 > figure {
+    width: calc(33.333% - var(--gallery-gap) * 0.667);
+  }
+
+  .wp-block-gallery.columns-4 > figure {
+    width: calc(25% - var(--gallery-gap) * 0.75);
+  }
+
+  /* 預設 3 欄（當沒有指定 columns 時） */
+  .wp-block-gallery:not([class*="columns-"]) > figure,
+  .wp-block-gallery.columns-default > figure {
+    width: calc(33.333% - var(--gallery-gap) * 0.667);
+  }
+}
+
+/* 裁切模式：強制正方形比例 */
+.wp-block-gallery.is-cropped > figure {
+  aspect-ratio: 1 / 1;
+}
+
+.wp-block-gallery.is-cropped > figure img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 非裁切模式：保留原始比例 */
+.wp-block-gallery:not(.is-cropped) > figure img {
+  width: 100%;
+  height: auto;
 }
