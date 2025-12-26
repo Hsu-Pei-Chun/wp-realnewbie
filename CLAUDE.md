@@ -73,6 +73,7 @@ Headless WordPress starter using Next.js 16 App Router with TypeScript.
 WORDPRESS_URL="https://example.com"      # Full WordPress URL
 WORDPRESS_HOSTNAME="example.com"          # For Next.js image optimization
 WORDPRESS_WEBHOOK_SECRET="secret-key"     # Webhook validation
+NEXT_PUBLIC_GA_ID="G-XXXXXXXXXX"          # Google Analytics ID (optional)
 ```
 
 ## Key Dependencies

@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme/theme-provider";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { MobileNav } from "@/components/nav/mobile-nav";
 import { Analytics } from "@vercel/analytics/react";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { Button } from "@/components/ui/button";
 
 import { mainMenu, contentMenu } from "@/menu.config";
@@ -80,6 +81,10 @@ export default function RootLayout({
           <Footer />
         </ThemeProvider>
         <Analytics />
+        {process.env.NODE_ENV === "production" &&
+          process.env.NEXT_PUBLIC_GA_ID && (
+            <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
+          )}
       </body>
     </html>
   );
