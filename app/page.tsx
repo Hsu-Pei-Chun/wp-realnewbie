@@ -15,10 +15,10 @@ export default async function Home() {
 
   const { data: latestPosts } = postsResponse;
 
-  // 過濾掉文章數為 0 的 tag，並按文章數排序
+  // 過濾掉文章數為 0 的 tag，並按建立時間排序（ID 越大越新）
   const popularTags = tags
     .filter((tag) => tag.count > 0)
-    .sort((a, b) => b.count - a.count)
+    .sort((a, b) => b.id - a.id)
     .slice(0, 9);
 
   return (

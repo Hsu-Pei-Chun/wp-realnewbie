@@ -17,10 +17,10 @@ export const metadata: Metadata = {
 export default async function Page() {
   const tags = await getAllTags();
 
-  // 過濾掉文章數為 0 的 tag，並按文章數排序
+  // 過濾掉文章數為 0 的 tag，並按建立時間排序（ID 越大越新）
   const sortedTags = tags
     .filter((tag) => tag.count > 0)
-    .sort((a, b) => b.count - a.count);
+    .sort((a, b) => b.id - a.id);
 
   return (
     <Section>
