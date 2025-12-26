@@ -1,7 +1,6 @@
 import {
   getPostBySlug,
   getFeaturedMediaById,
-  getAuthorById,
   getCategoryById,
   getAllPostSlugs,
 } from "@/lib/wordpress";
@@ -82,11 +81,10 @@ export default async function Page({
   const featuredMedia = post.featured_media
     ? await getFeaturedMediaById(post.featured_media)
     : null;
-  const author = await getAuthorById(post.author);
-  const date = new Date(post.date).toLocaleDateString("en-US", {
+  const modifiedDate = new Date(post.modified).toLocaleDateString("zh-TW", {
+    year: "numeric",
     month: "long",
     day: "numeric",
-    year: "numeric",
   });
   const category = await getCategoryById(post.categories[0]);
 
@@ -108,16 +106,7 @@ export default async function Page({
                 ></span>
               </h1>
               <div className="flex justify-between items-center gap-4 text-sm mb-4">
-                <h5>
-                  Published {date} by{" "}
-                  {author.name && (
-                    <span>
-                      <a href={`/posts/?author=${author.id}`}>
-                        {author.name}
-                      </a>{" "}
-                    </span>
-                  )}
-                </h5>
+                <h5>最後更新：{modifiedDate}</h5>
 
                 {/* Category badge - visible on mobile/tablet only */}
                 <Link
