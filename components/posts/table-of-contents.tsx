@@ -97,9 +97,7 @@ export function TableOfContents({ headings, className }: TableOfContentsProps) {
 
   return (
     <nav className={cn(className)} aria-label="Table of contents">
-      <h2 className="text-sm font-semibold text-muted-foreground mb-4">
-        目錄
-      </h2>
+      <h2 className="text-sm font-semibold text-muted-foreground mb-4">目錄</h2>
       <ul className="space-y-1 text-sm list-none pl-0">
         {headings.map((heading) => (
           <li

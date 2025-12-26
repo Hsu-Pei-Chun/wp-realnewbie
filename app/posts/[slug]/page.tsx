@@ -160,7 +160,10 @@ export default async function Page({
                 {category.name}
               </Link>
 
-              <TableOfContents headings={headings} className="mt-6 overflow-y-auto scrollbar-thin" />
+              <TableOfContents
+                headings={headings}
+                className="mt-6 overflow-y-auto scrollbar-thin"
+              />
             </div>
           </aside>
         </div>

@@ -77,11 +77,13 @@ export async function POST(request: NextRequest) {
       switch (contentType) {
         case "category":
           tags.push("categories");
-          if (contentId) tags.push(`posts-category-${contentId}`, `category-${contentId}`);
+          if (contentId)
+            tags.push(`posts-category-${contentId}`, `category-${contentId}`);
           break;
         case "post_tag":
           tags.push("tags");
-          if (contentId) tags.push(`posts-tag-${contentId}`, `tag-${contentId}`);
+          if (contentId)
+            tags.push(`posts-tag-${contentId}`, `tag-${contentId}`);
           break;
         default:
           // Custom taxonomy
