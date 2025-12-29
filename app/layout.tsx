@@ -117,11 +117,9 @@ const Nav = ({ className, children, id }: NavProps) => {
         {children}
         <div className="flex items-center gap-2">
           <div className="mx-2 hidden md:flex">
-            {Object.entries(mainMenu).map(([key, href]) => (
-              <Button key={href} asChild variant="ghost" size="sm">
-                <Link href={href}>
-                  {key.charAt(0).toUpperCase() + key.slice(1)}
-                </Link>
+            {mainMenu.map((item) => (
+              <Button key={item.href} asChild variant="ghost" size="sm">
+                <Link href={item.href}>{item.label}</Link>
               </Button>
             ))}
           </div>
@@ -151,26 +149,26 @@ const Footer = () => {
             <p>{siteConfig.site_description}</p>
           </div>
           <div className="flex flex-col gap-2 text-sm">
-            <h5 className="font-medium text-base">Website</h5>
-            {Object.entries(mainMenu).map(([key, href]) => (
+            <h5 className="font-medium text-base">網站</h5>
+            {mainMenu.map((item) => (
               <Link
                 className="hover:underline underline-offset-4"
-                key={href}
-                href={href}
+                key={item.href}
+                href={item.href}
               >
-                {key.charAt(0).toUpperCase() + key.slice(1)}
+                {item.label}
               </Link>
             ))}
           </div>
           <div className="flex flex-col gap-2 text-sm">
-            <h5 className="font-medium text-base">Blog</h5>
-            {Object.entries(contentMenu).map(([key, href]) => (
+            <h5 className="font-medium text-base">部落格</h5>
+            {contentMenu.map((item) => (
               <Link
                 className="hover:underline underline-offset-4"
-                key={href}
-                href={href}
+                key={item.href}
+                href={item.href}
               >
-                {key.charAt(0).toUpperCase() + key.slice(1)}
+                {item.label}
               </Link>
             ))}
           </div>
