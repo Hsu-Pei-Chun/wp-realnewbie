@@ -18,6 +18,9 @@ import { MermaidRenderer } from "@/components/wordpress/mermaid-renderer";
 import { TableOfContents } from "@/components/posts/table-of-contents";
 import { processContentWithToc } from "@/lib/toc-utils";
 import { CommentSection } from "@/components/comments";
+import { SeriesBadge } from "@/components/posts/series-badge";
+import { SeriesNavigation } from "@/components/posts/series-navigation";
+import { getSeriesData } from "@/lib/series-utils";
 
 export async function generateStaticParams() {
   return await getAllPostSlugs();
@@ -94,22 +97,24 @@ export default async function Page({
     post.content.rendered
   );
 
+  // Fetch series data once for both components
+  const seriesData = await getSeriesData(post.id, slug);
+
   return (
     <Section>
       <Container>
         <div className="xl:flex xl:gap-12">
           {/* Main content */}
           <div className="flex-1 min-w-0">
+            <SeriesBadge seriesData={seriesData} />
             <Prose>
-              <h1>
+              <h1 className="!mb-6 !mt-0">
                 <span
                   dangerouslySetInnerHTML={{ __html: post.title.rendered }}
                 ></span>
               </h1>
-              <div className="flex justify-between items-center gap-4 text-sm mb-4">
-                <h5>最後更新：{modifiedDate}</h5>
-
-                {/* Category badge - visible on mobile/tablet only */}
+              <div className="flex justify-between items-center text-sm text-muted-foreground/60 pb-4 border-b mb-8 not-prose">
+                <span>最後更新：{modifiedDate}</span>
                 <Link
                   href={`/posts/?category=${category.id}`}
                   className={cn(
@@ -136,6 +141,9 @@ export default async function Page({
             <CodeBlockPro />
             <MermaidRenderer />
 
+            {/* Series Navigation */}
+            <SeriesNavigation seriesData={seriesData} />
+
             {/* Comments Section */}
             <CommentSection
               postId={post.id}
@@ -158,7 +166,7 @@ export default async function Page({
 
               <TableOfContents
                 headings={headings}
-                className="mt-6 overflow-y-auto scrollbar-thin"
+                className="mt-6 overflow-y-auto overflow-x-hidden scrollbar-thin"
               />
             </div>
           </aside>
