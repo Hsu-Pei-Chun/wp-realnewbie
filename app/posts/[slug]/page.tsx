@@ -17,6 +17,7 @@ import type { Metadata } from "next";
 import { MermaidRenderer } from "@/components/wordpress/mermaid-renderer";
 import { TableOfContents } from "@/components/posts/table-of-contents";
 import { processContentWithToc } from "@/lib/toc-utils";
+import { CommentSection } from "@/components/comments";
 
 export async function generateStaticParams() {
   return await getAllPostSlugs();
@@ -134,6 +135,12 @@ export default async function Page({
             <Article html={processedContent} />
             <CodeBlockPro />
             <MermaidRenderer />
+
+            {/* Comments Section */}
+            <CommentSection
+              postId={post.id}
+              commentStatus={post.comment_status}
+            />
           </div>
 
           {/* Right sidebar: Category + TOC */}

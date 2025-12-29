@@ -218,6 +218,34 @@ export interface SearchResult {
   };
 }
 
+// Comment types
+export interface Comment {
+  id: number;
+  post: number;
+  parent: number;
+  author: number;
+  author_name: string;
+  author_email?: string;
+  author_url: string;
+  date: string;
+  date_gmt: string;
+  content: RenderedContent;
+  link: string;
+  status: "approved" | "hold" | "spam" | "trash";
+  type: string;
+  author_avatar_urls: Record<string, string>;
+  meta: Record<string, unknown>;
+}
+
+export interface CommentInput {
+  post: number;
+  parent?: number;
+  author_name: string;
+  author_email: string;
+  author_url?: string;
+  content: string;
+}
+
 // Component Props Types
 export interface FilterBarProps {
   authors: Author[];

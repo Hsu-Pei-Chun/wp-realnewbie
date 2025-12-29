@@ -11,6 +11,8 @@ import type {
   Page,
   Author,
   FeaturedMedia,
+  Comment,
+  CommentInput,
 } from "./wordpress.d";
 
 // Single source of truth for WordPress configuration
@@ -436,6 +438,61 @@ export async function getPostsByAuthorPaginated(
     page,
     author: authorId,
   });
+}
+
+// Comment functions
+export async function getCommentsByPostId(
+  postId: number,
+  page: number = 1,
+  perPage: number = 10
+): Promise<WordPressResponse<Comment[]>> {
+  return wordpressFetchPaginatedGraceful<Comment>(
+    "/wp-json/wp/v2/comments",
+    {
+      post: postId,
+      page,
+      per_page: perPage,
+      status: "approve",
+      orderby: "date",
+      order: "desc",
+    },
+    ["wordpress", "comments", `post-${postId}-comments`]
+  );
+}
+
+export async function createComment(
+  input: CommentInput
+): Promise<{ success: boolean; comment?: Comment; error?: string }> {
+  if (!baseUrl) {
+    return { success: false, error: "WordPress URL not configured" };
+  }
+
+  try {
+    const response = await fetch(`${baseUrl}/wp-json/wp/v2/comments`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "User-Agent": USER_AGENT,
+      },
+      body: JSON.stringify(input),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      return {
+        success: false,
+        error: errorData.message || `Failed to create comment: ${response.statusText}`,
+      };
+    }
+
+    const comment = await response.json();
+    return { success: true, comment };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
 }
 
 export { WordPressAPIError };
