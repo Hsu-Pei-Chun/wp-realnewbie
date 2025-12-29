@@ -48,7 +48,7 @@ export interface WordPressResponse<T> {
 }
 
 const USER_AGENT = "Next.js WordPress Client";
-const CACHE_TTL = 3600; // 1 hour
+const CACHE_TTL = 86400; // 24 hours
 
 // Core fetch - throws on error (for functions that require data)
 async function wordpressFetch<T>(
