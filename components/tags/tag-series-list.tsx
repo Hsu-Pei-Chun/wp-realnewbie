@@ -44,7 +44,7 @@ export function TagSeriesList({
     <div className="space-y-8">
       {/* 頂部標題區 */}
       <div className="space-y-4">
-        <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
+        <h1 className="text-4xl font-medium tracking-tight">
           {tagName}
         </h1>
         {tagDescription && (
