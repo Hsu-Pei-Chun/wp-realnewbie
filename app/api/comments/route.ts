@@ -2,40 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
 import { createComment } from "@/lib/wordpress";
 
-// Rate limiting: simple in-memory store (use Redis in production)
-const rateLimit = new Map<string, { count: number; resetTime: number }>();
-const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
-const RATE_LIMIT_MAX = 5; // 5 comments per minute
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const record = rateLimit.get(ip);
-
-  if (!record || now > record.resetTime) {
-    rateLimit.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
-    return false;
-  }
-
-  if (record.count >= RATE_LIMIT_MAX) {
-    return true;
-  }
-
-  record.count++;
-  return false;
-}
-
 export async function POST(request: NextRequest) {
   try {
-    const ip = request.headers.get("x-forwarded-for") || "unknown";
-
-    // Rate limiting check
-    if (isRateLimited(ip)) {
-      return NextResponse.json(
-        { success: false, error: "請稍後再試" },
-        { status: 429 }
-      );
-    }
-
     const body = await request.json();
     const { post, author_name, content, website } = body;
 
@@ -75,8 +43,6 @@ export async function POST(request: NextRequest) {
     const result = await createComment({
       post,
       author_name: author_name.trim(),
-      author_email: "",
-      author_url: "",
       content: content.trim(),
     });
 
@@ -88,7 +54,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Revalidate comments cache for this post
-    revalidateTag(`post-${post}-comments`, { expire: 0 });
+    revalidateTag(`post-${post}-comments`, "max");
 
     return NextResponse.json({
       success: true,

@@ -241,7 +241,7 @@ export interface CommentInput {
   post: number;
   parent?: number;
   author_name: string;
-  author_email: string;
+  author_email?: string;
   author_url?: string;
   content: string;
 }

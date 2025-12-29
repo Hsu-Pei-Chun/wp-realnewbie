@@ -25,6 +25,7 @@ const commentSchema = z.object({
     .string()
     .min(2, "留言內容太短")
     .max(5000, "留言內容過長（最多 5000 字）"),
+  website: z.string().optional(), // Honeypot field
 });
 
 type CommentFormValues = z.infer<typeof commentSchema>;
@@ -46,6 +47,7 @@ export function CommentForm({ postId, onSuccess }: CommentFormProps) {
     defaultValues: {
       author_name: "",
       content: "",
+      website: "", // Honeypot field
     },
   });
 
@@ -60,9 +62,6 @@ export function CommentForm({ postId, onSuccess }: CommentFormProps) {
         body: JSON.stringify({
           post: postId,
           ...values,
-          // Honeypot field - hidden from real users
-          website: (document.getElementById("website") as HTMLInputElement)
-            ?.value,
         }),
       });
 
@@ -114,10 +113,9 @@ export function CommentForm({ postId, onSuccess }: CommentFormProps) {
             <label htmlFor="website">Website</label>
             <input
               type="text"
-              id="website"
-              name="website"
               tabIndex={-1}
               autoComplete="off"
+              {...form.register("website")}
             />
           </div>
 
