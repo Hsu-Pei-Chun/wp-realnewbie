@@ -17,10 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 
 const commentSchema = z.object({
-  author_name: z
-    .string()
-    .min(1, "請輸入您的名稱")
-    .max(100, "名稱過長"),
+  author_name: z.string().min(1, "請輸入您的名稱").max(100, "名稱過長"),
   content: z
     .string()
     .min(2, "留言內容太短")
@@ -161,9 +158,7 @@ export function CommentForm({ postId, onSuccess }: CommentFormProps) {
         </form>
       </Form>
 
-      <p className="text-sm text-muted-foreground mt-4">
-        留言將在審核後顯示。
-      </p>
+      <p className="text-sm text-muted-foreground mt-4">留言將在審核後顯示。</p>
     </div>
   );
 }

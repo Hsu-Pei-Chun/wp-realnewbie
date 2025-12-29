@@ -481,7 +481,9 @@ export async function createComment(
       const errorData = await response.json().catch(() => ({}));
       return {
         success: false,
-        error: errorData.message || `Failed to create comment: ${response.statusText}`,
+        error:
+          errorData.message ||
+          `Failed to create comment: ${response.statusText}`,
       };
     }
 
