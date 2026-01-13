@@ -56,14 +56,22 @@ export function MobileNav() {
             <h3 className="text-small mt-6">網站</h3>
             <Separator />
             {mainMenu.map((item) => (
-              <MobileLink key={item.href} href={item.href} onOpenChange={setOpen}>
+              <MobileLink
+                key={item.href}
+                href={item.href}
+                onOpenChange={setOpen}
+              >
                 {item.label}
               </MobileLink>
             ))}
             <h3 className="text-small pt-6">部落格</h3>
             <Separator />
             {contentMenu.map((item) => (
-              <MobileLink key={item.href} href={item.href} onOpenChange={setOpen}>
+              <MobileLink
+                key={item.href}
+                href={item.href}
+                onOpenChange={setOpen}
+              >
                 {item.label}
               </MobileLink>
             ))}
