@@ -144,6 +144,7 @@ const styles = {
     ],
     code: [
       "[&_code]:relative [&_code]:rounded [&_code]:bg-muted/50 [&_code]:px-[0.3rem] [&_code]:py-[0.2rem] [&_code]:font-mono [&_code]:text-sm [&_code]:font-medium",
+      "[&_:is(h1,h2,h3,h4,h5,h6)_code]:text-[0.9em]", // 標題內 code 繼承標題字體大小
       "[&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:border [&_pre]:bg-muted/50 [&_pre]:p-4 [&_pre]:my-4",
       "[&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-sm",
       "[&_pre_code]:block [&_pre_code]:w-full",
