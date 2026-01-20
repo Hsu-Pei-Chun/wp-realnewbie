@@ -3,9 +3,6 @@ import {
   getAllAuthors,
   getAllTags,
   getAllCategories,
-  searchAuthors,
-  searchTags,
-  searchCategories,
 } from "@/lib/wordpress";
 
 import {
@@ -19,8 +16,7 @@ import {
 
 import { Section, Container, Prose } from "@/components/craft";
 import { PostCard } from "@/components/posts/post-card";
-import { FilterPosts } from "@/components/posts/filter";
-import { SearchInput } from "@/components/posts/search-input";
+import { PostsFilter } from "@/components/posts/posts-filter";
 
 import type { Metadata } from "next";
 
@@ -53,9 +49,9 @@ export default async function Page({
   // Fetch data based on search parameters using efficient pagination
   const [postsResponse, authors, tags, categories] = await Promise.all([
     getPostsPaginated(page, postsPerPage, { author, tag, category, search }),
-    search ? searchAuthors(search) : getAllAuthors(),
-    search ? searchTags(search) : getAllTags(),
-    search ? searchCategories(search) : getAllCategories(),
+    getAllAuthors(),
+    getAllTags(),
+    getAllCategories(),
   ]);
 
   const { data: posts, headers } = postsResponse;
@@ -78,24 +74,18 @@ export default async function Page({
         <div className="space-y-8">
           <Prose>
             <h2>所有文章</h2>
-            <p className="text-muted-foreground">
-              共 {total} 篇文章
-              {search && `（搜尋「${search}」）`}
-            </p>
+            <p className="text-muted-foreground">共 {total} 篇文章</p>
           </Prose>
 
-          <div className="space-y-4">
-            <SearchInput defaultValue={search} />
-
-            <FilterPosts
-              authors={authors}
-              tags={tags}
-              categories={categories}
-              selectedAuthor={author}
-              selectedTag={tag}
-              selectedCategory={category}
-            />
-          </div>
+          <PostsFilter
+            authors={authors}
+            tags={tags}
+            categories={categories}
+            initialSearch={search}
+            initialAuthor={author}
+            initialTag={tag}
+            initialCategory={category}
+          />
 
           {posts.length > 0 ? (
             <div className="grid sm:grid-cols-2 gap-6">

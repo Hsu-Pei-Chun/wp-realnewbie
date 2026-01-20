@@ -5,6 +5,9 @@ const wordpressUrl = process.env.WORDPRESS_URL;
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  experimental: {
+    optimizePackageImports: ["lucide-react"],
+  },
   images: {
     remotePatterns: wordpressHostname
       ? [
