@@ -107,79 +107,83 @@ export default async function Page({
 
   return (
     <>
-    <BlogPostingJsonLd post={post} author={author} featuredMedia={featuredMedia} />
-    <Section>
-      <Container>
-        <div className="xl:flex xl:gap-12">
-          {/* Main content */}
-          <div className="flex-1 min-w-0">
-            <SeriesBadge seriesData={seriesData} />
-            <Prose>
-              <h1 className="!mb-6 !mt-0">
-                <span
-                  dangerouslySetInnerHTML={{ __html: post.title.rendered }}
-                ></span>
-              </h1>
-              <div className="flex justify-between items-center text-sm text-muted-foreground/60 pb-4 border-b mb-8 not-prose">
-                <span>最後更新：{modifiedDate}</span>
+      <BlogPostingJsonLd
+        post={post}
+        author={author}
+        featuredMedia={featuredMedia}
+      />
+      <Section>
+        <Container>
+          <div className="xl:flex xl:gap-12">
+            {/* Main content */}
+            <div className="flex-1 min-w-0">
+              <SeriesBadge seriesData={seriesData} />
+              <Prose>
+                <h1 className="!mb-6 !mt-0">
+                  <span
+                    dangerouslySetInnerHTML={{ __html: post.title.rendered }}
+                  ></span>
+                </h1>
+                <div className="flex justify-between items-center text-sm text-muted-foreground/60 pb-4 border-b mb-8 not-prose">
+                  <span>最後更新：{modifiedDate}</span>
+                  <Link
+                    href={`/posts/?category=${category.id}`}
+                    className={cn(
+                      badgeVariants({ variant: "outline" }),
+                      "no-underline! xl:hidden"
+                    )}
+                  >
+                    {category.name}
+                  </Link>
+                </div>
+                {featuredMedia?.source_url && (
+                  <div className="h-96 my-12 md:h-[500px] overflow-hidden flex items-center justify-center border rounded-lg bg-accent/25">
+                    {/* eslint-disable-next-line */}
+                    <img
+                      className="w-full h-full object-cover"
+                      src={featuredMedia.source_url}
+                      alt={post.title.rendered}
+                    />
+                  </div>
+                )}
+              </Prose>
+
+              <Article html={processedContent} />
+              <CodeBlockPro />
+              <MermaidRenderer />
+
+              {/* Series Navigation */}
+              <SeriesNavigation seriesData={seriesData} />
+
+              {/* Comments Section */}
+              <CommentSection
+                postId={post.id}
+                commentStatus={post.comment_status}
+              />
+            </div>
+
+            {/* Right sidebar: Category + TOC */}
+            <aside className="hidden xl:block w-56 shrink-0">
+              <div className="sticky top-24 max-h-[calc(100vh-8rem)] flex flex-col items-start">
                 <Link
                   href={`/posts/?category=${category.id}`}
                   className={cn(
                     badgeVariants({ variant: "outline" }),
-                    "no-underline! xl:hidden"
+                    "no-underline! self-start"
                   )}
                 >
                   {category.name}
                 </Link>
+
+                <TableOfContents
+                  headings={headings}
+                  className="mt-6 overflow-y-auto overflow-x-hidden scrollbar-thin"
+                />
               </div>
-              {featuredMedia?.source_url && (
-                <div className="h-96 my-12 md:h-[500px] overflow-hidden flex items-center justify-center border rounded-lg bg-accent/25">
-                  {/* eslint-disable-next-line */}
-                  <img
-                    className="w-full h-full object-cover"
-                    src={featuredMedia.source_url}
-                    alt={post.title.rendered}
-                  />
-                </div>
-              )}
-            </Prose>
-
-            <Article html={processedContent} />
-            <CodeBlockPro />
-            <MermaidRenderer />
-
-            {/* Series Navigation */}
-            <SeriesNavigation seriesData={seriesData} />
-
-            {/* Comments Section */}
-            <CommentSection
-              postId={post.id}
-              commentStatus={post.comment_status}
-            />
+            </aside>
           </div>
-
-          {/* Right sidebar: Category + TOC */}
-          <aside className="hidden xl:block w-56 shrink-0">
-            <div className="sticky top-24 max-h-[calc(100vh-8rem)] flex flex-col items-start">
-              <Link
-                href={`/posts/?category=${category.id}`}
-                className={cn(
-                  badgeVariants({ variant: "outline" }),
-                  "no-underline! self-start"
-                )}
-              >
-                {category.name}
-              </Link>
-
-              <TableOfContents
-                headings={headings}
-                className="mt-6 overflow-y-auto overflow-x-hidden scrollbar-thin"
-              />
-            </div>
-          </aside>
-        </div>
-      </Container>
-    </Section>
+        </Container>
+      </Section>
     </>
   );
 }

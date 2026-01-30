@@ -1,9 +1,23 @@
 import { siteConfig } from "@/site.config";
 import type { Post, Page, Author, FeaturedMedia } from "@/lib/wordpress.d";
 
+/**
+ * Strip HTML tags using regex. Only safe for simple WordPress rendered fields
+ * (title.rendered, excerpt.rendered) — do NOT use on post.content.rendered
+ * where attributes may contain '>' characters.
+ */
 function stripHtmlTags(html: string): string {
   return html.replace(/<[^>]*>/g, "").trim();
 }
+
+const publisher = {
+  "@type": "Organization" as const,
+  name: siteConfig.site_name,
+  logo: {
+    "@type": "ImageObject" as const,
+    url: `${siteConfig.site_domain}/logo.png`,
+  },
+};
 
 export function WebSiteJsonLd() {
   const jsonLd = {
@@ -23,10 +37,7 @@ export function WebSiteJsonLd() {
         "@id": `${siteConfig.site_domain}/#organization`,
         name: siteConfig.site_name,
         url: siteConfig.site_domain,
-        logo: {
-          "@type": "ImageObject",
-          url: `${siteConfig.site_domain}/logo.png`,
-        },
+        logo: publisher.logo,
       },
     ],
   };
@@ -48,37 +59,29 @@ export function BlogPostingJsonLd({
   author: Author;
   featuredMedia: FeaturedMedia | null;
 }) {
-  const jsonLd: Record<string, unknown> = {
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
+  const jsonLd = {
+    "@context": "https://schema.org" as const,
+    "@type": "BlogPosting" as const,
     headline: stripHtmlTags(post.title.rendered),
     description: stripHtmlTags(post.excerpt.rendered),
     datePublished: post.date,
     dateModified: post.modified,
     url: `${siteConfig.site_domain}/posts/${post.slug}`,
     author: {
-      "@type": "Person",
+      "@type": "Person" as const,
       name: author.name,
-      url: author.url,
+      ...(author.url && { url: author.url }),
     },
-    publisher: {
-      "@type": "Organization",
-      name: siteConfig.site_name,
-      logo: {
-        "@type": "ImageObject",
-        url: `${siteConfig.site_domain}/logo.png`,
+    publisher,
+    ...(featuredMedia && {
+      image: {
+        "@type": "ImageObject" as const,
+        url: featuredMedia.source_url,
+        width: featuredMedia.media_details.width,
+        height: featuredMedia.media_details.height,
       },
-    },
+    }),
   };
-
-  if (featuredMedia) {
-    jsonLd.image = {
-      "@type": "ImageObject",
-      url: featuredMedia.source_url,
-      width: featuredMedia.media_details.width,
-      height: featuredMedia.media_details.height,
-    };
-  }
 
   return (
     <script
@@ -89,22 +92,17 @@ export function BlogPostingJsonLd({
 }
 
 export function WebPageJsonLd({ page }: { page: Page }) {
+  const description = stripHtmlTags(page.excerpt.rendered);
+
   const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "WebPage",
+    "@context": "https://schema.org" as const,
+    "@type": "WebPage" as const,
     name: stripHtmlTags(page.title.rendered),
-    description: stripHtmlTags(page.excerpt.rendered),
+    ...(description && { description }),
     url: `${siteConfig.site_domain}/pages/${page.slug}`,
     datePublished: page.date,
     dateModified: page.modified,
-    publisher: {
-      "@type": "Organization",
-      name: siteConfig.site_name,
-      logo: {
-        "@type": "ImageObject",
-        url: `${siteConfig.site_domain}/logo.png`,
-      },
-    },
+    publisher,
   };
 
   return (

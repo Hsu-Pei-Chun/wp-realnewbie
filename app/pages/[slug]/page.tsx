@@ -90,40 +90,40 @@ export default async function Page({
   if (showToc) {
     return (
       <>
-      <WebPageJsonLd page={page} />
-      <Section>
-        <Container>
-          <div className="xl:flex xl:gap-12">
-            <div className="flex-1 min-w-0">
-              <Prose className="mb-8">
-                <h1>{title}</h1>
-              </Prose>
-              <Article html={processedContent} />
-            </div>
-
-            <aside className="hidden xl:block w-56 shrink-0">
-              <div className="sticky top-24">
-                <TableOfContents headings={headings} />
+        <WebPageJsonLd page={page} />
+        <Section>
+          <Container>
+            <div className="xl:flex xl:gap-12">
+              <div className="flex-1 min-w-0">
+                <Prose className="mb-8">
+                  <h1>{title}</h1>
+                </Prose>
+                <Article html={processedContent} />
               </div>
-            </aside>
-          </div>
-        </Container>
-      </Section>
+
+              <aside className="hidden xl:block w-56 shrink-0">
+                <div className="sticky top-24">
+                  <TableOfContents headings={headings} />
+                </div>
+              </aside>
+            </div>
+          </Container>
+        </Section>
       </>
     );
   }
 
   return (
     <>
-    <WebPageJsonLd page={page} />
-    <Section>
-      <Container>
-        <Prose>
-          <h1>{title}</h1>
-          <div dangerouslySetInnerHTML={{ __html: page.content.rendered }} />
-        </Prose>
-      </Container>
-    </Section>
+      <WebPageJsonLd page={page} />
+      <Section>
+        <Container>
+          <Prose>
+            <h1>{title}</h1>
+            <div dangerouslySetInnerHTML={{ __html: page.content.rendered }} />
+          </Prose>
+        </Container>
+      </Section>
     </>
   );
 }
