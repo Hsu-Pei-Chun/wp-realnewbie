@@ -6,6 +6,7 @@ import { siteConfig } from "@/site.config";
 import { notFound } from "next/navigation";
 
 import type { Metadata } from "next";
+import { WebPageJsonLd } from "@/lib/json-ld";
 
 /** Pages that should display a Table of Contents */
 const PAGES_WITH_TOC = ["about-me"];
@@ -88,6 +89,8 @@ export default async function Page({
 
   if (showToc) {
     return (
+      <>
+      <WebPageJsonLd page={page} />
       <Section>
         <Container>
           <div className="xl:flex xl:gap-12">
@@ -106,10 +109,13 @@ export default async function Page({
           </div>
         </Container>
       </Section>
+      </>
     );
   }
 
   return (
+    <>
+    <WebPageJsonLd page={page} />
     <Section>
       <Container>
         <Prose>
@@ -118,5 +124,6 @@ export default async function Page({
         </Prose>
       </Container>
     </Section>
+    </>
   );
 }

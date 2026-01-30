@@ -3,6 +3,7 @@ import {
   getFeaturedMediaById,
   getCategoryById,
   getAllPostSlugs,
+  getAuthorById,
 } from "@/lib/wordpress";
 
 import { Section, Container, Prose, Article } from "@/components/craft";
@@ -21,6 +22,7 @@ import { CommentSection } from "@/components/comments";
 import { SeriesBadge } from "@/components/posts/series-badge";
 import { SeriesNavigation } from "@/components/posts/series-navigation";
 import { getSeriesData } from "@/lib/series-utils";
+import { BlogPostingJsonLd } from "@/lib/json-ld";
 
 export async function generateStaticParams() {
   return await getAllPostSlugs();
@@ -82,9 +84,12 @@ export default async function Page({
     notFound();
   }
 
-  const featuredMedia = post.featured_media
-    ? await getFeaturedMediaById(post.featured_media)
-    : null;
+  const [featuredMedia, author] = await Promise.all([
+    post.featured_media
+      ? getFeaturedMediaById(post.featured_media)
+      : Promise.resolve(null),
+    getAuthorById(post.author),
+  ]);
   const modifiedDate = new Date(post.modified).toLocaleDateString("zh-TW", {
     year: "numeric",
     month: "long",
@@ -101,6 +106,8 @@ export default async function Page({
   const seriesData = await getSeriesData(post.id, slug);
 
   return (
+    <>
+    <BlogPostingJsonLd post={post} author={author} featuredMedia={featuredMedia} />
     <Section>
       <Container>
         <div className="xl:flex xl:gap-12">
@@ -173,5 +180,6 @@ export default async function Page({
         </div>
       </Container>
     </Section>
+    </>
   );
 }

@@ -4,6 +4,7 @@ import { PostCard } from "@/components/posts/post-card";
 import { TagCard } from "@/components/tags/tag-card";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { WebSiteJsonLd } from "@/lib/json-ld";
 
 export const revalidate = 3600;
 
@@ -22,6 +23,8 @@ export default async function Home() {
     .slice(0, 9);
 
   return (
+    <>
+    <WebSiteJsonLd />
     <Section>
       <Container>
         <main className="space-y-12">
@@ -81,5 +84,6 @@ export default async function Home() {
         </main>
       </Container>
     </Section>
+    </>
   );
 }
