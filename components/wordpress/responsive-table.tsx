@@ -102,9 +102,9 @@ export function ResponsiveTable({
 
   return (
     <div className={cn("my-4", className)}>
-      {/* Desktop: Original table */}
+      {/* Desktop: Original table with horizontal scroll */}
       <div
-        className="hidden sm:block"
+        className="hidden sm:block overflow-x-auto scrollbar-thin"
         dangerouslySetInnerHTML={{ __html: tableHtml }}
       />
 

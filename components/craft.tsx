@@ -150,10 +150,10 @@ const styles = {
       "[&_pre_code]:block [&_pre_code]:w-full",
     ],
     tables: [
-      "[&_table]:w-full [&_table]:my-4 [&_table]:overflow-x-auto [&_table]:rounded-lg [&_table]:border",
+      "[&_table]:w-max [&_table]:min-w-full [&_table]:my-4 [&_table]:rounded-lg [&_table]:border",
       "[&_thead]:bg-muted/50",
       "[&_tr]:border-b [&_tr]:last:border-0",
-      "[&_th]:border-r [&_th]:px-4 [&_th]:py-2 [&_th]:text-left [&_th]:font-semibold [&_th]:last:border-0",
+      "[&_th]:border-r [&_th]:px-4 [&_th]:py-2 [&_th]:text-left [&_th]:font-semibold [&_th]:whitespace-nowrap [&_th]:last:border-0",
       "[&_td]:border-r [&_td]:px-4 [&_td]:py-2 [&_td]:last:border-0",
     ],
     media: [
@@ -168,7 +168,7 @@ const styles = {
       "[&_blockquote_blockquote]:mt-4",
       "[&_hr]:my-8 [&_hr]:border-t-2 [&_hr]:border-muted",
       "[&_abbr]:cursor-help [&_abbr]:underline [&_abbr]:underline-dotted [&_abbr]:underline-offset-4",
-      "[&_details]:rounded-lg [&_details]:border [&_details]:px-4 [&_details]:py-2 [&_details]:my-4",
+      "[&_details]:rounded-lg [&_details]:border [&_details]:px-4 [&_details]:py-2 [&_details]:my-4 [&_details]:overflow-x-auto [&_details]:scrollbar-thin",
       "[&_summary]:cursor-pointer [&_summary]:font-semibold",
       "[&_kbd]:rounded-md [&_kbd]:border [&_kbd]:bg-muted/50 [&_kbd]:px-1.5 [&_kbd]:py-0.5 [&_kbd]:text-sm [&_kbd]:font-mono",
       "[&_mark]:bg-primary/10 [&_mark]:px-1",
