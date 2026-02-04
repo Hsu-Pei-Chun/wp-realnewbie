@@ -227,7 +227,7 @@ All WordPress interactions are centralized in `lib/wordpress.ts`:
 ### Posts
 
 ```typescript
-getAllPosts(filters?)        // Get all posts (max 100)
+getAllPosts(filters?)        // Get all posts (paginated, fetches all pages)
 getPostsPaginated(page, perPage, filters?)  // Paginated posts
 getPostBySlug(slug)          // Single post by slug
 getPostById(id)              // Single post by ID

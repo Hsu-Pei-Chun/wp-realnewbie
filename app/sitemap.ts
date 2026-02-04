@@ -1,9 +1,9 @@
 import { MetadataRoute } from "next";
-import { getAllPosts } from "@/lib/wordpress";
+import { getAllPostSlugs } from "@/lib/wordpress";
 import { siteConfig } from "@/site.config";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const posts = await getAllPosts();
+  const posts = await getAllPostSlugs();
 
   const staticUrls: MetadataRoute.Sitemap = [
     {

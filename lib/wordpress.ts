@@ -200,20 +200,62 @@ export async function getAllPosts(filterParams?: {
   category?: string;
   search?: string;
 }): Promise<Post[]> {
-  const query: Record<string, any> = {
+  const baseQuery: Record<string, any> = {
     _embed: true,
     per_page: 100,
   };
 
-  if (filterParams?.search) query.search = filterParams.search;
-  if (filterParams?.author) query.author = filterParams.author;
-  if (filterParams?.tag) query.tags = filterParams.tag;
-  if (filterParams?.category) query.categories = filterParams.category;
+  if (filterParams?.search) baseQuery.search = filterParams.search;
+  if (filterParams?.author) baseQuery.author = filterParams.author;
+  if (filterParams?.tag) baseQuery.tags = filterParams.tag;
+  if (filterParams?.category) baseQuery.categories = filterParams.category;
 
-  return wordpressFetchGraceful<Post[]>("/wp-json/wp/v2/posts", [], query, [
-    "wordpress",
-    "posts",
-  ]);
+  const allPosts: Post[] = [];
+  let page = 1;
+  let totalPages = 1;
+
+  do {
+    const response = await wordpressFetchPaginatedGraceful<Post>(
+      "/wp-json/wp/v2/posts",
+      { ...baseQuery, page },
+      ["wordpress", "posts"]
+    );
+
+    allPosts.push(...response.data);
+    totalPages = response.headers.totalPages;
+    page++;
+  } while (page <= totalPages);
+
+  return allPosts;
+}
+
+// Lightweight version for sitemap - only fetches slug and modified date
+// Returns empty array if WordPress is unavailable (allows build to succeed)
+export async function getAllPostSlugs(): Promise<
+  { slug: string; modified: string }[]
+> {
+  if (!isConfigured) return [];
+
+  const allPosts: { slug: string; modified: string }[] = [];
+  let page = 1;
+  let totalPages = 1;
+
+  do {
+    const response = await wordpressFetchPaginatedGraceful<{
+      slug: string;
+      modified: string;
+    }>(
+      "/wp-json/wp/v2/posts",
+      { _fields: "slug,modified", per_page: 100, page },
+      ["wordpress", "posts"]
+    );
+
+    allPosts.push(...response.data);
+    totalPages = response.headers.totalPages;
+    page++;
+  } while (page <= totalPages);
+
+  return allPosts;
 }
 
 export async function getPostById(id: number): Promise<Post> {
@@ -370,34 +412,6 @@ export async function searchAuthors(query: string): Promise<Author[]> {
     search: query,
     per_page: 100,
   });
-}
-
-// Function specifically for generateStaticParams - fetches ALL posts
-// Returns empty array if WordPress is unavailable (allows build to succeed)
-export async function getAllPostSlugs(): Promise<{ slug: string }[]> {
-  if (!isConfigured) return [];
-
-  try {
-    const allSlugs: { slug: string }[] = [];
-    let page = 1;
-    let hasMore = true;
-
-    while (hasMore) {
-      const response = await wordpressFetchPaginated<Post[]>(
-        "/wp-json/wp/v2/posts",
-        { per_page: 100, page, _fields: "slug" }
-      );
-
-      allSlugs.push(...response.data.map((post) => ({ slug: post.slug })));
-      hasMore = page < response.headers.totalPages;
-      page++;
-    }
-
-    return allSlugs;
-  } catch {
-    console.warn("WordPress unavailable, skipping static generation for posts");
-    return [];
-  }
 }
 
 // Enhanced pagination functions for specific queries
