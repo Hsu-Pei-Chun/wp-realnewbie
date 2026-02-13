@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { Post } from "@/lib/wordpress.d";
 import { getCategoryById } from "@/lib/wordpress";
+import { stripHtml } from "@/lib/html-utils";
 
 import {
   Card,
@@ -23,19 +24,9 @@ export async function PostCard({ post }: { post: Post }) {
     ? await getCategoryById(post.categories[0])
     : null;
 
-  // Extract plain text excerpt and limit to ~100 characters
   const excerptText = post.excerpt?.rendered
-    ? post.excerpt.rendered
-        .replace(/<[^>]*>/g, "") // Remove HTML tags
-        .replace(/&hellip;/g, "...")
-        .replace(/&nbsp;/g, " ")
-        .trim()
+    ? stripHtml(post.excerpt.rendered, { maxLength: 100 })
     : "";
-
-  const truncatedExcerpt =
-    excerptText.length > 100
-      ? excerptText.slice(0, 100).trim() + "..."
-      : excerptText;
 
   return (
     <Link href={`/posts/${post.slug}`} className="group block h-full">
@@ -54,9 +45,9 @@ export async function PostCard({ post }: { post: Post }) {
           />
         </CardHeader>
         <CardContent className="space-y-4">
-          {truncatedExcerpt && (
+          {excerptText && (
             <CardDescription className="text-sm leading-relaxed line-clamp-3">
-              {truncatedExcerpt}
+              {excerptText}
             </CardDescription>
           )}
           <p className="text-sm text-muted-foreground">{date}</p>

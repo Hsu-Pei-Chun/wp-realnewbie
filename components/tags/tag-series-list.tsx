@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
+import { stripHtml } from "@/lib/html-utils";
 import type { GetPostsByTagQuery } from "@/lib/generated/graphql";
 
 type Post = NonNullable<GetPostsByTagQuery["posts"]>["nodes"][number];
@@ -69,17 +70,8 @@ export function TagSeriesList({
 
           // 處理摘要
           const excerptText = post.excerpt
-            ? post.excerpt
-                .replace(/<[^>]*>/g, "")
-                .replace(/&hellip;/g, "...")
-                .replace(/&nbsp;/g, " ")
-                .trim()
+            ? stripHtml(post.excerpt, { maxLength: 150 })
             : "";
-
-          const truncatedExcerpt =
-            excerptText.length > 150
-              ? excerptText.slice(0, 150).trim() + "..."
-              : excerptText;
 
           // 取得第一個分類
           const category = post.categories?.nodes?.[0];
@@ -110,9 +102,9 @@ export function TagSeriesList({
                     />
 
                     {/* 摘要 */}
-                    {truncatedExcerpt && (
+                    {excerptText && (
                       <p className="text-muted-foreground line-clamp-2">
-                        {truncatedExcerpt}
+                        {excerptText}
                       </p>
                     )}
 
