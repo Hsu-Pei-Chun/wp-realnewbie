@@ -24,6 +24,9 @@ import { SeriesNavigation } from "@/components/posts/series-navigation";
 import { getSeriesData } from "@/lib/series-utils";
 import { BlogPostingJsonLd } from "@/lib/json-ld";
 
+// Static generation only, rely on webhook revalidation
+export const revalidate = false;
+
 export async function generateStaticParams() {
   return await getAllPostSlugs();
 }
