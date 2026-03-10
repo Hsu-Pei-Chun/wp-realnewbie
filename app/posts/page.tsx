@@ -26,7 +26,7 @@ export const metadata: Metadata = {
 };
 
 export const dynamic = "auto";
-export const revalidate = 600;
+export const revalidate = 86400;
 
 export default async function Page({
   searchParams,

@@ -1,4 +1,4 @@
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
 export const maxDuration = 30;
@@ -96,9 +96,6 @@ export async function POST(request: NextRequest) {
     for (const tag of tags) {
       revalidateTag(tag, { expire: 0 });
     }
-
-    // Also revalidate the entire layout for safety
-    revalidatePath("/", "layout");
 
     return NextResponse.json({
       revalidated: true,
