@@ -22,17 +22,8 @@ import type { Redirect } from "next/dist/lib/load-custom-routes";
  */
 export const articleRedirects: Redirect[] = [
   // 2026-03-10: JavaScript 作用域文章改名
-  // 舊：javascript-function-scope-block-scope
-  // 新：javascript-beginner-must-learn-understanding-variable-scope
   {
     source: "/posts/javascript-function-scope-block-scope",
-    destination:
-      "/posts/javascript-beginner-must-learn-understanding-variable-scope",
-    permanent: true,
-  },
-  {
-    source:
-      "/:category(javascript)/:slug(javascript-function-scope-block-scope)",
     destination:
       "/posts/javascript-beginner-must-learn-understanding-variable-scope",
     permanent: true,
