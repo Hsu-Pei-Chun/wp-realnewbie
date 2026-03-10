@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { articleRedirects } from "./redirects";
 
 const wordpressHostname = process.env.WORDPRESS_HOSTNAME;
 const wordpressUrl = process.env.WORDPRESS_URL;
@@ -22,6 +23,8 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     const redirects = [
+      // 特定文章轉址（優先於通用規則）
+      ...articleRedirects,
       // 2025-12-24: 舊 WordPress 網站遷移
       // 這是舊站已存在的分類 slug（封閉清單，不會新增）
       // 目的：讓 Google 索引和外部連結能 301 到新 URL 結構
