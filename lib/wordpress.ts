@@ -165,6 +165,8 @@ export async function getPostsPaginated(
     _embed: true,
     per_page: perPage,
     page,
+    orderby: "modified",
+    order: "desc",
   };
 
   // Build cache tags based on filters
