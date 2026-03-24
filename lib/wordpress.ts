@@ -3,7 +3,6 @@
 // Types are imported from `wp.d.ts`
 
 import { cache } from "react";
-import querystring from "query-string";
 import type {
   Post,
   Category,
@@ -47,6 +46,16 @@ export interface WordPressResponse<T> {
   headers: WordPressPaginationHeaders;
 }
 
+function buildQueryString(params: Record<string, any>): string {
+  const searchParams = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value !== undefined && value !== null) {
+      searchParams.set(key, String(value));
+    }
+  }
+  return searchParams.toString();
+}
+
 const USER_AGENT = "Next.js WordPress Client";
 const CACHE_TTL = false; // Static generation only, rely on webhook revalidation
 
@@ -60,7 +69,7 @@ async function wordpressFetch<T>(
     throw new Error("WordPress URL not configured");
   }
 
-  const url = `${baseUrl}${path}${query ? `?${querystring.stringify(query)}` : ""}`;
+  const url = `${baseUrl}${path}${query ? `?${buildQueryString(query)}` : ""}`;
 
   const response = await fetch(url, {
     headers: { "User-Agent": USER_AGENT },
@@ -105,7 +114,7 @@ async function wordpressFetchPaginated<T>(
     throw new Error("WordPress URL not configured");
   }
 
-  const url = `${baseUrl}${path}${query ? `?${querystring.stringify(query)}` : ""}`;
+  const url = `${baseUrl}${path}${query ? `?${buildQueryString(query)}` : ""}`;
 
   const response = await fetch(url, {
     headers: { "User-Agent": USER_AGENT },
