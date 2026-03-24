@@ -1,10 +1,9 @@
 import { getTagsByPost } from "@/lib/wordpress";
-import { getClient } from "@/lib/apollo-client";
-import {
-  GetPostsByTagDocument,
-  type GetPostsByTagQuery,
-  type GetPostsByTagQueryVariables,
-} from "@/lib/generated/graphql";
+import { graphqlFetch, GET_POSTS_BY_TAG_QUERY } from "@/lib/graphql-client";
+import type {
+  GetPostsByTagResponse,
+  GraphQLPostNode,
+} from "@/lib/graphql-types";
 
 /**
  * Safe parseInt with fallback for invalid values
@@ -16,9 +15,7 @@ export function parseOrder(value: string | null | undefined): number | null {
   return isNaN(parsed) ? null : parsed;
 }
 
-export type SeriesPost = NonNullable<
-  GetPostsByTagQuery["posts"]
->["nodes"][number];
+export type SeriesPost = GraphQLPostNode;
 
 export interface SeriesData {
   tagName: string;
@@ -50,15 +47,17 @@ export async function getSeriesData(
   const seriesTag = tags[0];
 
   // 2. Get all posts in this series via GraphQL
-  const { data } = await getClient().query<
-    GetPostsByTagQuery,
-    GetPostsByTagQueryVariables
-  >({
-    query: GetPostsByTagDocument,
-    variables: { tagSlug: seriesTag.slug, tagId: seriesTag.slug },
-  });
+  const result = await graphqlFetch<GetPostsByTagResponse>(
+    GET_POSTS_BY_TAG_QUERY,
+    { tagSlug: seriesTag.slug, tagId: seriesTag.slug },
+    ["wordpress", "tags", `tag-${seriesTag.slug}`]
+  );
 
-  const allPosts = data?.posts?.nodes || [];
+  if (result.errors?.length) {
+    console.error("GraphQL errors:", result.errors);
+  }
+
+  const allPosts = result.data?.posts?.nodes || [];
 
   // Only one post in tag = not a series
   if (allPosts.length <= 1) {

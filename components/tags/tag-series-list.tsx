@@ -2,12 +2,10 @@ import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
 import { stripHtml } from "@/lib/html-utils";
-import type { GetPostsByTagQuery } from "@/lib/generated/graphql";
-
-type Post = NonNullable<GetPostsByTagQuery["posts"]>["nodes"][number];
+import type { GraphQLPostNode } from "@/lib/graphql-types";
 
 interface TagSeriesListProps {
-  posts: Post[];
+  posts: GraphQLPostNode[];
   tagName: string;
   tagDescription?: string | null;
 }
