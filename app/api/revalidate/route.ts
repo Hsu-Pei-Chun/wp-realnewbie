@@ -110,7 +110,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         message: "Error processing revalidation request",
-        error: (error as Error).message,
         timestamp: new Date().toISOString(),
       },
       { status: 500 }

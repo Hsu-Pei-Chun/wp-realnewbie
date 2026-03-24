@@ -1,3 +1,4 @@
+import { sanitizeHtml } from "@/lib/sanitize";
 import type { Comment } from "@/lib/wordpress.d";
 
 interface CommentCardProps {
@@ -48,7 +49,9 @@ export function CommentCard({ comment }: CommentCardProps) {
 
         <div
           className="prose prose-sm max-w-none text-foreground"
-          dangerouslySetInnerHTML={{ __html: comment.content.rendered }}
+          dangerouslySetInnerHTML={{
+            __html: sanitizeHtml(comment.content.rendered),
+          }}
         />
       </div>
     </div>
