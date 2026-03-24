@@ -87,26 +87,24 @@ export default async function Page({
     notFound();
   }
 
-  const [featuredMedia, author] = await Promise.all([
+  const [featuredMedia, author, category, seriesData] = await Promise.all([
     post.featured_media
       ? getFeaturedMediaById(post.featured_media)
       : Promise.resolve(null),
     getAuthorById(post.author),
+    getCategoryById(post.categories[0]),
+    getSeriesData(post.id, slug),
   ]);
   const modifiedDate = new Date(post.modified).toLocaleDateString("zh-TW", {
     year: "numeric",
     month: "long",
     day: "numeric",
   });
-  const category = await getCategoryById(post.categories[0]);
 
   // Process content once: extract headings and add anchor IDs
   const { html: processedContent, headings } = processContentWithToc(
     post.content.rendered
   );
-
-  // Fetch series data once for both components
-  const seriesData = await getSeriesData(post.id, slug);
 
   return (
     <>

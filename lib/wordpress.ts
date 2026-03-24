@@ -264,14 +264,16 @@ export async function getPostById(id: number): Promise<Post> {
   return wordpressFetch<Post>(`/wp-json/wp/v2/posts/${id}`);
 }
 
-export async function getPostBySlug(slug: string): Promise<Post | undefined> {
-  const posts = await wordpressFetchGraceful<Post[]>(
-    "/wp-json/wp/v2/posts",
-    [],
-    { slug }
-  );
-  return posts[0];
-}
+export const getPostBySlug = cache(
+  async (slug: string): Promise<Post | undefined> => {
+    const posts = await wordpressFetchGraceful<Post[]>(
+      "/wp-json/wp/v2/posts",
+      [],
+      { slug }
+    );
+    return posts[0];
+  }
+);
 
 export async function getAllCategories(): Promise<Category[]> {
   return wordpressFetchGraceful<Category[]>(
