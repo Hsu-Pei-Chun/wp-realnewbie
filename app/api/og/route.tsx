@@ -11,6 +11,17 @@ export async function GET(request: NextRequest) {
     const title = searchParams.get("title");
     const description = searchParams.get("description");
 
+    // Load CJK font for Traditional Chinese
+    const fontResponse = await fetch(
+      "https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@700&display=swap",
+      { headers: { "User-Agent": "Mozilla/5.0" } }
+    );
+    const css = await fontResponse.text();
+    const fontUrl = css.match(/src: url\((.+?)\)/)?.[1];
+    const fontData = fontUrl
+      ? await fetch(fontUrl).then((res) => res.arrayBuffer())
+      : null;
+
     return new ImageResponse(
       <div
         style={{
@@ -31,6 +42,7 @@ export async function GET(request: NextRequest) {
           style={{
             display: "flex",
             fontSize: 60,
+            fontFamily: '"Noto Sans TC", sans-serif',
             fontStyle: "normal",
             color: "black",
             marginBottom: 30,
@@ -45,6 +57,7 @@ export async function GET(request: NextRequest) {
           <div
             style={{
               fontSize: 30,
+              fontFamily: '"Noto Sans TC", sans-serif',
               fontStyle: "normal",
               color: "gray",
               whiteSpace: "pre-wrap",
@@ -64,6 +77,16 @@ export async function GET(request: NextRequest) {
       {
         width: 1200,
         height: 630,
+        fonts: fontData
+          ? [
+              {
+                name: "Noto Sans TC",
+                data: fontData,
+                style: "normal" as const,
+                weight: 700 as const,
+              },
+            ]
+          : undefined,
       }
     );
   } catch (e: any) {

@@ -12,6 +12,7 @@ import { CodeBlockPro } from "@/components/wordpress/code-block-pro";
 import { cn } from "@/lib/utils";
 import { siteConfig } from "@/site.config";
 
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -139,11 +140,13 @@ export default async function Page({
                 </div>
                 {featuredMedia?.source_url && (
                   <div className="h-96 my-12 md:h-[500px] overflow-hidden flex items-center justify-center border rounded-lg bg-accent/25">
-                    {/* eslint-disable-next-line */}
-                    <img
+                    <Image
                       className="w-full h-full object-cover"
                       src={featuredMedia.source_url}
                       alt={post.title.rendered}
+                      width={featuredMedia.media_details?.width || 1200}
+                      height={featuredMedia.media_details?.height || 630}
+                      priority
                     />
                   </div>
                 )}

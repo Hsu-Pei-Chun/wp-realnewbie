@@ -3,7 +3,6 @@
 // React and Next Imports
 import * as React from "react";
 import Link, { LinkProps } from "next/link";
-import { useRouter } from "next/navigation";
 
 // Utility Imports
 import { Menu, ArrowRightSquare } from "lucide-react";
@@ -95,12 +94,10 @@ function MobileLink({
   children,
   ...props
 }: MobileLinkProps) {
-  const router = useRouter();
   return (
     <Link
       href={href}
       onClick={() => {
-        router.push(href.toString());
         onOpenChange?.(false);
       }}
       className={cn("text-lg", className)}
