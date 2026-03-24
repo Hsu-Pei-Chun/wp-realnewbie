@@ -11,8 +11,8 @@ import { WebPageJsonLd } from "@/lib/json-ld";
 /** Pages that should display a Table of Contents */
 const PAGES_WITH_TOC = ["about-me"];
 
-// Revalidate pages every hour
-export const revalidate = 3600;
+// Static generation only, rely on webhook revalidation
+export const revalidate = false;
 
 export async function generateStaticParams() {
   const pages = await getAllPages();

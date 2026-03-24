@@ -25,8 +25,7 @@ export const metadata: Metadata = {
   description: "瀏覽所有文章",
 };
 
-export const dynamic = "auto";
-export const revalidate = 86400;
+export const revalidate = false;
 
 export default async function Page({
   searchParams,

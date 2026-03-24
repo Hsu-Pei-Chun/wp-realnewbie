@@ -4,7 +4,7 @@ import { Metadata } from "next";
 import BackButton from "@/components/back";
 import { TagCard } from "@/components/tags/tag-card";
 
-export const revalidate = 3600;
+export const revalidate = false;
 
 export const metadata: Metadata = {
   title: "All Tags",

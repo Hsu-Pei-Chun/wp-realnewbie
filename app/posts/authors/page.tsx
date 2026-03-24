@@ -4,7 +4,7 @@ import { Metadata } from "next";
 import BackButton from "@/components/back";
 import Link from "next/link";
 
-export const revalidate = 3600;
+export const revalidate = false;
 
 export const metadata: Metadata = {
   title: "All Authors",
