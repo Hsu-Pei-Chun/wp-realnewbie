@@ -1,7 +1,6 @@
 import Link from "next/link";
 
 import { Post } from "@/lib/wordpress.d";
-import { getCategoryById } from "@/lib/wordpress";
 import { stripHtml } from "@/lib/html-utils";
 
 import {
@@ -13,7 +12,13 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-export async function PostCard({ post }: { post: Post }) {
+export function PostCard({
+  post,
+  categoryName,
+}: {
+  post: Post;
+  categoryName?: string;
+}) {
   const date = new Date(post.modified || post.date).toLocaleDateString(
     "zh-TW",
     {
@@ -23,10 +28,6 @@ export async function PostCard({ post }: { post: Post }) {
     }
   );
 
-  const category = post.categories?.[0]
-    ? await getCategoryById(post.categories[0])
-    : null;
-
   const excerptText = post.excerpt?.rendered
     ? stripHtml(post.excerpt.rendered, { maxLength: 100 })
     : "";
@@ -35,9 +36,9 @@ export async function PostCard({ post }: { post: Post }) {
     <Link href={`/posts/${post.slug}`} className="group block h-full">
       <Card className="h-full border transition-all duration-200 hover:border-foreground/20 hover:-translate-y-0.5 hover:shadow-md dark:hover:shadow-foreground/5">
         <CardHeader className="space-y-3">
-          {category && (
+          {categoryName && (
             <Badge variant="secondary" className="w-fit text-xs font-normal">
-              {category.name}
+              {categoryName}
             </Badge>
           )}
           <CardTitle

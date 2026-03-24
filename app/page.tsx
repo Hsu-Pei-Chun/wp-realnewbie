@@ -1,5 +1,9 @@
 import { Section, Container, Prose } from "@/components/craft";
-import { getAllTags, getPostsPaginated } from "@/lib/wordpress";
+import {
+  getAllTags,
+  getAllCategories,
+  getPostsPaginated,
+} from "@/lib/wordpress";
 import { PostCard } from "@/components/posts/post-card";
 import { TagCard } from "@/components/tags/tag-card";
 import { ArrowRight } from "lucide-react";
@@ -9,12 +13,16 @@ import { WebSiteJsonLd } from "@/lib/json-ld";
 export const revalidate = 3600;
 
 export default async function Home() {
-  const [tags, postsResponse] = await Promise.all([
+  const [tags, postsResponse, categories] = await Promise.all([
     getAllTags(),
     getPostsPaginated(1, 6),
+    getAllCategories(),
   ]);
 
   const { data: latestPosts } = postsResponse;
+
+  // Build category lookup map to avoid N+1 queries in PostCard
+  const categoryMap = new Map(categories.map((c) => [c.id, c.name]));
 
   // 過濾掉文章數為 0 的 tag，並按建立時間排序（ID 越大越新）
   const popularTags = tags
@@ -72,7 +80,11 @@ export default async function Home() {
               {latestPosts.length > 0 ? (
                 <div className="grid sm:grid-cols-2 gap-6">
                   {latestPosts.map((post) => (
-                    <PostCard key={post.id} post={post} />
+                    <PostCard
+                      key={post.id}
+                      post={post}
+                      categoryName={categoryMap.get(post.categories?.[0])}
+                    />
                   ))}
                 </div>
               ) : (

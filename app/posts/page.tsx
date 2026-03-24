@@ -57,6 +57,9 @@ export default async function Page({
   const { data: posts, headers } = postsResponse;
   const { total, totalPages } = headers;
 
+  // Build category lookup map to avoid N+1 queries in PostCard
+  const categoryMap = new Map(categories.map((c) => [c.id, c.name]));
+
   // Create pagination URL helper
   const createPaginationUrl = (newPage: number) => {
     const params = new URLSearchParams();
@@ -90,7 +93,11 @@ export default async function Page({
           {posts.length > 0 ? (
             <div className="grid sm:grid-cols-2 gap-6">
               {posts.map((post) => (
-                <PostCard key={post.id} post={post} />
+                <PostCard
+                  key={post.id}
+                  post={post}
+                  categoryName={categoryMap.get(post.categories?.[0])}
+                />
               ))}
             </div>
           ) : (
