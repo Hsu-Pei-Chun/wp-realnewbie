@@ -14,11 +14,14 @@ import {
 import { Badge } from "@/components/ui/badge";
 
 export async function PostCard({ post }: { post: Post }) {
-  const date = new Date(post.modified || post.date).toLocaleDateString("zh-TW", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  const date = new Date(post.modified || post.date).toLocaleDateString(
+    "zh-TW",
+    {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }
+  );
 
   const category = post.categories?.[0]
     ? await getCategoryById(post.categories[0])
