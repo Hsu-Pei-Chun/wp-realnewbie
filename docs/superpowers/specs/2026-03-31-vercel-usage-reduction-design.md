@@ -1,36 +1,36 @@
-# Vercel Usage Reduction — API Payload & Request Optimization
+# Vercel 用量降低 — API 回應瘦身與請求優化
 
-## Problem
+## 問題
 
-Vercel usage metrics are over quota:
+Vercel 用量指標全部超標：
 
-| Metric               | Current  | Limit |
+| 指標                 | 目前     | 上限  |
 | -------------------- | -------- | ----- |
 | Fast Origin Transfer | 10.92 GB | 10 GB |
 | Edge Requests        | 1.5M     | 1M    |
 | ISR Reads            | 1.2M     | 1M    |
 | Fluid Active CPU     | 5h21m    | 4h    |
 
-Root causes identified:
+已找到的根因：
 
-- `_embed: true` on all WordPress API calls inflates payloads ~10x (embedded data is never used)
-- No `_fields` parameter — list pages fetch full post content when only title/slug/excerpt needed
-- Homepage fetches ALL tags then filters client-side to 9
-- Search API re-fetches all categories on every request (already available from SSG)
-- OG image route fetches Google Fonts on every request (2 network calls per OG generation)
-- Dual analytics (Vercel Analytics + Google Analytics) doubles tracking requests
+- 所有 WordPress API 呼叫都帶 `_embed: true`，回應膨脹約 10 倍（但 embedded 資料從未被使用）
+- 沒用 `_fields` 參數 — 列表頁撈了完整文章內容，實際只需要標題/slug/摘要
+- 首頁撈全部標籤再 filter/sort/slice 到 9 個
+- 搜尋 API 每次都重新撈全部分類（但 SSG 已經有了）
+- OG 圖片每次生成都去 Google Fonts 抓字體（每次 2 個網路請求）
+- 同時啟用 Vercel Analytics + Google Analytics，追蹤請求翻倍
 
-## Solution: Approach B — Targeted Optimization
+## 方案：B — 精準優化
 
-Six changes, low risk, no architectural changes to post detail pages.
+6 項改動，風險低，不動文章詳情頁。
 
-## Changes
+## 改動內容
 
-### 1. Remove `_embed` + Add `_fields` to List Queries
+### 1. 移除 `_embed` + 加上 `_fields` 限制列表查詢欄位
 
-**Files:** `lib/wordpress.ts`
+**檔案：** `lib/wordpress.ts`
 
-**Functions affected (5):**
+**影響的函式（5 個）：**
 
 - `getPostsPaginated()`
 - `getAllPosts()`
@@ -38,88 +38,88 @@ Six changes, low risk, no architectural changes to post detail pages.
 - `getPostsByTagPaginated()`
 - `getPostsByAuthorPaginated()`
 
-**Change:**
+**改動：**
 
-- Remove `_embed: true` from query params
-- Add `_fields: "id,title,slug,excerpt,categories,modified,author,tags,featured_media"`
+- 移除 `_embed: true`
+- 加上 `_fields: "id,title,slug,excerpt,categories,modified,author,tags,featured_media"`
 
-**Not changed:**
+**不動的：**
 
-- `getPostBySlug()` / `getPostById()` — detail pages need full content
-- `getAllPostSlugs()` — already uses `_fields: "slug,modified"`
+- `getPostBySlug()` / `getPostById()` — 詳情頁需要完整內容
+- `getAllPostSlugs()` — 已經有 `_fields: "slug,modified"`
 
-**Impact:** List page payload per post: ~30 KB → ~2 KB
+**效果：** 列表頁每篇文章回應大小：~30 KB → ~2 KB
 
-### 2. Homepage: Fetch Only 9 Recent Tags
+### 2. 首頁：只撈 9 個最新標籤
 
-**Files:** `lib/wordpress.ts`, `app/page.tsx`
+**檔案：** `lib/wordpress.ts`、`app/page.tsx`
 
-**New function `getRecentTags()`:**
+**新增 `getRecentTags()` 函式：**
 
 ```
 GET /wp-json/wp/v2/tags?per_page=9&orderby=id&order=desc&_fields=id,name,slug,count
 ```
 
-- Returns up to 9 tags, newest first (ID descending, matching current sort logic)
-- Filter `count > 0` after fetch (WordPress API does not support count filter)
+- 只撈 9 筆，ID 最大的排前面（跟原本排序邏輯一致）
+- 撈回來後過濾掉 `count === 0` 的（WordPress API 不支援直接過濾）
 
-**Homepage change:**
+**首頁改動：**
 
-- Replace `getAllTags()` with `getRecentTags()`
-- Remove the filter/sort/slice logic (lines 28-31 of `app/page.tsx`)
+- `getAllTags()` 換成 `getRecentTags()`
+- 移除原本的 filter/sort/slice 邏輯（`app/page.tsx` 第 28-31 行）
 
-**`getAllTags()` is NOT deleted** — still used by `app/posts/page.tsx` for PostsClient filter dropdowns.
+**`getAllTags()` 不刪除** — `/posts` 頁面的 PostsClient 篩選下拉還需要全部標籤。
 
-### 3. Search API: Remove Redundant Categories Fetch
+### 3. 搜尋 API：移除重複撈分類
 
-**Files:** `app/api/posts/search/route.ts`, `components/posts/posts-client.tsx`
+**檔案：** `app/api/posts/search/route.ts`、`components/posts/posts-client.tsx`
 
-**API route change:**
+**API route 改動：**
 
-- Remove `getAllCategories()` call
-- Remove `categoryMap` from response
-- Response becomes: `{ posts, total, totalPages }`
+- 移除 `getAllCategories()` 呼叫
+- 移除回應中的 `categoryMap`
+- 回應變成只有：`{ posts, total, totalPages }`
 
-**Client component change:**
+**前端元件改動：**
 
-- Remove `categoryMap` state (`setCategoryMap`)
-- Always use `initialCategoryMap` from SSG props (categories don't change during search)
+- 移除 `categoryMap` 的 state（`setCategoryMap`）
+- 一律使用 SSG 傳入的 `initialCategoryMap`（分類不會在搜尋過程中改變）
 
-### 4. OG Font: Bundle Locally
+### 4. OG 字體：打包進專案
 
-**Files:** `app/api/og/route.tsx`, `public/fonts/NotoSansTC-Bold.woff2` (new)
+**檔案：** `app/api/og/route.tsx`、`public/fonts/NotoSansTC-Bold.woff2`（新增）
 
-**Change:**
+**改動：**
 
-- Download Noto Sans TC Bold (.woff2) into `public/fonts/`
-- Load font at module top level via `fetch(new URL(..., import.meta.url))` (Edge Runtime compatible)
-- Remove the 3-step Google Fonts fetch (CSS → parse URL → download font)
+- 下載 Noto Sans TC Bold（.woff2）放到 `public/fonts/`
+- 在模組頂層用 `fetch(new URL(..., import.meta.url))` 載入字體（Edge Runtime 相容寫法）
+- 移除原本的 3 步驟 Google Fonts 抓取（抓 CSS → 解析字體 URL → 下載字體檔）
 
-**Impact:** 0 network requests per OG generation (was 2-3)
+**效果：** 每次 OG 圖片生成從 2-3 次網路請求 → 0 次
 
-### 5. Remove Vercel Analytics, Keep Only GA
+### 5. 移除 Vercel Analytics，只保留 GA
 
-**Files:** `app/layout.tsx`, `package.json`
+**檔案：** `app/layout.tsx`、`package.json`
 
-**Change:**
+**改動：**
 
-- Remove `import { Analytics } from "@vercel/analytics/react"`
-- Remove `<Analytics />` component
-- Run `pnpm remove @vercel/analytics`
+- 移除 `import { Analytics } from "@vercel/analytics/react"`
+- 移除 `<Analytics />` 元件
+- 執行 `pnpm remove @vercel/analytics`
 
-**Google Analytics (`<GoogleAnalytics>`) is unchanged.**
+**Google Analytics（`<GoogleAnalytics>`）不動。**
 
-## Expected Impact
+## 預期效果
 
-| Metric               | Reduction | Reason                                      |
-| -------------------- | --------- | ------------------------------------------- |
-| Fast Origin Transfer | ~50-60%   | Smaller payloads (no embed, \_fields)       |
-| Edge Requests        | ~20-30%   | No dual analytics, no OG font fetches       |
-| Fluid Active CPU     | ~10-20%   | Faster OG generation, lighter API responses |
-| ISR Reads            | Minimal   | Already addressed by prior SSG refactor     |
+| 指標                 | 預估降幅 | 原因                                |
+| -------------------- | -------- | ----------------------------------- |
+| Fast Origin Transfer | ~50-60%  | 回應瘦身（移除 embed、加 \_fields） |
+| Edge Requests        | ~20-30%  | 不再雙重追蹤、OG 不再抓字體         |
+| Fluid Active CPU     | ~10-20%  | OG 生成更快、API 回應更輕           |
+| ISR Reads            | 極小     | 已在先前的 SSG 重構中處理           |
 
-## Out of Scope
+## 不在此次範圍
 
-- Post detail page data fetching (no changes)
-- Image optimization settings (normal Next.js behavior)
-- ISR Read quota (already addressed by `/posts` SSG refactor in commit 9cc7fb1)
+- 文章詳情頁的資料撈取（不動）
+- 圖片優化設定（Next.js 正常行為）
+- ISR Read 配額（已在 commit 9cc7fb1 的 `/posts` SSG 重構中處理）
