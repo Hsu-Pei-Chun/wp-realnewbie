@@ -45,27 +45,30 @@ Move search, filter, and pagination from server-side rendering to client-side fe
 Replaces `PostsFilter`. Contains three sections:
 
 **Search/Filter area:**
+
 - Same UI as current: search input, category/tag/author dropdowns, search and reset buttons
 - On search: `fetch('/api/posts/search?...')` instead of `router.push`
 - No URL state — search results are not shareable via URL
 
 **Post list area:**
+
 - Initial render uses server-provided first page data (instant load)
 - After search/pagination: replaced with API response data
 - Shows loading state during fetch
 
 **Pagination area:**
+
 - Same UI as current: page numbers, previous/next buttons
 - On click: fetches new page via API, no page reload
 
 ### Files Changed
 
-| File | Action |
-|------|--------|
-| `app/posts/page.tsx` | Remove `searchParams`, pass initial data to `PostsClient` |
-| `app/api/posts/search/route.ts` | New — API route for search/filter/pagination |
-| `components/posts/posts-client.tsx` | New — client component with search + list + pagination |
-| `components/posts/posts-filter.tsx` | Delete — functionality merged into `PostsClient` |
+| File                                | Action                                                    |
+| ----------------------------------- | --------------------------------------------------------- |
+| `app/posts/page.tsx`                | Remove `searchParams`, pass initial data to `PostsClient` |
+| `app/api/posts/search/route.ts`     | New — API route for search/filter/pagination              |
+| `components/posts/posts-client.tsx` | New — client component with search + list + pagination    |
+| `components/posts/posts-filter.tsx` | Delete — functionality merged into `PostsClient`          |
 
 ### Data Flow
 

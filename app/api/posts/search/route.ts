@@ -15,9 +15,7 @@ export async function GET(request: NextRequest) {
     getAllCategories(),
   ]);
 
-  const categoryMap = Object.fromEntries(
-    categories.map((c) => [c.id, c.name])
-  );
+  const categoryMap = Object.fromEntries(categories.map((c) => [c.id, c.name]));
 
   return NextResponse.json({
     posts: postsResponse.data,

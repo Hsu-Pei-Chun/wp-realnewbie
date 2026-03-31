@@ -73,7 +73,8 @@ export function PostsClient({
         params.set("search", search.trim());
       } else {
         if (selectedTag !== "all") params.set("tag", selectedTag);
-        if (selectedCategory !== "all") params.set("category", selectedCategory);
+        if (selectedCategory !== "all")
+          params.set("category", selectedCategory);
         if (selectedAuthor !== "all") params.set("author", selectedAuthor);
       }
 

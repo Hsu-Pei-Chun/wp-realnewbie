@@ -12,18 +12,19 @@
 
 ## File Structure
 
-| File | Action | Responsibility |
-|------|--------|----------------|
-| `app/api/posts/search/route.ts` | Create | API route: accepts search/filter/pagination params, returns posts + metadata as JSON |
-| `components/posts/posts-client.tsx` | Create | Client component: search/filter UI + post list + pagination, fetches from API route |
-| `app/posts/page.tsx` | Modify | Remove `searchParams`, fetch initial data at build time, render `PostsClient` |
-| `components/posts/posts-filter.tsx` | Delete | Replaced by `PostsClient` |
+| File                                | Action | Responsibility                                                                       |
+| ----------------------------------- | ------ | ------------------------------------------------------------------------------------ |
+| `app/api/posts/search/route.ts`     | Create | API route: accepts search/filter/pagination params, returns posts + metadata as JSON |
+| `components/posts/posts-client.tsx` | Create | Client component: search/filter UI + post list + pagination, fetches from API route  |
+| `app/posts/page.tsx`                | Modify | Remove `searchParams`, fetch initial data at build time, render `PostsClient`        |
+| `components/posts/posts-filter.tsx` | Delete | Replaced by `PostsClient`                                                            |
 
 ---
 
 ### Task 1: Create API Route
 
 **Files:**
+
 - Create: `app/api/posts/search/route.ts`
 
 - [ ] **Step 1: Create the API route**
@@ -46,9 +47,7 @@ export async function GET(request: NextRequest) {
     getAllCategories(),
   ]);
 
-  const categoryMap = Object.fromEntries(
-    categories.map((c) => [c.id, c.name])
-  );
+  const categoryMap = Object.fromEntries(categories.map((c) => [c.id, c.name]));
 
   return NextResponse.json({
     posts: postsResponse.data,
@@ -64,6 +63,7 @@ export async function GET(request: NextRequest) {
 Run: `pnpm dev`
 
 Then in a separate terminal:
+
 ```bash
 curl "http://localhost:3000/api/posts/search?page=1&per_page=2"
 ```
@@ -82,6 +82,7 @@ git commit -m "feat: add /api/posts/search API route for client-side search"
 ### Task 2: Create PostsClient Component
 
 **Files:**
+
 - Create: `components/posts/posts-client.tsx`
 
 This component receives initial data from the server and handles all interactive behavior (search, filter, pagination) via client-side fetch.
@@ -164,7 +165,8 @@ export function PostsClient({
         params.set("search", search.trim());
       } else {
         if (selectedTag !== "all") params.set("tag", selectedTag);
-        if (selectedCategory !== "all") params.set("category", selectedCategory);
+        if (selectedCategory !== "all")
+          params.set("category", selectedCategory);
         if (selectedAuthor !== "all") params.set("author", selectedAuthor);
       }
 
@@ -396,6 +398,7 @@ git commit -m "feat: add PostsClient component for client-side search and pagina
 ### Task 3: Refactor /posts Page to SSG
 
 **Files:**
+
 - Modify: `app/posts/page.tsx` (full rewrite)
 - Delete: `components/posts/posts-filter.tsx`
 
@@ -431,9 +434,7 @@ export default async function Page() {
     getAllCategories(),
   ]);
 
-  const categoryMap = Object.fromEntries(
-    categories.map((c) => [c.id, c.name])
-  );
+  const categoryMap = Object.fromEntries(categories.map((c) => [c.id, c.name]));
 
   return (
     <Section>

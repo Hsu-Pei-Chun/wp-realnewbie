@@ -25,9 +25,7 @@ export default async function Page() {
     getAllCategories(),
   ]);
 
-  const categoryMap = Object.fromEntries(
-    categories.map((c) => [c.id, c.name])
-  );
+  const categoryMap = Object.fromEntries(categories.map((c) => [c.id, c.name]));
 
   return (
     <Section>
