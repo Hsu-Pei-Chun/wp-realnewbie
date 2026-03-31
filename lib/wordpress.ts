@@ -171,7 +171,8 @@ export async function getPostsPaginated(
   }
 ): Promise<WordPressResponse<Post[]>> {
   const query: Record<string, any> = {
-    _embed: true,
+    _fields:
+      "id,title,slug,excerpt,categories,modified,author,tags,featured_media",
     per_page: perPage,
     page,
     orderby: "modified",
@@ -212,7 +213,8 @@ export async function getAllPosts(filterParams?: {
   search?: string;
 }): Promise<Post[]> {
   const baseQuery: Record<string, any> = {
-    _embed: true,
+    _fields:
+      "id,title,slug,excerpt,categories,modified,author,tags,featured_media",
     per_page: 100,
   };
 
@@ -434,7 +436,8 @@ export async function getPostsByCategoryPaginated(
   perPage: number = 9
 ): Promise<WordPressResponse<Post[]>> {
   return wordpressFetchPaginatedGraceful<Post>("/wp-json/wp/v2/posts", {
-    _embed: true,
+    _fields:
+      "id,title,slug,excerpt,categories,modified,author,tags,featured_media",
     per_page: perPage,
     page,
     categories: categoryId,
@@ -447,7 +450,8 @@ export async function getPostsByTagPaginated(
   perPage: number = 9
 ): Promise<WordPressResponse<Post[]>> {
   return wordpressFetchPaginatedGraceful<Post>("/wp-json/wp/v2/posts", {
-    _embed: true,
+    _fields:
+      "id,title,slug,excerpt,categories,modified,author,tags,featured_media",
     per_page: perPage,
     page,
     tags: tagId,
@@ -460,7 +464,8 @@ export async function getPostsByAuthorPaginated(
   perPage: number = 9
 ): Promise<WordPressResponse<Post[]>> {
   return wordpressFetchPaginatedGraceful<Post>("/wp-json/wp/v2/posts", {
-    _embed: true,
+    _fields:
+      "id,title,slug,excerpt,categories,modified,author,tags,featured_media",
     per_page: perPage,
     page,
     author: authorId,
