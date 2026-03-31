@@ -44,7 +44,7 @@ export function PostsClient({
   const [posts, setPosts] = useState(initialPosts);
   const [total, setTotal] = useState(initialTotal);
   const [totalPages, setTotalPages] = useState(initialTotalPages);
-  const [categoryMap, setCategoryMap] = useState(initialCategoryMap);
+  const categoryMap = initialCategoryMap;
   const [page, setPage] = useState(1);
   const [isPending, startTransition] = useTransition();
 
@@ -84,7 +84,6 @@ export function PostsClient({
       setPosts(data.posts);
       setTotal(data.total);
       setTotalPages(data.totalPages);
-      setCategoryMap(data.categoryMap);
       setPage(targetPage);
     });
   };
@@ -101,7 +100,6 @@ export function PostsClient({
     setPosts(initialPosts);
     setTotal(initialTotal);
     setTotalPages(initialTotalPages);
-    setCategoryMap(initialCategoryMap);
     setPage(1);
   };
 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getPostsPaginated, getAllCategories } from "@/lib/wordpress";
+import { getPostsPaginated } from "@/lib/wordpress";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
@@ -10,17 +10,16 @@ export async function GET(request: NextRequest) {
   const category = searchParams.get("category") || undefined;
   const search = searchParams.get("search") || undefined;
 
-  const [postsResponse, categories] = await Promise.all([
-    getPostsPaginated(page, perPage, { author, tag, category, search }),
-    getAllCategories(),
-  ]);
-
-  const categoryMap = Object.fromEntries(categories.map((c) => [c.id, c.name]));
+  const postsResponse = await getPostsPaginated(page, perPage, {
+    author,
+    tag,
+    category,
+    search,
+  });
 
   return NextResponse.json({
     posts: postsResponse.data,
     total: postsResponse.headers.total,
     totalPages: postsResponse.headers.totalPages,
-    categoryMap,
   });
 }
