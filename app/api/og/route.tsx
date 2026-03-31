@@ -3,18 +3,16 @@ import { NextRequest } from "next/server";
 
 export const runtime = "edge";
 
-const fontData = fetch(
-  new URL("../../public/fonts/NotoSansTC-Bold.ttf", import.meta.url)
-).then((res) => res.arrayBuffer());
-
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
+    const { searchParams, origin } = new URL(request.url);
 
     const title = searchParams.get("title");
     const description = searchParams.get("description");
 
-    const font = await fontData;
+    const font = await fetch(
+      new URL("/fonts/NotoSansTC-Bold.ttf", origin)
+    ).then((res) => res.arrayBuffer());
 
     return new ImageResponse(
       <div
