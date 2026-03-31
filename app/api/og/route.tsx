@@ -3,24 +3,18 @@ import { NextRequest } from "next/server";
 
 export const runtime = "edge";
 
+const fontData = fetch(
+  new URL("../../public/fonts/NotoSansTC-Bold.ttf", import.meta.url)
+).then((res) => res.arrayBuffer());
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
 
-    // Get title and description from the URL query params
     const title = searchParams.get("title");
     const description = searchParams.get("description");
 
-    // Load CJK font for Traditional Chinese
-    const fontResponse = await fetch(
-      "https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@700&display=swap",
-      { headers: { "User-Agent": "Mozilla/5.0" } }
-    );
-    const css = await fontResponse.text();
-    const fontUrl = css.match(/src: url\((.+?)\)/)?.[1];
-    const fontData = fontUrl
-      ? await fetch(fontUrl).then((res) => res.arrayBuffer())
-      : null;
+    const font = await fontData;
 
     return new ImageResponse(
       <div
@@ -77,16 +71,14 @@ export async function GET(request: NextRequest) {
       {
         width: 1200,
         height: 630,
-        fonts: fontData
-          ? [
-              {
-                name: "Noto Sans TC",
-                data: fontData,
-                style: "normal" as const,
-                weight: 700 as const,
-              },
-            ]
-          : undefined,
+        fonts: [
+          {
+            name: "Noto Sans TC",
+            data: font,
+            style: "normal" as const,
+            weight: 700 as const,
+          },
+        ],
       }
     );
   } catch (e: any) {
