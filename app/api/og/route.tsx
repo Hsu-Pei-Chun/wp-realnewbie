@@ -1,18 +1,18 @@
 import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 
-export const runtime = "edge";
+const fontData = readFileSync(
+  join(process.cwd(), "public/fonts/NotoSansTC-Bold.ttf")
+);
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams, origin } = new URL(request.url);
+    const { searchParams } = new URL(request.url);
 
     const title = searchParams.get("title");
     const description = searchParams.get("description");
-
-    const font = await fetch(
-      new URL("/fonts/NotoSansTC-Bold.ttf", origin)
-    ).then((res) => res.arrayBuffer());
 
     return new ImageResponse(
       <div
@@ -72,7 +72,7 @@ export async function GET(request: NextRequest) {
         fonts: [
           {
             name: "Noto Sans TC",
-            data: font,
+            data: fontData,
             style: "normal" as const,
             weight: 700 as const,
           },
