@@ -328,6 +328,21 @@ export async function getAllTags(): Promise<Tag[]> {
   );
 }
 
+export async function getRecentTags(): Promise<Tag[]> {
+  const tags = await wordpressFetchGraceful<Tag[]>(
+    "/wp-json/wp/v2/tags",
+    [],
+    {
+      per_page: 9,
+      orderby: "id",
+      order: "desc",
+      _fields: "id,name,slug,count",
+    },
+    ["wordpress", "tags"]
+  );
+  return tags.filter((tag) => tag.count > 0);
+}
+
 export async function getTagById(id: number): Promise<Tag> {
   return wordpressFetch<Tag>(`/wp-json/wp/v2/tags/${id}`);
 }

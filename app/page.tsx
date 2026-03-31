@@ -1,6 +1,6 @@
 import { Section, Container, Prose } from "@/components/craft";
 import {
-  getAllTags,
+  getRecentTags,
   getAllCategories,
   getPostsPaginated,
 } from "@/lib/wordpress";
@@ -13,8 +13,8 @@ import { WebSiteJsonLd } from "@/lib/json-ld";
 export const revalidate = false;
 
 export default async function Home() {
-  const [tags, postsResponse, categories] = await Promise.all([
-    getAllTags(),
+  const [popularTags, postsResponse, categories] = await Promise.all([
+    getRecentTags(),
     getPostsPaginated(1, 6),
     getAllCategories(),
   ]);
@@ -23,12 +23,6 @@ export default async function Home() {
 
   // Build category lookup map to avoid N+1 queries in PostCard
   const categoryMap = new Map(categories.map((c) => [c.id, c.name]));
-
-  // 過濾掉文章數為 0 的 tag，並按建立時間排序（ID 越大越新）
-  const popularTags = tags
-    .filter((tag) => tag.count > 0)
-    .sort((a, b) => b.id - a.id)
-    .slice(0, 9);
 
   return (
     <>
