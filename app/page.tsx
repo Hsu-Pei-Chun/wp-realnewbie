@@ -21,6 +21,14 @@ export default async function Home() {
 
   const { data: latestPosts } = postsResponse;
 
+  // If WordPress API fails during revalidation, graceful fetch returns empty data.
+  // Throw to prevent Next.js from caching an empty page over a previously good one.
+  if (latestPosts.length === 0 && popularTags.length === 0) {
+    throw new Error(
+      "WordPress API returned empty data — likely unreachable. Keeping previous cached page."
+    );
+  }
+
   // Build category lookup map to avoid N+1 queries in PostCard
   const categoryMap = new Map(categories.map((c) => [c.id, c.name]));
 
