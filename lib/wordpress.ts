@@ -316,7 +316,9 @@ export async function getPostsByTag(tagId: number): Promise<Post[]> {
 }
 
 export async function getTagsByPost(postId: number): Promise<Tag[]> {
-  return wordpressFetch<Tag[]>("/wp-json/wp/v2/tags", { post: postId });
+  return wordpressFetchGraceful<Tag[]>("/wp-json/wp/v2/tags", [], {
+    post: postId,
+  });
 }
 
 export async function getAllTags(): Promise<Tag[]> {
