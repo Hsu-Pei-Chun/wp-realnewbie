@@ -76,6 +76,31 @@ export interface Post extends WPEntity {
   categories: number[];
   tags: number[];
   meta: Record<string, unknown>;
+  // Present only when fetched with ?_embed=author,wp:term,wp:featuredmedia.
+  // WordPress trims embedded sub-resources (fewer fields than their standalone
+  // REST endpoints), so these mirror the actual embedded shape, not Author/Category/Tag.
+  _embedded?: {
+    author?: EmbeddedAuthor[];
+    "wp:term"?: EmbeddedTerm[][];
+  };
+}
+
+interface EmbeddedAuthor {
+  id: number;
+  name: string;
+  url: string;
+  description: string;
+  link: string;
+  slug: string;
+  avatar_urls: Record<string, string>;
+}
+
+interface EmbeddedTerm {
+  id: number;
+  link: string;
+  name: string;
+  slug: string;
+  taxonomy: string;
 }
 
 export interface Page extends WPEntity {

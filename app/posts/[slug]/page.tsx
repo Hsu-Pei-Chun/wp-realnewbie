@@ -1,9 +1,10 @@
 import {
   getPostBySlug,
   getFeaturedMediaById,
-  getCategoryById,
   getAllPostSlugs,
-  getAuthorById,
+  getEmbeddedAuthor,
+  getEmbeddedCategory,
+  getEmbeddedTags,
 } from "@/lib/wordpress";
 
 import { Section, Container, Prose, Article } from "@/components/craft";
@@ -88,13 +89,15 @@ export default async function Page({
     notFound();
   }
 
-  const [featuredMedia, author, category, seriesData] = await Promise.all([
+  const author = getEmbeddedAuthor(post);
+  const category = getEmbeddedCategory(post);
+  const tags = getEmbeddedTags(post);
+
+  const [featuredMedia, seriesData] = await Promise.all([
     post.featured_media
       ? getFeaturedMediaById(post.featured_media)
       : Promise.resolve(null),
-    getAuthorById(post.author),
-    getCategoryById(post.categories[0]),
-    getSeriesData(post.id, slug),
+    getSeriesData(tags, slug),
   ]);
   const modifiedDate = new Date(post.modified).toLocaleDateString("zh-TW", {
     year: "numeric",

@@ -281,24 +281,53 @@ export const getPostBySlug = cache(
     const posts = await wordpressFetchGraceful<Post[]>(
       "/wp-json/wp/v2/posts",
       [],
-      { slug }
+      { slug, _embed: "author,wp:term" }
     );
     return posts[0];
   }
 );
 
-export async function getAllCategories(): Promise<Category[]> {
-  return wordpressFetchGraceful<Category[]>(
-    "/wp-json/wp/v2/categories",
-    [],
-    { per_page: 100 },
-    ["wordpress", "categories"]
-  );
+// Reads author/category/tags from the post's _embedded data (populated by the
+// _embed param on getPostBySlug) instead of firing separate per-post REST
+// calls. With ~1200 posts, 3 extra live requests per post during static
+// generation was enough concurrent load to intermittently overwhelm the
+// WordPress origin and abort the entire build.
+export function getEmbeddedAuthor(post: Post): Author {
+  const embedded = post._embedded?.author?.[0];
+  if (embedded) {
+    return { ...embedded, meta: {} };
+  }
+  return {
+    id: post.author,
+    name: siteConfig.site_name,
+    url: "",
+    description: "",
+    link: "",
+    slug: "",
+    avatar_urls: {},
+    meta: {},
+  };
 }
 
-export async function getCategoryById(id: number): Promise<Category> {
-  return wordpressFetchGraceful<Category>(`/wp-json/wp/v2/categories/${id}`, {
-    id,
+export function getEmbeddedCategory(post: Post): Category {
+  const term = post._embedded?.["wp:term"]?.find(
+    (group) => group[0]?.taxonomy === "category"
+  )?.[0];
+  if (term) {
+    return {
+      id: term.id,
+      count: 0,
+      description: "",
+      link: term.link,
+      name: term.name,
+      slug: term.slug,
+      meta: {},
+      taxonomy: "category",
+      parent: 0,
+    };
+  }
+  return {
+    id: post.categories[0] ?? 0,
     count: 0,
     description: "",
     link: "",
@@ -307,7 +336,33 @@ export async function getCategoryById(id: number): Promise<Category> {
     meta: {},
     taxonomy: "category",
     parent: 0,
-  });
+  };
+}
+
+export function getEmbeddedTags(post: Post): Tag[] {
+  const tagGroup =
+    post._embedded?.["wp:term"]?.find(
+      (group) => group[0]?.taxonomy === "post_tag"
+    ) ?? [];
+  return tagGroup.map((term) => ({
+    id: term.id,
+    count: 0,
+    description: "",
+    link: term.link,
+    name: term.name,
+    slug: term.slug,
+    meta: {},
+    taxonomy: "post_tag",
+  }));
+}
+
+export async function getAllCategories(): Promise<Category[]> {
+  return wordpressFetchGraceful<Category[]>(
+    "/wp-json/wp/v2/categories",
+    [],
+    { per_page: 100 },
+    ["wordpress", "categories"]
+  );
 }
 
 export async function getCategoryBySlug(slug: string): Promise<Category> {
@@ -324,12 +379,6 @@ export async function getPostsByCategory(categoryId: number): Promise<Post[]> {
 
 export async function getPostsByTag(tagId: number): Promise<Post[]> {
   return wordpressFetch<Post[]>("/wp-json/wp/v2/posts", { tags: tagId });
-}
-
-export async function getTagsByPost(postId: number): Promise<Tag[]> {
-  return wordpressFetchGraceful<Tag[]>("/wp-json/wp/v2/tags", [], {
-    post: postId,
-  });
 }
 
 export async function getAllTags(): Promise<Tag[]> {
@@ -395,19 +444,6 @@ export async function getAllAuthors(): Promise<Author[]> {
     { per_page: 100 },
     ["wordpress", "authors"]
   );
-}
-
-export async function getAuthorById(id: number): Promise<Author> {
-  return wordpressFetchGraceful<Author>(`/wp-json/wp/v2/users/${id}`, {
-    id,
-    name: siteConfig.site_name,
-    url: "",
-    description: "",
-    link: "",
-    slug: "",
-    avatar_urls: {},
-    meta: {},
-  });
 }
 
 export async function getAuthorBySlug(slug: string): Promise<Author> {

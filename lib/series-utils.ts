@@ -1,9 +1,9 @@
-import { getTagsByPost } from "@/lib/wordpress";
 import { graphqlFetch, GET_POSTS_BY_TAG_QUERY } from "@/lib/graphql-client";
 import type {
   GetPostsByTagResponse,
   GraphQLPostNode,
 } from "@/lib/graphql-types";
+import type { Tag } from "@/lib/wordpress.d";
 
 /**
  * Safe parseInt with fallback for invalid values
@@ -30,12 +30,9 @@ export interface SeriesData {
  * Returns null if the post is not part of a series
  */
 export async function getSeriesData(
-  postId: number,
+  tags: Tag[],
   currentPostSlug: string
 ): Promise<SeriesData | null> {
-  // 1. Get tags for this post via REST API
-  const tags = await getTagsByPost(postId);
-
   // No tags = not a series
   if (tags.length === 0) {
     return null;
