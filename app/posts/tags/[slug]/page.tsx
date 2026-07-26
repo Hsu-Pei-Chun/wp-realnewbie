@@ -5,7 +5,10 @@ import { notFound } from "next/navigation";
 import { Section, Container } from "@/components/craft";
 import { TagSeriesList } from "@/components/tags/tag-series-list";
 import BackButton from "@/components/back";
-import { graphqlFetch, GET_POSTS_BY_TAG_QUERY } from "@/lib/graphql-client";
+import {
+  graphqlFetchGraceful,
+  GET_POSTS_BY_TAG_QUERY,
+} from "@/lib/graphql-client";
 import type { GetPostsByTagResponse } from "@/lib/graphql-types";
 import { getAllTags } from "@/lib/wordpress";
 
@@ -18,8 +21,9 @@ export async function generateStaticParams() {
 
 // Cached query function - deduplicates requests within the same render
 const getTagData = cache(async (slug: string) => {
-  return graphqlFetch<GetPostsByTagResponse>(
+  return graphqlFetchGraceful<GetPostsByTagResponse>(
     GET_POSTS_BY_TAG_QUERY,
+    { data: { posts: null, tag: null } },
     { tagSlug: slug, tagId: slug },
     ["wordpress", "tags", `tag-${slug}`]
   );

@@ -1,4 +1,7 @@
-import { graphqlFetch, GET_POSTS_BY_TAG_QUERY } from "@/lib/graphql-client";
+import {
+  graphqlFetchGraceful,
+  GET_POSTS_BY_TAG_QUERY,
+} from "@/lib/graphql-client";
 import type {
   GetPostsByTagResponse,
   GraphQLPostNode,
@@ -44,8 +47,9 @@ export async function getSeriesData(
   const seriesTag = tags[0];
 
   // 2. Get all posts in this series via GraphQL
-  const result = await graphqlFetch<GetPostsByTagResponse>(
+  const result = await graphqlFetchGraceful<GetPostsByTagResponse>(
     GET_POSTS_BY_TAG_QUERY,
+    { data: { posts: null, tag: null } },
     { tagSlug: seriesTag.slug, tagId: seriesTag.slug },
     ["wordpress", "tags", `tag-${seriesTag.slug}`]
   );

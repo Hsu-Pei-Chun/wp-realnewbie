@@ -27,6 +27,21 @@ export async function graphqlFetch<T>(
   return response.json();
 }
 
+// Graceful fetch - returns fallback when the GraphQL endpoint is unavailable or errors
+export async function graphqlFetchGraceful<T>(
+  query: string,
+  fallback: T,
+  variables?: Record<string, unknown>,
+  tags: string[] = ["wordpress"]
+): Promise<T> {
+  try {
+    return await graphqlFetch<T>(query, variables, tags);
+  } catch {
+    console.warn("GraphQL fetch failed");
+    return fallback;
+  }
+}
+
 // The raw query string (previously in graphql/queries/tags.graphql)
 export const GET_POSTS_BY_TAG_QUERY = `
   query GetPostsByTag($tagSlug: String!, $tagId: ID!) {
