@@ -10,7 +10,7 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { WebSiteJsonLd } from "@/lib/json-ld";
 
-export const revalidate = false;
+export const revalidate = 86400;
 
 export default async function Home() {
   const [popularTags, postsResponse, categories] = await Promise.all([

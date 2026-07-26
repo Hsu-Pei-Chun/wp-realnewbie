@@ -9,7 +9,7 @@ import { graphqlFetch, GET_POSTS_BY_TAG_QUERY } from "@/lib/graphql-client";
 import type { GetPostsByTagResponse } from "@/lib/graphql-types";
 import { getAllTags } from "@/lib/wordpress";
 
-export const revalidate = false;
+export const revalidate = 86400;
 
 export async function generateStaticParams() {
   const tags = await getAllTags();

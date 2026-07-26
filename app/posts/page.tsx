@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   description: "瀏覽所有文章",
 };
 
-export const revalidate = false;
+export const revalidate = 86400;
 
 export default async function Page() {
   const [postsResponse, authors, tags, categories] = await Promise.all([
