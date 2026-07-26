@@ -13,6 +13,7 @@ import type {
   Comment,
   CommentInput,
 } from "./wordpress.d";
+import { siteConfig } from "@/site.config";
 
 // Single source of truth for WordPress configuration
 const baseUrl = process.env.WORDPRESS_URL;
@@ -296,7 +297,17 @@ export async function getAllCategories(): Promise<Category[]> {
 }
 
 export async function getCategoryById(id: number): Promise<Category> {
-  return wordpressFetch<Category>(`/wp-json/wp/v2/categories/${id}`);
+  return wordpressFetchGraceful<Category>(`/wp-json/wp/v2/categories/${id}`, {
+    id,
+    count: 0,
+    description: "",
+    link: "",
+    name: "未分類",
+    slug: "uncategorized",
+    meta: {},
+    taxonomy: "category",
+    parent: 0,
+  });
 }
 
 export async function getCategoryBySlug(slug: string): Promise<Category> {
@@ -387,7 +398,16 @@ export async function getAllAuthors(): Promise<Author[]> {
 }
 
 export async function getAuthorById(id: number): Promise<Author> {
-  return wordpressFetch<Author>(`/wp-json/wp/v2/users/${id}`);
+  return wordpressFetchGraceful<Author>(`/wp-json/wp/v2/users/${id}`, {
+    id,
+    name: siteConfig.site_name,
+    url: "",
+    description: "",
+    link: "",
+    slug: "",
+    avatar_urls: {},
+    meta: {},
+  });
 }
 
 export async function getAuthorBySlug(slug: string): Promise<Author> {
@@ -421,8 +441,13 @@ export async function getPostsByTagSlug(tagSlug: string): Promise<Post[]> {
   return wordpressFetch<Post[]>("/wp-json/wp/v2/posts", { tags: tag.id });
 }
 
-export async function getFeaturedMediaById(id: number): Promise<FeaturedMedia> {
-  return wordpressFetch<FeaturedMedia>(`/wp-json/wp/v2/media/${id}`);
+export async function getFeaturedMediaById(
+  id: number
+): Promise<FeaturedMedia | null> {
+  return wordpressFetchGraceful<FeaturedMedia | null>(
+    `/wp-json/wp/v2/media/${id}`,
+    null
+  );
 }
 
 export async function searchCategories(query: string): Promise<Category[]> {
