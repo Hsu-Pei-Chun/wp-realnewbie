@@ -1,3 +1,5 @@
+import { withRequestLimit } from "@/lib/request-limiter";
+
 if (!process.env.WORDPRESS_URL) {
   console.warn(
     "WORDPRESS_URL environment variable is not defined - GraphQL features will be unavailable"
@@ -6,25 +8,29 @@ if (!process.env.WORDPRESS_URL) {
 
 const GRAPHQL_ENDPOINT = `${process.env.WORDPRESS_URL}/graphql`;
 
-export async function graphqlFetch<T>(
+// Throws on error. Private: only graphqlFetchGraceful may call this, so
+// nothing outside this file can accidentally reach the throwing version.
+async function graphqlFetch<T>(
   query: string,
   variables?: Record<string, unknown>,
   tags: string[] = ["wordpress"]
 ): Promise<T> {
-  const response = await fetch(GRAPHQL_ENDPOINT, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ query, variables }),
-    next: { tags, revalidate: false },
+  return withRequestLimit(async () => {
+    const response = await fetch(GRAPHQL_ENDPOINT, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ query, variables }),
+      next: { tags, revalidate: false },
+    });
+
+    if (!response.ok) {
+      throw new Error(`GraphQL request failed: ${response.statusText}`);
+    }
+
+    return response.json();
   });
-
-  if (!response.ok) {
-    throw new Error(`GraphQL request failed: ${response.statusText}`);
-  }
-
-  return response.json();
 }
 
 // Graceful fetch - returns fallback when the GraphQL endpoint is unavailable or errors
