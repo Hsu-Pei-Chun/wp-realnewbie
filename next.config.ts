@@ -8,6 +8,18 @@ const nextConfig: NextConfig = {
   output: "standalone",
   experimental: {
     optimizePackageImports: ["lucide-react"],
+    // Each static-generation worker is a separate OS process with its own
+    // memory, so an in-process concurrency limiter (lib/request-limiter.ts)
+    // can only throttle requests within one worker, not across all of them.
+    // With ~1200 posts, Vercel's 30-core build machine was spinning up 29
+    // workers that each fetched WordPress independently - up to 29 (or more,
+    // since a single worker can process pages concurrently too) simultaneous
+    // requests, enough to overwhelm the origin and make every in-flight page
+    // miss the 60s per-page timeout at once. These cap concurrency at the
+    // one place that actually controls process/worker count.
+    staticGenerationMinPagesPerWorker: 400,
+    staticGenerationMaxConcurrency: 1,
+    staticGenerationRetryCount: 1,
   },
   images: {
     remotePatterns: wordpressHostname
