@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { Suspense, useEffect, useState, useTransition } from "react";
+import { useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import {
   Select,
@@ -30,6 +31,23 @@ interface PostsClientProps {
   authors: Author[];
   tags: Tag[];
   categories: Category[];
+}
+
+function SearchParamSync({ onSearch }: { onSearch: (value: string) => void }) {
+  const searchParams = useSearchParams();
+  const value = searchParams.get("search") ?? "";
+
+  useEffect(() => {
+    if (value) {
+      onSearch(value);
+    }
+    // Re-run only when the URL's search value itself changes; onSearch has
+    // no closure-staleness risk (see its definition below), so it's safe
+    // to omit from deps here.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+
+  return null;
 }
 
 export function PostsClient({
@@ -63,21 +81,8 @@ export function PostsClient({
     selectedCategory !== "all" ||
     selectedAuthor !== "all";
 
-  const fetchPosts = (targetPage: number) => {
+  const fetchWithParams = (targetPage: number, params: URLSearchParams) => {
     startTransition(async () => {
-      const params = new URLSearchParams();
-      params.set("page", targetPage.toString());
-      params.set("per_page", "9");
-
-      if (hasSearch) {
-        params.set("search", search.trim());
-      } else {
-        if (selectedTag !== "all") params.set("tag", selectedTag);
-        if (selectedCategory !== "all")
-          params.set("category", selectedCategory);
-        if (selectedAuthor !== "all") params.set("author", selectedAuthor);
-      }
-
       const res = await fetch(`/api/posts/search?${params.toString()}`);
       const data = await res.json();
 
@@ -88,8 +93,33 @@ export function PostsClient({
     });
   };
 
+  const fetchPosts = (targetPage: number) => {
+    const params = new URLSearchParams();
+    params.set("page", targetPage.toString());
+    params.set("per_page", "9");
+
+    if (hasSearch) {
+      params.set("search", search.trim());
+    } else {
+      if (selectedTag !== "all") params.set("tag", selectedTag);
+      if (selectedCategory !== "all") params.set("category", selectedCategory);
+      if (selectedAuthor !== "all") params.set("author", selectedAuthor);
+    }
+
+    fetchWithParams(targetPage, params);
+  };
+
   const handleSearch = () => {
     fetchPosts(1);
+  };
+
+  const handleUrlSearch = (value: string) => {
+    setSearch(value);
+    const params = new URLSearchParams();
+    params.set("page", "1");
+    params.set("per_page", "9");
+    params.set("search", value);
+    fetchWithParams(1, params);
   };
 
   const handleReset = () => {
@@ -115,6 +145,10 @@ export function PostsClient({
 
   return (
     <div className="space-y-8">
+      <Suspense fallback={null}>
+        <SearchParamSync onSearch={handleUrlSearch} />
+      </Suspense>
+
       {/* Search and Filter */}
       <div className="space-y-4">
         <Input
