@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
+import { useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import {
   Select,
@@ -27,7 +28,6 @@ interface PostsClientProps {
   initialTotal: number;
   initialTotalPages: number;
   initialCategoryMap: Record<number, string>;
-  initialSearch?: string;
   authors: Author[];
   tags: Tag[];
   categories: Category[];
@@ -38,11 +38,12 @@ export function PostsClient({
   initialTotal,
   initialTotalPages,
   initialCategoryMap,
-  initialSearch,
   authors,
   tags,
   categories,
 }: PostsClientProps) {
+  const searchParams = useSearchParams();
+
   const [posts, setPosts] = useState(initialPosts);
   const [total, setTotal] = useState(initialTotal);
   const [totalPages, setTotalPages] = useState(initialTotalPages);
@@ -51,7 +52,7 @@ export function PostsClient({
   const [isPending, startTransition] = useTransition();
 
   // Filter state
-  const [search, setSearch] = useState(initialSearch ?? "");
+  const [search, setSearch] = useState(() => searchParams.get("search") ?? "");
   const [selectedTag, setSelectedTag] = useState("all");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedAuthor, setSelectedAuthor] = useState("all");
@@ -90,6 +91,17 @@ export function PostsClient({
     });
   };
 
+  useEffect(() => {
+    if (search.trim()) {
+      fetchPosts(1);
+    }
+    // Runs once on mount only, to apply a search term carried in the URL
+    // (e.g. from the nav search dialog's "view all results" link). The
+    // initial posts/total/totalPages props are always the unfiltered
+    // first page — this effect is what applies the filter client-side.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleSearch = () => {
     fetchPosts(1);
   };
@@ -99,20 +111,10 @@ export function PostsClient({
     setSelectedTag("all");
     setSelectedCategory("all");
     setSelectedAuthor("all");
+    setPosts(initialPosts);
+    setTotal(initialTotal);
+    setTotalPages(initialTotalPages);
     setPage(1);
-
-    startTransition(async () => {
-      const params = new URLSearchParams();
-      params.set("page", "1");
-      params.set("per_page", "9");
-
-      const res = await fetch(`/api/posts/search?${params.toString()}`);
-      const data = await res.json();
-
-      setPosts(data.posts);
-      setTotal(data.total);
-      setTotalPages(data.totalPages);
-    });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

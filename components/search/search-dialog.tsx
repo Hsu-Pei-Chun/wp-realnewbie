@@ -146,7 +146,7 @@ export function SearchDialog() {
             輸入關鍵字搜尋文章標題與內容
           </DialogDescription>
 
-          <div className="flex items-center gap-2 border-b px-4 py-3">
+          <div className="flex items-center gap-2 border-b py-3 pl-4 pr-12">
             <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
             <Input
               autoFocus
