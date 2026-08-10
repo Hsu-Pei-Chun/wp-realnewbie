@@ -5,7 +5,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { SearchDialog } from "./search-dialog";
 import type { Post } from "@/lib/wordpress.d";
 
-const DEBOUNCE_MS = 300;
 // Real-time wait, generously past the component's 300ms debounce, so we
 // don't need fake timers (which fight with Radix's RAF-based focus /
 // dismissable-layer internals in jsdom).
