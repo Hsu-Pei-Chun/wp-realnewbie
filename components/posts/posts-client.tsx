@@ -99,10 +99,20 @@ export function PostsClient({
     setSelectedTag("all");
     setSelectedCategory("all");
     setSelectedAuthor("all");
-    setPosts(initialPosts);
-    setTotal(initialTotal);
-    setTotalPages(initialTotalPages);
     setPage(1);
+
+    startTransition(async () => {
+      const params = new URLSearchParams();
+      params.set("page", "1");
+      params.set("per_page", "9");
+
+      const res = await fetch(`/api/posts/search?${params.toString()}`);
+      const data = await res.json();
+
+      setPosts(data.posts);
+      setTotal(data.total);
+      setTotalPages(data.totalPages);
+    });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
