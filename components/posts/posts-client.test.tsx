@@ -2,8 +2,14 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { Post } from "@/lib/wordpress.d";
 import { PostsClient } from "./posts-client";
+import type { Author, Category, Post, Tag } from "@/lib/wordpress.d";
+
+let mockSearchParam = "";
+vi.mock("next/navigation", () => ({
+  useSearchParams: () =>
+    new URLSearchParams(mockSearchParam ? `search=${mockSearchParam}` : ""),
+}));
 
 function makePost(overrides: Partial<Post> = {}): Post {
   return {
@@ -33,19 +39,28 @@ function makePost(overrides: Partial<Post> = {}): Post {
   };
 }
 
+function jsonResponse(body: unknown) {
+  return { ok: true, status: 200, json: async () => body } as Response;
+}
+
 const baseProps = {
   initialPosts: [makePost()],
   initialTotal: 1,
   initialTotalPages: 1,
   initialCategoryMap: {},
-  authors: [],
-  tags: [],
-  categories: [],
+  authors: [] as Author[],
+  tags: [] as Tag[],
+  categories: [] as Category[],
 };
 
 describe("PostsClient", () => {
   beforeEach(() => {
+    mockSearchParam = "";
     vi.stubGlobal("fetch", vi.fn());
+    Element.prototype.hasPointerCapture = vi.fn().mockReturnValue(false);
+    Element.prototype.setPointerCapture = vi.fn();
+    Element.prototype.releasePointerCapture = vi.fn();
+    Element.prototype.scrollIntoView = vi.fn();
   });
 
   afterEach(() => {
@@ -60,6 +75,7 @@ describe("PostsClient", () => {
       "href",
       "/posts/post-1"
     );
+    expect(fetch).not.toHaveBeenCalled();
   });
 
   it("shows the empty state when there are no posts", () => {
@@ -107,7 +123,7 @@ describe("PostsClient", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("restores the initial posts and clears the search box on reset", async () => {
+  it("restores the initial posts and clears the search box on reset, with no fetch", async () => {
     (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
       json: async () => ({
         posts: [
@@ -133,12 +149,19 @@ describe("PostsClient", () => {
       ).toBeInTheDocument()
     );
 
+    const fetchCallsBeforeReset = (fetch as ReturnType<typeof vi.fn>).mock
+      .calls.length;
     await user.click(screen.getByRole("button", { name: "重設" }));
 
     expect(
       screen.getByRole("link", { name: /First Post/ })
     ).toBeInTheDocument();
     expect(searchInput).toHaveValue("");
+    // Reset restores the initial props directly — it never needs a fetch,
+    // since app/posts/page.tsx always does an unfiltered SSR fetch.
+    expect((fetch as ReturnType<typeof vi.fn>).mock.calls.length).toBe(
+      fetchCallsBeforeReset
+    );
   });
 
   it("renders pagination and requests the target page on click", async () => {
@@ -172,5 +195,50 @@ describe("PostsClient", () => {
     );
     const [url] = (fetch as ReturnType<typeof vi.fn>).mock.calls[0];
     expect(url).toContain("page=2");
+  });
+
+  it("renders the initial unfiltered posts with no fetch on mount when there is no URL search term", () => {
+    render(
+      <PostsClient
+        {...baseProps}
+        initialPosts={[makePost({ id: 1, title: { rendered: "Post One" } })]}
+      />
+    );
+
+    expect(screen.getByText("Post One")).toBeInTheDocument();
+    expect(fetch).not.toHaveBeenCalled();
+    expect(screen.getByPlaceholderText("搜尋文章...")).toHaveValue("");
+  });
+
+  it("applies a search term found in the URL by fetching filtered results client-side", async () => {
+    mockSearchParam = "kubernetes";
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue(
+      jsonResponse({
+        posts: [makePost({ id: 2, title: { rendered: "K8s Basics" } })],
+        total: 1,
+        totalPages: 1,
+      })
+    );
+
+    render(
+      <PostsClient
+        {...baseProps}
+        initialPosts={[makePost({ id: 1, title: { rendered: "Post One" } })]}
+      />
+    );
+
+    // The client-side fetch for the URL's search term resolves and
+    // replaces the initial unfiltered post with the filtered result.
+    await waitFor(() => {
+      expect(screen.getByText("K8s Basics")).toBeInTheDocument();
+    });
+
+    expect(fetch).toHaveBeenCalledTimes(1);
+    const requestedUrl = (fetch as ReturnType<typeof vi.fn>).mock
+      .calls[0][0] as string;
+    expect(requestedUrl).toContain("search=kubernetes");
+    expect(screen.getByPlaceholderText("搜尋文章...")).toHaveValue(
+      "kubernetes"
+    );
   });
 });
