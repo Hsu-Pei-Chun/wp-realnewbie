@@ -1,1 +1,1 @@
-pnpm format && git add -A && pnpm typecheck && pnpm lint
+pnpm format && git add -A && pnpm typecheck && pnpm lint && pnpm test
