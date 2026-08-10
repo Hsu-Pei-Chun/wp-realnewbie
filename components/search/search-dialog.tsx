@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Loader2, Search } from "lucide-react";
 import { useDebouncedCallback } from "use-debounce";
@@ -42,6 +42,12 @@ export function SearchDialog() {
   const [query, setQuery] = useState("");
   const [state, setState] = useState<SearchState>(INITIAL_STATE);
 
+  // Always holds the query the user most recently typed (or "" when
+  // cleared/closed). Used to detect and discard stale, out-of-order
+  // fetch responses — e.g. a slow request for an earlier query resolving
+  // after a faster request for a newer query already updated the UI.
+  const latestQueryRef = useRef("");
+
   const runSearch = useDebouncedCallback(async (value: string) => {
     setState((prev) => ({ ...prev, loading: true, error: false }));
 
@@ -55,6 +61,11 @@ export function SearchDialog() {
         throw new Error(`Search request failed: ${res.status}`);
       }
       const data: SearchResponse = await res.json();
+      if (latestQueryRef.current !== value) {
+        // A newer query has since been typed (or the input was cleared/
+        // the dialog closed) — this response is stale, ignore it.
+        return;
+      }
       setState({
         results: data.posts,
         total: data.total,
@@ -62,17 +73,30 @@ export function SearchDialog() {
         error: false,
       });
     } catch {
+      if (latestQueryRef.current !== value) {
+        return;
+      }
       setState({ ...INITIAL_STATE, error: true });
     }
   }, 300);
 
   const handleQueryChange = (value: string) => {
     setQuery(value);
+    latestQueryRef.current = value;
     if (!value.trim()) {
       runSearch.cancel();
       setState(INITIAL_STATE);
       return;
     }
+    // Flip into the loading state immediately so the "not found" panel
+    // never has a chance to flash before the debounced search has even
+    // run — state.loading previously only flipped once the debounce
+    // fired, ~300ms after the keystroke.
+    setState((prev) => ({
+      ...prev,
+      loading: true,
+      error: false,
+    }));
     runSearch(value);
   };
 
@@ -80,6 +104,7 @@ export function SearchDialog() {
     setOpen(next);
     if (!next) {
       runSearch.cancel();
+      latestQueryRef.current = "";
       setQuery("");
       setState(INITIAL_STATE);
     }
