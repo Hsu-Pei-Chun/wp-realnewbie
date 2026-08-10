@@ -17,9 +17,15 @@ export const metadata: Metadata = {
 
 export const revalidate = 86400;
 
-export default async function Page() {
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ search?: string }>;
+}) {
+  const { search } = await searchParams;
+
   const [postsResponse, authors, tags, categories] = await Promise.all([
-    getPostsPaginated(1, 9),
+    getPostsPaginated(1, 9, { search }),
     getAllAuthors(),
     getAllTags(),
     getAllCategories(),
@@ -39,6 +45,7 @@ export default async function Page() {
           initialTotal={postsResponse.headers.total}
           initialTotalPages={postsResponse.headers.totalPages}
           initialCategoryMap={categoryMap}
+          initialSearch={search}
           authors={authors}
           tags={tags}
           categories={categories}

@@ -27,6 +27,7 @@ interface PostsClientProps {
   initialTotal: number;
   initialTotalPages: number;
   initialCategoryMap: Record<number, string>;
+  initialSearch?: string;
   authors: Author[];
   tags: Tag[];
   categories: Category[];
@@ -37,6 +38,7 @@ export function PostsClient({
   initialTotal,
   initialTotalPages,
   initialCategoryMap,
+  initialSearch,
   authors,
   tags,
   categories,
@@ -49,7 +51,7 @@ export function PostsClient({
   const [isPending, startTransition] = useTransition();
 
   // Filter state
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(initialSearch ?? "");
   const [selectedTag, setSelectedTag] = useState("all");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedAuthor, setSelectedAuthor] = useState("all");
