@@ -151,7 +151,7 @@ export function SearchDialog() {
                 value={query}
                 onChange={(e) => handleQueryChange(e.target.value)}
                 placeholder="搜尋文章..."
-                className="h-auto border-0 px-0 py-1 shadow-none focus-visible:ring-0"
+                className="h-auto border-0 px-0 py-1 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
               />
             </div>
 
