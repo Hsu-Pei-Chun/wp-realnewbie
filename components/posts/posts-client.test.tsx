@@ -149,8 +149,8 @@ describe("PostsClient", () => {
       ).toBeInTheDocument()
     );
 
-    const fetchCallsBeforeReset = (fetch as ReturnType<typeof vi.fn>).mock
-      .calls.length;
+    const fetchCallsBeforeReset = (fetch as ReturnType<typeof vi.fn>).mock.calls
+      .length;
     await user.click(screen.getByRole("button", { name: "重設" }));
 
     expect(
