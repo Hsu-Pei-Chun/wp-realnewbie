@@ -1,7 +1,7 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vitest/config";
+import { configDefaults, defineConfig } from "vitest/config";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -15,5 +15,9 @@ export default defineConfig({
   test: {
     environment: "node",
     setupFiles: ["./vitest.setup.ts"],
+    // .claude/worktrees/* are sibling git worktrees for other concurrent
+    // sessions, each with their own node_modules — a bare `vitest run`
+    // would otherwise scan into them and fail on unrelated pollution.
+    exclude: [...configDefaults.exclude, "**/.claude/**"],
   },
 });
