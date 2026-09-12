@@ -49,13 +49,13 @@ Branch: `feature/topics-mdx`
 
 ### 新增依賴
 
-| 套件 | 用途 |
-|---|---|
-| `@next/mdx`, `@mdx-js/loader`, `@mdx-js/react`, `@types/mdx` | MDX 編譯與型別 |
-| `gray-matter` | `lib/topics.ts` 讀取 frontmatter（不經 MDX 編譯，方便測試） |
-| `remark-frontmatter` | 讓 MDX 編譯時忽略 YAML 區塊，不渲染成文字 |
-| `rehype-slug` | 標題自動加 `id`（可深連結） |
-| `rehype-pretty-code`, `shiki` | 程式碼區塊 build-time 語法高亮，不依賴 Code Block Pro |
+| 套件                                                         | 用途                                                        |
+| ------------------------------------------------------------ | ----------------------------------------------------------- |
+| `@next/mdx`, `@mdx-js/loader`, `@mdx-js/react`, `@types/mdx` | MDX 編譯與型別                                              |
+| `gray-matter`                                                | `lib/topics.ts` 讀取 frontmatter（不經 MDX 編譯，方便測試） |
+| `remark-frontmatter`                                         | 讓 MDX 編譯時忽略 YAML 區塊，不渲染成文字                   |
+| `rehype-slug`                                                | 標題自動加 `id`（可深連結）                                 |
+| `rehype-pretty-code`, `shiki`                                | 程式碼區塊 build-time 語法高亮，不依賴 Code Block Pro       |
 
 ## 檔案結構
 
@@ -81,11 +81,11 @@ public/topics/<slug>/      ← 封面等靜態資源（選用）
 
 ```yaml
 ---
-title: 排序演算法視覺化          # 必填，非空字串
+title: 排序演算法視覺化 # 必填，非空字串
 description: 用互動方式理解五種排序 # 必填，非空字串；用於列表、<meta>、OG
-date: 2026-09-12                 # 必填，YYYY-MM-DD；列表依此降冪排序
+date: 2026-09-12 # 必填，YYYY-MM-DD；列表依此降冪排序
 cover: /topics/sorting/cover.png # 選填，public/ 下的絕對路徑
-draft: true                      # 選填，預設 false
+draft: true # 選填，預設 false
 ---
 ```
 
@@ -150,7 +150,12 @@ frontmatter → zod 驗證 → 組成 `TopicMeta`。目錄下沒有 `index.mdx` 
   const { default: Content } = await import(
     `@/content/topics/${slug}/index.mdx`
   );
-  return (<><TopicHeader meta={meta} /><Content /></>);
+  return (
+    <>
+      <TopicHeader meta={meta} />
+      <Content />
+    </>
+  );
   ```
 
 ### `app/topics/page.tsx`
@@ -189,7 +194,10 @@ const withMDX = createMDX({
     remarkPlugins: [["remark-frontmatter"]],
     rehypePlugins: [
       ["rehype-slug"],
-      ["rehype-pretty-code", { theme: { light: "github-light", dark: "github-dark" } }],
+      [
+        "rehype-pretty-code",
+        { theme: { light: "github-light", dark: "github-dark" } },
+      ],
     ],
   },
 });
@@ -224,14 +232,14 @@ export default withMDX(nextConfig);
 
 ## 錯誤處理
 
-| 情境 | 行為 |
-|---|---|
+| 情境                        | 行為                                                   |
+| --------------------------- | ------------------------------------------------------ |
 | frontmatter 缺欄位 / 型別錯 | `getAllTopics` 拋錯，訊息含檔案路徑與欄位 → build 失敗 |
-| 資料夾名稱含非法字元 | 同上 |
-| 資料夾內沒有 `index.mdx` | 同上 |
-| 訪問不存在的 slug | `dynamicParams = false` → 404 |
-| production 訪問 draft | 未產生頁面 → 404 |
-| MDX 語法錯誤 | `@next/mdx` 編譯錯誤 → build 失敗（原生行為） |
+| 資料夾名稱含非法字元        | 同上                                                   |
+| 資料夾內沒有 `index.mdx`    | 同上                                                   |
+| 訪問不存在的 slug           | `dynamicParams = false` → 404                          |
+| production 訪問 draft       | 未產生頁面 → 404                                       |
+| MDX 語法錯誤                | `@next/mdx` 編譯錯誤 → build 失敗（原生行為）          |
 
 ## 測試
 
