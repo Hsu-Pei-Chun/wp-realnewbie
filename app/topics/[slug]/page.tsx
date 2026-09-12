@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 
 import { getAllTopics, getTopicBySlug, getTopicOutline } from "@/lib/topics";
 import { TopicHeader } from "@/components/topics/topic-header";
-import { TableOfContents } from "@/components/posts/table-of-contents";
 import { siteConfig } from "@/site.config";
 
 // 專題全部在 build 時靜態產生；內容只透過部署更新，所以不設 revalidate，
@@ -69,25 +68,16 @@ export default async function Page({
     `@/content/topics/${slug}/index.mdx`
   );
 
-  // 兩層格線：正文欄靠左、與 nav 的 logo 共用左邊界（兩者都在 max-w-5xl 內），
-  // 目錄欄貼齊容器右邊界（與 nav 的 logo 左／選單右同一套錨點），中間的空白
-  // 才是刻意的；lg 以下收成單欄、正文置中。側欄不能 items-start：sticky 只能在
-  // 父元素高度內黏住，側欄必須撐到跟正文一樣高，目錄才會一路跟著捲動。
+  // 單欄置中的閱讀版面：跟 /posts 的「兩欄＋側欄目錄」在結構上區隔開來。
+  // 章節導覽放在標題區（TopicHeader），閱讀途中不再有東西跟著捲動。
   return (
-    <div className="lg:flex lg:justify-between lg:gap-12">
-      <article className="topic-article prose prose-neutral dark:prose-invert mx-auto min-w-0 lg:mx-0">
-        <TopicHeader meta={meta} />
-        <Content />
-      </article>
-
-      <aside className="hidden w-56 shrink-0 lg:block">
-        <div className="sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto scrollbar-thin">
-          <p className="mb-4 text-xs tracking-[0.08em] text-muted-foreground">
-            閱讀時間約 {outline.readingMinutes} 分鐘
-          </p>
-          <TableOfContents headings={outline.headings} />
-        </div>
-      </aside>
-    </div>
+    <article className="topic-article prose prose-neutral dark:prose-invert mx-auto">
+      <TopicHeader
+        meta={meta}
+        readingMinutes={outline.readingMinutes}
+        headings={outline.headings}
+      />
+      <Content />
+    </article>
   );
 }
