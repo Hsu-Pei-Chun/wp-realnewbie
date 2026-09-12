@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import createMDX from "@next/mdx";
 import { articleRedirects } from "./redirects";
 
 const wordpressHostname = process.env.WORDPRESS_HOSTNAME;
@@ -66,4 +67,22 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+// 專題內容區：content/topics/<slug>/index.mdx 由 @next/mdx 在 build 時編譯。
+// Turbopack 要求 remark/rehype 外掛以字串名稱 + 可序列化選項指定。
+const withMDX = createMDX({
+  options: {
+    remarkPlugins: [["remark-frontmatter"]],
+    rehypePlugins: [
+      ["rehype-slug"],
+      [
+        "rehype-pretty-code",
+        {
+          theme: { light: "github-light", dark: "github-dark" },
+          keepBackground: false,
+        },
+      ],
+    ],
+  },
+});
+
+export default withMDX(nextConfig);
