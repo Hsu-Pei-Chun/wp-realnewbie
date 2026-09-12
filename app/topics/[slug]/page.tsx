@@ -73,7 +73,7 @@ export default async function Page({
   // 右側空間交給 sticky 目錄與閱讀時間；lg 以下收成單欄。
   return (
     <div className="lg:flex lg:items-start lg:gap-16">
-      <article className="topic-article prose prose-neutral dark:prose-invert min-w-0">
+      <article className="topic-article prose prose-neutral dark:prose-invert mx-auto min-w-0 lg:mx-0">
         <TopicHeader meta={meta} />
         <Content />
       </article>
