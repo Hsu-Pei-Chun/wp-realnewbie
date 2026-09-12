@@ -18,9 +18,9 @@ Headless WordPress starter using Next.js 16 App Router with TypeScript.
 - All WordPress REST API interactions centralized here
 - Type definitions in `lib/wordpress.d.ts` (Post, Page, Category, Tag, Author, FeaturedMedia)
 - `WordPressAPIError` class for consistent error handling
-- Cache tags for granular revalidation: `['wordpress', 'posts', 'post-{id}', 'posts-page-{n}']`
+- Cache tags for granular revalidation: `'wordpress'` (umbrella, on every fetch), `'posts'` / `'pages'` / `'categories'` / `'tags'` (lists), `'post-{slug}'` / `'page-{slug}'` (single items), `'posts-page-{n}'`
 - Pagination via `getPostsPaginated()` returns `{ data, headers: { total, totalPages } }`
-- Default cache: 1 hour (`revalidate: 3600`)
+- Data cache never expires by time (`revalidate: false`); it is cleared only by webhook `revalidateTag()`. Pages use `revalidate = 86400` as a self-heal safety net.
 
 ### Routing
 
@@ -31,7 +31,7 @@ Headless WordPress starter using Next.js 16 App Router with TypeScript.
 ### Data Fetching Patterns
 
 - Server Components with parallel `Promise.all()` calls
-- `generateStaticParams()` uses `getAllPostSlugs()` for static generation
+- `generateStaticParams()` returns `[]` for posts/tags (on-demand ISR: generated on first request, not at build); only `/pages/[slug]` is prerendered
 - URL-based state for search/filters via `searchParams`
 - Debounced search (300ms) in `SearchInput` component
 
@@ -39,7 +39,7 @@ Headless WordPress starter using Next.js 16 App Router with TypeScript.
 
 1. WordPress plugin sends webhook to `/api/revalidate`
 2. Validates `x-webhook-secret` header against `WORDPRESS_WEBHOOK_SECRET`
-3. Calls `revalidateTag()` for specific content types (posts, categories, tags, authors)
+3. Calls `revalidateTag()` only for tags the event can affect (e.g. post update → `post-{slug}`, `posts`, `categories`, `tags`). The `'wordpress'` umbrella tag is cleared only on `type: "all"` or when the payload lacks a slug — never on routine events, since every fetch carries it
 
 ### Configuration Files
 
