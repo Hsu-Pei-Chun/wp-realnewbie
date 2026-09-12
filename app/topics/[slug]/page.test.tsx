@@ -6,9 +6,21 @@ const getAllTopics = vi.fn(async () => [
   { slug: "b", title: "B", description: "d", date: "2026-01-01", draft: false },
 ]);
 
+const getTopicBySlug = vi.fn(async (slug: string) =>
+  slug === "a"
+    ? {
+        slug: "a",
+        title: "A",
+        description: "d",
+        date: "2026-01-02",
+        draft: false,
+      }
+    : null
+);
+
 vi.mock("@/lib/topics", () => ({
   getAllTopics,
-  getTopicBySlug: vi.fn(async () => null),
+  getTopicBySlug,
   formatTopicDate: (d: string) => d,
 }));
 
@@ -29,5 +41,18 @@ describe("topics/[slug]", () => {
     await expect(
       generateMetadata({ params: Promise.resolve({ slug: "nope" }) })
     ).resolves.toEqual({});
+  });
+
+  it("sets the canonical alternate for a known slug", async () => {
+    const { generateMetadata } = await import("./page");
+
+    const metadata = await generateMetadata({
+      params: Promise.resolve({ slug: "a" }),
+    });
+
+    expect(metadata.alternates).toEqual({
+      canonical: "https://realnewbie.com/topics/a",
+    });
+    expect(metadata.title).toBe("A");
   });
 });

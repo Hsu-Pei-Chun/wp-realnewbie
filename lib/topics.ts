@@ -55,8 +55,11 @@ async function readTopic(dir: string, slug: string): Promise<TopicMeta> {
   let raw: string;
   try {
     raw = await fs.readFile(file, "utf8");
-  } catch {
-    throw new Error(`Topic folder "${slug}" has no index.mdx (${file})`);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+      throw new Error(`Topic folder "${slug}" has no index.mdx (${file})`);
+    }
+    throw error;
   }
 
   const parsed = topicFrontmatterSchema.safeParse(matter(raw).data);

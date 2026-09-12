@@ -5,6 +5,9 @@ import { TopicCard } from "@/components/topics/topic-card";
 export const metadata: Metadata = {
   title: "專題",
   description: "以互動內容深入單一主題的長文專題。",
+  alternates: {
+    canonical: "/topics",
+  },
 };
 
 export default async function Page() {

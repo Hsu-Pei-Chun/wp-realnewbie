@@ -1,7 +1,7 @@
 import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { formatTopicDate, getAllTopics, getTopicBySlug } from "./topics";
 
 let dir: string;
@@ -24,6 +24,7 @@ beforeEach(async () => {
 
 afterEach(async () => {
   await rm(dir, { recursive: true, force: true });
+  vi.unstubAllEnvs();
 });
 
 describe("getAllTopics", () => {
@@ -68,12 +69,23 @@ describe("getAllTopics", () => {
   });
 
   it("includes drafts by default outside production and marks them", async () => {
+    vi.stubEnv("NODE_ENV", "development");
     await writeTopic("wip", `${VALID}\ndraft: true`);
 
     const topics = await getAllTopics({ dir });
 
     expect(topics).toHaveLength(1);
     expect(topics[0].draft).toBe(true);
+  });
+
+  it("excludes drafts by default in production", async () => {
+    vi.stubEnv("NODE_ENV", "production");
+    await writeTopic("wip", `${VALID}\ndraft: true`);
+    await writeTopic("live", VALID);
+
+    const slugs = (await getAllTopics({ dir })).map((t) => t.slug);
+
+    expect(slugs).toEqual(["live"]);
   });
 
   it("excludes drafts when includeDrafts is false", async () => {
@@ -112,6 +124,12 @@ describe("getAllTopics", () => {
     await expect(getAllTopics({ dir })).rejects.toThrow(/bad-date\/index\.mdx/);
   });
 
+  it("throws when cover is not an absolute /public path", async () => {
+    await writeTopic("cov", `${VALID}\ncover: relative/path.png`);
+
+    await expect(getAllTopics({ dir })).rejects.toThrow(/cov\/index\.mdx/);
+  });
+
   it("throws when the folder name is not a valid slug", async () => {
     await writeTopic("Bad_Slug", VALID);
 
@@ -122,6 +140,15 @@ describe("getAllTopics", () => {
     await mkdir(path.join(dir, "empty"));
 
     await expect(getAllTopics({ dir })).rejects.toThrow(/empty\/index\.mdx/);
+  });
+
+  it("rethrows non-ENOENT read errors instead of reporting a missing index.mdx", async () => {
+    await mkdir(path.join(dir, "weird", "index.mdx"), { recursive: true });
+
+    await expect(getAllTopics({ dir })).rejects.toThrow(/EISDIR/);
+    await expect(getAllTopics({ dir })).rejects.not.toThrow(
+      /has no index\.mdx/
+    );
   });
 });
 

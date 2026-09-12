@@ -27,4 +27,23 @@ describe("MdxLink", () => {
     expect(link).toHaveAttribute("target", "_blank");
     expect(link).toHaveAttribute("rel", "noopener noreferrer");
   });
+
+  it("treats protocol-relative links as external", () => {
+    render(<MdxLink href="//evil.example">Evil</MdxLink>);
+
+    const link = screen.getByRole("link", { name: "Evil" });
+    expect(link).toHaveAttribute("target", "_blank");
+    expect(link).toHaveAttribute("rel", "noopener noreferrer");
+  });
+
+  it("does not let a caller override the safety rel attribute", () => {
+    render(
+      <MdxLink href="https://x.example" rel="nofollow">
+        X
+      </MdxLink>
+    );
+
+    const link = screen.getByRole("link", { name: "X" });
+    expect(link).toHaveAttribute("rel", "noopener noreferrer");
+  });
 });

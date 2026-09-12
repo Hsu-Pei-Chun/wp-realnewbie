@@ -4,7 +4,7 @@ import type { ComponentProps } from "react";
 // MDX 內的 <a>：站內走 next/link（client navigation），錨點維持原生，
 // 外部連結開新分頁並加 rel 防 reverse tabnabbing。
 export function MdxLink({ href = "", children, ...rest }: ComponentProps<"a">) {
-  if (href.startsWith("/")) {
+  if (href.startsWith("/") && !href.startsWith("//")) {
     return (
       <Link href={href} {...rest}>
         {children}
@@ -19,7 +19,7 @@ export function MdxLink({ href = "", children, ...rest }: ComponentProps<"a">) {
     );
   }
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer" {...rest}>
+    <a href={href} {...rest} target="_blank" rel="noopener noreferrer">
       {children}
     </a>
   );
