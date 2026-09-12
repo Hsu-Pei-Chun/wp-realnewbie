@@ -1,7 +1,6 @@
 import {
   getPostBySlug,
   getFeaturedMediaById,
-  getAllPostSlugs,
   getEmbeddedAuthor,
   getEmbeddedCategory,
   getEmbeddedTags,
@@ -26,11 +25,14 @@ import { SeriesNavigation } from "@/components/posts/series-navigation";
 import { getSeriesData } from "@/lib/series-utils";
 import { BlogPostingJsonLd } from "@/lib/json-ld";
 
-// Static generation with daily self-heal; webhook still revalidates instantly
+// On-demand ISR：build 時不預產任何文章，第一次被訪問才產生並快取。
+// 這條路由在 Vercel 上本來就是 ISR（有 revalidate），build 時預產 1200 篇
+// 只會讓每次部署逐篇打 WordPress、拉長 build 到 20 分鐘，不會省到任何配額。
+// webhook（/api/revalidate）仍即時清快取；86400 是防快取中毒的自癒保險。
 export const revalidate = 86400;
 
 export async function generateStaticParams() {
-  return await getAllPostSlugs();
+  return [];
 }
 
 export async function generateMetadata({

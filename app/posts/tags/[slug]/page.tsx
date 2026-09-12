@@ -10,13 +10,12 @@ import {
   GET_POSTS_BY_TAG_QUERY,
 } from "@/lib/graphql-client";
 import type { GetPostsByTagResponse } from "@/lib/graphql-types";
-import { getAllTags } from "@/lib/wordpress";
 
 export const revalidate = 86400;
 
+// On-demand ISR：與 posts/[slug] 相同理由，build 時不逐一預產標籤頁。
 export async function generateStaticParams() {
-  const tags = await getAllTags();
-  return tags.map((tag) => ({ slug: tag.slug }));
+  return [];
 }
 
 // Cached query function - deduplicates requests within the same render
