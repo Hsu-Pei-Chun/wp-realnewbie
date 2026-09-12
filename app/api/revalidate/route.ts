@@ -5,21 +5,55 @@ export const maxDuration = 30;
 
 /**
  * WordPress webhook handler for content revalidation
- * Receives notifications from WordPress when content changes
- * and revalidates the entire site
+ * Receives notifications from WordPress when content changes and clears
+ * only the cache tags that content can affect.
  *
- * Expected payload from next-revalidate plugin:
+ * Expected payload from next-revalidate plugin (wordpress/next-revalidate, v1.1.0+):
  * {
  *   "type": "post" | "term" | "test",
  *   "data": {
  *     "id": number,
  *     "slug": string,
- *     "type": string (post_type or taxonomy),
+ *     "type": string (post_type; post events only),
+ *     "taxonomy": string (term events only),
  *     "action": "create" | "update" | "delete" | "status_change" | ...
  *   },
  *   "timestamp": number
  * }
  */
+
+// 全站傘狀 tag：每個 WordPress fetch 都帶它。只在 type: "all"（手動全清）
+// 或 payload 資訊不足以精準命中時才清，否則任何一次存檔都會讓全站 1200 篇
+// 的資料快取歸零，下一次部署或訪問又得逐篇重抓 WordPress。
+const EVERYTHING = ["wordpress"];
+
+interface WebhookData {
+  slug?: string;
+  type?: string;
+  taxonomy?: string;
+}
+
+// 每種事件對應到 lib/wordpress.ts 與 GraphQL 查詢實際使用的 tag：
+// - 單篇：post-<slug> / page-<slug>
+// - 列表：posts（含 posts-page-* 與各種篩選）、pages
+// - 分類法：categories、tags（文章數會隨文章增減變動；系列導覽的查詢帶 tags）
+function tagsToRevalidate(type: string, data?: WebhookData): string[] {
+  if (type === "all") return EVERYTHING;
+
+  if (type === "post") {
+    if (!data?.slug) return EVERYTHING;
+    if (data.type === "page") return [`page-${data.slug}`, "pages"];
+    return [`post-${data.slug}`, "posts", "categories", "tags"];
+  }
+
+  if (type === "term") {
+    if (data?.taxonomy === "category") return ["categories", "posts"];
+    if (data?.taxonomy === "post_tag") return ["tags", "posts"];
+    return EVERYTHING;
+  }
+
+  return EVERYTHING;
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -52,45 +86,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const contentId = data?.id;
-    const contentType = data?.type;
+    const tags = tagsToRevalidate(type, data);
 
-    console.log(
-      `Revalidating: type=${type}, contentType=${contentType}, id=${contentId}`
-    );
-
-    // Collect tags to revalidate
-    const tags: string[] = ["wordpress"];
-
-    // Handle post types
-    if (type === "post") {
-      tags.push("posts");
-      if (contentId) tags.push(`post-${contentId}`);
-      if (contentType === "page") {
-        tags.push("pages");
-        if (contentId) tags.push(`page-${contentId}`);
-      }
-    }
-
-    // Handle taxonomy terms
-    if (type === "term") {
-      switch (contentType) {
-        case "category":
-          tags.push("categories");
-          if (contentId)
-            tags.push(`posts-category-${contentId}`, `category-${contentId}`);
-          break;
-        case "post_tag":
-          tags.push("tags");
-          if (contentId)
-            tags.push(`posts-tag-${contentId}`, `tag-${contentId}`);
-          break;
-        default:
-          // Custom taxonomy
-          if (contentType) tags.push(`taxonomy-${contentType}`);
-          if (contentId) tags.push(`term-${contentId}`);
-      }
-    }
+    console.log(`Revalidating: type=${type}, tags=${tags.join(",")}`);
 
     // Revalidate all collected tags
     for (const tag of tags) {
@@ -99,9 +97,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       revalidated: true,
-      message: `Revalidated ${type}${contentType ? ` (${contentType})` : ""}${
-        contentId ? ` ID: ${contentId}` : ""
-      }`,
+      message: `Revalidated ${type}`,
       tags,
       timestamp: new Date().toISOString(),
     });

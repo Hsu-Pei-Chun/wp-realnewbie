@@ -317,12 +317,15 @@ export async function getPostById(id: number): Promise<Post | null> {
   return wordpressItemFetch<Post>(`/wp-json/wp/v2/posts/${id}`);
 }
 
+// post-<slug> 讓 webhook 只清這一篇；刻意不帶 "posts"，否則改任何一篇文章
+// 都會連帶清掉全部單篇的資料快取。
 export const getPostBySlug = cache(
   async (slug: string): Promise<Post | null> => {
-    return wordpressFirstFetch<Post>("/wp-json/wp/v2/posts", {
-      slug,
-      _embed: "author,wp:term",
-    });
+    return wordpressFirstFetch<Post>(
+      "/wp-json/wp/v2/posts",
+      { slug, _embed: "author,wp:term" },
+      ["wordpress", `post-${slug}`]
+    );
   }
 );
 
@@ -461,7 +464,11 @@ export async function getPageById(id: number): Promise<Page | null> {
 
 export const getPageBySlug = cache(
   async (slug: string): Promise<Page | null> => {
-    return wordpressFirstFetch<Page>("/wp-json/wp/v2/pages", { slug });
+    return wordpressFirstFetch<Page>("/wp-json/wp/v2/pages", { slug }, [
+      "wordpress",
+      "pages",
+      `page-${slug}`,
+    ]);
   }
 );
 

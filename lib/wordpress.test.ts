@@ -12,6 +12,8 @@ const {
   getEmbeddedCategory,
   getEmbeddedTags,
   getPostById,
+  getPostBySlug,
+  getPageBySlug,
   getPostsByAuthorSlug,
   getPostsPaginated,
   createComment,
@@ -117,6 +119,33 @@ describe("when WORDPRESS_URL is configured", () => {
         new Error("network down")
       );
       await expect(getPostById(1)).resolves.toBeNull();
+    });
+  });
+
+  // 單篇文章 / 頁面必須帶自己的 tag，webhook 才能只清那一篇，而不是靠
+  // "wordpress" 傘狀 tag 把全站資料快取一起清掉。用 slug 而非 id，因為 fetch
+  // 當下只有 slug，而 next-revalidate 外掛的 payload 也帶 slug。
+  describe("per-item cache tags", () => {
+    it("tags getPostBySlug with post-<slug> so a webhook can clear just that post", async () => {
+      (fetch as ReturnType<typeof vi.fn>).mockResolvedValue(
+        mockResponse([makePost({ slug: "hello-world" })])
+      );
+
+      await getPostBySlug("hello-world");
+
+      const [, init] = (fetch as ReturnType<typeof vi.fn>).mock.calls[0];
+      expect(init.next.tags).toEqual(["wordpress", "post-hello-world"]);
+    });
+
+    it("tags getPageBySlug with pages and page-<slug>", async () => {
+      (fetch as ReturnType<typeof vi.fn>).mockResolvedValue(
+        mockResponse([{ id: 9, slug: "about-me" }])
+      );
+
+      await getPageBySlug("about-me");
+
+      const [, init] = (fetch as ReturnType<typeof vi.fn>).mock.calls[0];
+      expect(init.next.tags).toEqual(["wordpress", "pages", "page-about-me"]);
     });
   });
 
