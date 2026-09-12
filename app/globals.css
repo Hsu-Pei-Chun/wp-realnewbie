@@ -204,16 +204,43 @@
  * 專題區（/topics）樣式 scope
  * 專題與一般文章視覺區隔；之後的風格設計只需在 .topic-shell 內調整。
  * ------------------------------------------------------------------------- */
+/*
+ * 正文四個數字（黑體、純黑純白方案）：字級 17px、行距 2.15、字距 0.045em、
+ * 行長 32 字。沒有灰階可以做層次，層次全部交給空白：段距壓到 0.5em 讓句子
+ * 連成論述，標題與引言前後留大量空白當分隔。
+ */
 .topic-shell .topic-article {
   --tw-prose-body: hsl(var(--foreground));
+  max-width: 32em;
+  padding-inline: 0.5rem;
+  font-size: 17px;
+  line-height: 2.15;
+  letter-spacing: 0.045em;
+  text-wrap: pretty;
+}
+
+/* 這些規則沒有分層，會壓過 Tailwind utilities，所以要避開積木內部（.not-prose） */
+.topic-shell .topic-article :is(p, li):not(:where(.not-prose, .not-prose *)) {
+  margin-block: 0 0.5em;
+}
+
+.topic-shell .topic-article :is(ul, ol):not(:where(.not-prose, .not-prose *)) {
+  margin-block: 0.5em 1.5em;
 }
 
 .topic-shell .topic-article h2 {
-  margin-top: 2.5em;
+  margin-top: 4em;
+  margin-bottom: 1.2em;
+  font-size: 1.45em;
+  letter-spacing: 0.03em;
   scroll-margin-top: 6rem;
 }
 
 .topic-shell .topic-article h3 {
+  margin-top: 2.8em;
+  margin-bottom: 0.9em;
+  font-size: 1.15em;
+  letter-spacing: 0.03em;
   scroll-margin-top: 6rem;
 }
 

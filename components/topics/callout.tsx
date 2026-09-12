@@ -1,6 +1,6 @@
 export function Callout({ children }: { children: React.ReactNode }) {
   return (
-    <aside className="not-prose my-8 border-l-4 border-foreground/70 bg-muted/40 py-4 pl-5 pr-4 text-lg font-medium leading-relaxed">
+    <aside className="not-prose mx-auto my-[5em] max-w-[22em] text-balance text-center text-[22px] font-medium leading-[1.7] tracking-[0.03em]">
       {children}
     </aside>
   );

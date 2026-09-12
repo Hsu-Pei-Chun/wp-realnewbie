@@ -66,7 +66,7 @@ export default async function Page({
   );
 
   return (
-    <article className="topic-article prose prose-neutral dark:prose-invert mx-auto max-w-3xl">
+    <article className="topic-article prose prose-neutral dark:prose-invert mx-auto">
       <TopicHeader meta={meta} />
       <Content />
     </article>

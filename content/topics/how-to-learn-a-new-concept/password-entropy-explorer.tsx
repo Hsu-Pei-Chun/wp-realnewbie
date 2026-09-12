@@ -27,7 +27,7 @@ export function PasswordEntropyExplorer() {
   const combos = combinations(length, enabled);
 
   return (
-    <div className="not-prose my-8 rounded-lg border bg-muted/40 p-6">
+    <div className="not-prose my-[3.5em] rounded-lg border p-6 md:p-8">
       <p className="text-sm font-medium text-muted-foreground">
         密碼組合數探索器
       </p>

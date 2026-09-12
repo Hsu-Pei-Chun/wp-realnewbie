@@ -23,7 +23,7 @@ export function Quiz({
   const correctOption = options.find((option) => option.correct);
 
   return (
-    <div className="not-prose my-8 rounded-lg border bg-muted/40 p-6">
+    <div className="not-prose my-[3.5em] rounded-lg border p-6 md:p-8">
       <p className="text-sm font-medium text-muted-foreground">自我檢驗</p>
       <p className="mt-2 text-base font-semibold leading-relaxed">{question}</p>
 
