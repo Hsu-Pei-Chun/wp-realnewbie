@@ -10,13 +10,13 @@ function CompareColumn({ side, emoji }: { side: CompareSide; emoji: string }) {
       <h4 className="mb-4 text-base font-medium tracking-[0.03em]">
         {emoji} {side.title}
       </h4>
-      <ul className="space-y-2 text-[15px] leading-[1.9]">
+      <ul className="space-y-2 text-[0.9375rem] leading-[1.9]">
         {side.items.map((item) => (
           <li key={item}>{item}</li>
         ))}
       </ul>
       {side.note && (
-        <p className="mt-5 text-[14px] leading-[1.9] text-muted-foreground">
+        <p className="mt-5 text-[0.875rem] leading-[1.9] text-muted-foreground">
           {side.note}
         </p>
       )}

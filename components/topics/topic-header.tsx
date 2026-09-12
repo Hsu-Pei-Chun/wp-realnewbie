@@ -13,7 +13,7 @@ export function TopicHeader({ meta }: { meta: TopicMeta }) {
       <h1 className="text-[2rem] font-semibold leading-[1.4] tracking-[0.02em] md:text-[2.25rem]">
         {meta.title}
       </h1>
-      <p className="mt-5 text-[17px] leading-[1.9] tracking-[0.03em] text-muted-foreground">
+      <p className="mt-5 text-[1.0625rem] leading-[1.9] tracking-[0.03em] text-muted-foreground">
         {meta.description}
       </p>
       <p className="mt-6 text-sm tracking-[0.05em] text-muted-foreground">

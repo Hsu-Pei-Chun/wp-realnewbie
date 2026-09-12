@@ -208,12 +208,15 @@
  * 正文四個數字（黑體、純黑純白方案）：字級 17px、行距 2.15、字距 0.045em、
  * 行長 32 字。沒有灰階可以做層次，層次全部交給空白：段距壓到 0.5em 讓句子
  * 連成論述，標題與引言前後留大量空白當分隔。
+ *
+ * 尺寸一律用 rem/em，不用 px：Tailwind 的容器、側欄、斷點都是 rem，讀者若把
+ * 瀏覽器字級調大（例如 20px），正文行長要跟著放大，否則容器變寬、正文不變，
+ * 中間會多出一大塊空白。
  */
 .topic-shell .topic-article {
   --tw-prose-body: hsl(var(--foreground));
   max-width: 32em;
-  padding-inline: 0.5rem;
-  font-size: 17px;
+  font-size: 1.0625rem; /* 17px @ 16px root */
   line-height: 2.15;
   letter-spacing: 0.045em;
   text-wrap: pretty;
