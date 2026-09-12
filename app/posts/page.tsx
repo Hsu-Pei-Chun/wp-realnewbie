@@ -13,6 +13,9 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "所有文章",
   description: "瀏覽所有文章",
+  alternates: {
+    canonical: "/posts",
+  },
 };
 
 export const revalidate = 86400;
