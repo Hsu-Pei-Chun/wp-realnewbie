@@ -18,6 +18,9 @@ export default defineConfig({
     // .claude/worktrees/* are sibling git worktrees for other concurrent
     // sessions, each with their own node_modules — a bare `vitest run`
     // would otherwise scan into them and fail on unrelated pollution.
-    exclude: [...configDefaults.exclude, "**/.claude/**"],
+    // .next/** is excluded because `next build` with output: "standalone"
+    // copies traced content files (including content/topics/**'s tests)
+    // into .next/standalone, and vitest would otherwise pick those up too.
+    exclude: [...configDefaults.exclude, "**/.claude/**", "**/.next/**"],
   },
 });

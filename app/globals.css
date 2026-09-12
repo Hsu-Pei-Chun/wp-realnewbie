@@ -199,3 +199,45 @@
 }
 
 @import "../styles/heading-counter.css";
+
+/* ---------------------------------------------------------------------------
+ * 專題區（/topics）樣式 scope
+ * 專題與一般文章視覺區隔；之後的風格設計只需在 .topic-shell 內調整。
+ * ------------------------------------------------------------------------- */
+.topic-shell .topic-article {
+  --tw-prose-body: hsl(var(--foreground));
+}
+
+.topic-shell .topic-article h2 {
+  margin-top: 2.5em;
+  scroll-margin-top: 6rem;
+}
+
+.topic-shell .topic-article h3 {
+  scroll-margin-top: 6rem;
+}
+
+.topic-shell .topic-article pre {
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.5rem;
+  padding: 1rem;
+  overflow-x: auto;
+  background-color: hsl(var(--muted) / 0.4);
+}
+
+.topic-shell .topic-article pre > code {
+  display: grid;
+  background: transparent;
+  padding: 0;
+}
+
+/* rehype-pretty-code 雙主題：預設用 light 變數，.dark 下切換到 dark 變數 */
+.topic-shell code[data-theme*=" "],
+.topic-shell code[data-theme*=" "] span {
+  color: var(--shiki-light);
+}
+
+.dark .topic-shell code[data-theme*=" "],
+.dark .topic-shell code[data-theme*=" "] span {
+  color: var(--shiki-dark);
+}
