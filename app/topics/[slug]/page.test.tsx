@@ -21,6 +21,7 @@ const getTopicBySlug = vi.fn(async (slug: string) =>
 vi.mock("@/lib/topics", () => ({
   getAllTopics,
   getTopicBySlug,
+  getTopicOutline: vi.fn(async () => null),
   formatTopicDate: (d: string) => d,
 }));
 

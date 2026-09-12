@@ -2,7 +2,14 @@ import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { formatTopicDate, getAllTopics, getTopicBySlug } from "./topics";
+import {
+  estimateReadingMinutes,
+  extractHeadings,
+  formatTopicDate,
+  getAllTopics,
+  getTopicBySlug,
+  getTopicOutline,
+} from "./topics";
 
 let dir: string;
 
@@ -179,5 +186,102 @@ describe("getTopicBySlug", () => {
 describe("formatTopicDate", () => {
   it("formats YYYY-MM-DD in zh-TW without timezone drift", () => {
     expect(formatTopicDate("2026-09-05")).toBe("2026 年 9 月 5 日");
+  });
+});
+
+// 右側目錄的 id 必須跟 rehype-slug 實際加在 <h2>/<h3> 上的 id 一致，
+// 否則點了跳不到；兩邊都用 github-slugger，這裡釘住幾個中文標點的案例。
+describe("extractHeadings", () => {
+  it("extracts h2/h3 with rehype-slug-compatible ids and skips h1/h4", () => {
+    const md = `
+# 不該出現的 H1
+
+## 為什麼你讀完定義還是不懂
+
+內文
+
+### 那樣哪裡不行
+
+## 把「這是什麼」換成這四個問題
+
+#### 不該出現的 H4
+`;
+    expect(extractHeadings(md)).toEqual([
+      {
+        id: "為什麼你讀完定義還是不懂",
+        text: "為什麼你讀完定義還是不懂",
+        level: 2,
+      },
+      { id: "那樣哪裡不行", text: "那樣哪裡不行", level: 3 },
+      {
+        id: "把這是什麼換成這四個問題",
+        text: "把「這是什麼」換成這四個問題",
+        level: 2,
+      },
+    ]);
+  });
+
+  it("dedupes repeated headings the same way rehype-slug does", () => {
+    const md = "## 那樣哪裡不行\n\n## 那樣哪裡不行\n";
+    expect(extractHeadings(md).map((h) => h.id)).toEqual([
+      "那樣哪裡不行",
+      "那樣哪裡不行-1",
+    ]);
+  });
+
+  it("ignores # lines inside fenced code blocks and strips inline markdown", () => {
+    const md = "## 標題 **粗體** 與 `code`\n\n```bash\n## 這是註解\n```\n";
+    expect(extractHeadings(md)).toEqual([
+      { id: "標題-粗體-與-code", text: "標題 粗體 與 code", level: 2 },
+    ]);
+  });
+});
+
+describe("estimateReadingMinutes", () => {
+  it("counts CJK characters at 400 per minute, minimum 1", () => {
+    expect(estimateReadingMinutes("短文")).toBe(1);
+    expect(estimateReadingMinutes("字".repeat(1200))).toBe(3);
+  });
+
+  it("does not count frontmatter, code fences, or JSX tags", () => {
+    const md = `---
+title: 字字字字字字字字字字
+---
+
+import { X } from "./x";
+
+<X foo="字字字字" />
+
+\`\`\`ts
+const a = "字字字字字字";
+\`\`\`
+
+${"字".repeat(800)}
+`;
+    expect(estimateReadingMinutes(md)).toBe(2);
+  });
+});
+
+describe("getTopicOutline", () => {
+  it("returns headings and reading minutes for a topic", async () => {
+    await writeTopic(
+      "outline",
+      VALID,
+      `## 第一節\n\n${"字".repeat(500)}\n\n### 小節\n\n內文\n`
+    );
+
+    const outline = await getTopicOutline("outline", { dir });
+
+    expect(outline).toEqual({
+      headings: [
+        { id: "第一節", text: "第一節", level: 2 },
+        { id: "小節", text: "小節", level: 3 },
+      ],
+      readingMinutes: 2,
+    });
+  });
+
+  it("returns null for an unknown slug", async () => {
+    await expect(getTopicOutline("nope", { dir })).resolves.toBeNull();
   });
 });

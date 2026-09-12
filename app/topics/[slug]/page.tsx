@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { getAllTopics, getTopicBySlug } from "@/lib/topics";
+import { getAllTopics, getTopicBySlug, getTopicOutline } from "@/lib/topics";
 import { TopicHeader } from "@/components/topics/topic-header";
+import { TableOfContents } from "@/components/posts/table-of-contents";
 import { siteConfig } from "@/site.config";
 
 // 專題全部在 build 時靜態產生；內容只透過部署更新，所以不設 revalidate，
@@ -58,17 +59,33 @@ export default async function Page({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const meta = await getTopicBySlug(slug);
-  if (!meta) notFound();
+  const [meta, outline] = await Promise.all([
+    getTopicBySlug(slug),
+    getTopicOutline(slug),
+  ]);
+  if (!meta || !outline) notFound();
 
   const { default: Content } = await import(
     `@/content/topics/${slug}/index.mdx`
   );
 
+  // 兩層格線：正文欄靠左、與 nav 的 logo 共用左邊界（兩者都在 max-w-5xl 內），
+  // 右側空間交給 sticky 目錄與閱讀時間；lg 以下收成單欄。
   return (
-    <article className="topic-article prose prose-neutral dark:prose-invert mx-auto">
-      <TopicHeader meta={meta} />
-      <Content />
-    </article>
+    <div className="lg:flex lg:items-start lg:gap-16">
+      <article className="topic-article prose prose-neutral dark:prose-invert min-w-0">
+        <TopicHeader meta={meta} />
+        <Content />
+      </article>
+
+      <aside className="hidden w-56 shrink-0 lg:block">
+        <div className="sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto scrollbar-thin">
+          <p className="mb-4 text-xs tracking-[0.08em] text-muted-foreground">
+            閱讀時間約 {outline.readingMinutes} 分鐘
+          </p>
+          <TableOfContents headings={outline.headings} />
+        </div>
+      </aside>
+    </div>
   );
 }
