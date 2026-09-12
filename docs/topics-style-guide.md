@@ -60,7 +60,7 @@
 行長 32 字是對的，兩側看起來空是因為版面只有一層。做法不是把欄位變寬，而是給空間一個工作：
 
 - **正文欄靠左**，與 nav 的 logo 共用同一條左邊界（兩者都在 `max-w-5xl` 容器內）。右邊留出的白是刻意的邊，不是漏掉的。
-- **右側 sticky 側欄**：文章目錄（`##`／`###`，捲到哪亮到哪）＋閱讀時間。目錄 id 由 `lib/topics.ts` 的 `extractHeadings` 以 `github-slugger` 產生，與 `rehype-slug` 加在標題上的 id 相同，不要手動指定 id。
+- **右側 sticky 側欄貼齊容器右邊界**（`justify-between`），與 nav 的「logo 貼左、選單貼右」用同一套錨點；正文與側欄之間的空白是刻意的，不要用固定 gap 把側欄往左拉。側欄內容：文章目錄（`##`／`###`，捲到哪亮到哪）＋閱讀時間。目錄 id 由 `lib/topics.ts` 的 `extractHeadings` 以 `github-slugger` 產生，與 `rehype-slug` 加在標題上的 id 相同，不要手動指定 id。
 - `lg`（1024px）以下收成單欄、側欄隱藏，**此時正文改為置中**（`mx-auto lg:mx-0`），否則右邊會留下一塊沒有工作的空白——與 `/posts/[slug]` 的側欄斷點邏輯一致。
 - 側欄沿用 `components/posts/table-of-contents.tsx`，不另外做一個。
 

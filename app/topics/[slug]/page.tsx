@@ -70,9 +70,10 @@ export default async function Page({
   );
 
   // 兩層格線：正文欄靠左、與 nav 的 logo 共用左邊界（兩者都在 max-w-5xl 內），
-  // 右側空間交給 sticky 目錄與閱讀時間；lg 以下收成單欄。
+  // 目錄欄貼齊容器右邊界（與 nav 的 logo 左／選單右同一套錨點），中間的空白
+  // 才是刻意的；lg 以下收成單欄、正文置中。
   return (
-    <div className="lg:flex lg:items-start lg:gap-16">
+    <div className="lg:flex lg:items-start lg:justify-between lg:gap-12">
       <article className="topic-article prose prose-neutral dark:prose-invert mx-auto min-w-0 lg:mx-0">
         <TopicHeader meta={meta} />
         <Content />
