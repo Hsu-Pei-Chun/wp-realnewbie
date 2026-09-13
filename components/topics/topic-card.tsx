@@ -22,7 +22,7 @@ export function TopicCard({ topic }: { topic: TopicMeta }) {
               草稿
             </Badge>
           )}
-          <CardTitle className="text-xl font-bold leading-snug tracking-tight group-hover:underline underline-offset-4 decoration-1">
+          <CardTitle className="topic-serif text-[1.375rem] font-semibold leading-[1.5] tracking-[0.01em] group-hover:underline underline-offset-4 decoration-1">
             {topic.title}
           </CardTitle>
         </CardHeader>
