@@ -199,3 +199,176 @@
 }
 
 @import "../styles/heading-counter.css";
+
+/* ---------------------------------------------------------------------------
+ * 專題區（/topics）樣式與色調 scope
+ * 專題與一般文章的區隔來自三件事：宋體、紙色／墨色的色調、單欄置中的閱讀版面。
+ * 全部在 .topic-shell 內，不外溢到 /posts；nav / footer 仍跟全站主題走。
+ * ------------------------------------------------------------------------- */
+
+/*
+ * 色調：覆寫 shadcn 的 token（HSL 三元組），所以 Button / Badge / border /
+ * text-muted-foreground 在專題區內自動換成紙色系，不需要另寫一套 class。
+ * 淺色 = 微暖的紙色底 + 墨色字（不是純白純黑）；深色 = 偏墨的深底 + 米白字。
+ */
+.topic-shell {
+  --background: 40 33% 97%; /* #faf9f6 紙色 */
+  --foreground: 34 9% 11%; /* #1f1d1a 墨色 */
+  --card: 40 33% 97%;
+  --card-foreground: 34 9% 11%;
+  --popover: 40 33% 97%;
+  --popover-foreground: 34 9% 11%;
+  --primary: 34 9% 11%;
+  --primary-foreground: 40 33% 97%;
+  --secondary: 42 22% 92%;
+  --secondary-foreground: 34 9% 11%;
+  --muted: 42 22% 92%; /* #f1eee7 */
+  --muted-foreground: 37 8% 40%; /* #6e685e */
+  --accent: 42 22% 92%;
+  --accent-foreground: 34 9% 11%;
+  --border: 41 17% 82%; /* #d8d3c8 */
+  --input: 41 17% 82%;
+  --ring: 34 9% 11%;
+
+  /*
+   * Tailwind v4 的 bg-background / text-muted-foreground 等 utility 讀的是
+   * @theme 的 --color-*，而那些是在 :root 上用 var(--background) 算好的——
+   * 在這裡只改三元組不會影響它們。要在同一個元素上重新宣告，讓它們用
+   * 覆寫後的值重算。
+   */
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+.dark .topic-shell {
+  --background: 40 6% 10%; /* #1a1917 墨底 */
+  --foreground: 42 23% 89%; /* #e9e5dc 米白 */
+  --card: 40 6% 10%;
+  --card-foreground: 42 23% 89%;
+  --popover: 40 6% 10%;
+  --popover-foreground: 42 23% 89%;
+  --primary: 42 23% 89%;
+  --primary-foreground: 40 6% 10%;
+  --secondary: 38 5% 15%;
+  --secondary-foreground: 42 23% 89%;
+  --muted: 38 5% 15%; /* #282624 */
+  --muted-foreground: 37 9% 64%; /* #aaa398 */
+  --accent: 38 5% 15%;
+  --accent-foreground: 42 23% 89%;
+  --border: 37 6% 24%; /* #413d37 */
+  --input: 37 6% 24%;
+  --ring: 42 23% 89%;
+}
+
+/*
+ * 正文（宋體版）：字級 18.5px、行距 2.05、字距 0.01em、行長 32 字。宋體本身有
+ * 筆畫粗細撐節奏，字距只需微量。段距壓到 0.5em 讓句子連成論述，層次交給空白。
+ *
+ * 尺寸一律用 rem/em：Tailwind 的容器與斷點都是 rem，讀者調大瀏覽器字級時，
+ * 正文行長必須跟著放大，否則容器變寬、正文不變。
+ */
+.topic-shell .topic-article,
+.topic-shell .topic-serif {
+  font-family:
+    var(--font-serif-tc), "Noto Serif TC", "Songti TC", "PMingLiU", serif;
+}
+
+.topic-shell .topic-article {
+  --tw-prose-body: hsl(var(--foreground));
+  --tw-prose-headings: hsl(var(--foreground));
+  --tw-prose-bold: hsl(var(--foreground));
+  --tw-prose-links: hsl(var(--foreground));
+  --tw-prose-code: hsl(var(--foreground));
+  max-width: 32em;
+  font-size: 1.15625rem; /* 18.5px @ 16px root */
+  line-height: 2.05;
+  letter-spacing: 0.01em;
+  text-wrap: pretty;
+}
+
+/* 互動元件、Quiz、表格這類 UI 回到黑體；引言與標題區（.topic-serif）維持宋體 */
+.topic-shell .topic-article .not-prose:not(.topic-serif) {
+  font-family: var(--font-sans);
+  letter-spacing: normal;
+}
+
+/* 這些規則沒有分層，會壓過 Tailwind utilities，所以要避開積木內部（.not-prose） */
+.topic-shell .topic-article :is(p, li):not(:where(.not-prose, .not-prose *)) {
+  margin-block: 0 0.5em;
+}
+
+.topic-shell .topic-article :is(ul, ol):not(:where(.not-prose, .not-prose *)) {
+  margin-block: 0.5em 1.5em;
+}
+
+.topic-shell .topic-article h2 {
+  margin-top: 3.6em;
+  margin-bottom: 1em;
+  font-size: 1.5em;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  scroll-margin-top: 6rem;
+}
+
+.topic-shell .topic-article h3 {
+  margin-top: 2.6em;
+  margin-bottom: 0.8em;
+  font-size: 1.15em;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  scroll-margin-top: 6rem;
+}
+
+.topic-shell .topic-article strong {
+  font-weight: 600;
+}
+
+.topic-shell .topic-article :where(code):not(:where(pre *)) {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.85em;
+  letter-spacing: normal;
+}
+
+.topic-shell .topic-article pre {
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.5rem;
+  padding: 1rem;
+  overflow-x: auto;
+  background-color: hsl(var(--muted) / 0.6);
+  letter-spacing: normal;
+}
+
+.topic-shell .topic-article pre > code {
+  display: grid;
+  background: transparent;
+  padding: 0;
+}
+
+/* rehype-pretty-code 雙主題：預設用 light 變數，.dark 下切換到 dark 變數 */
+.topic-shell code[data-theme*=" "],
+.topic-shell code[data-theme*=" "] span {
+  color: var(--shiki-light);
+}
+
+.dark .topic-shell code[data-theme*=" "],
+.dark .topic-shell code[data-theme*=" "] span {
+  color: var(--shiki-dark);
+}

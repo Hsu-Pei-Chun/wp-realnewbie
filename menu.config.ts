@@ -7,6 +7,7 @@ export const mainMenu: MenuItem[] = [
   { label: "首頁", href: "/" },
   { label: "關於我", href: "/pages/about-me" },
   { label: "部落格", href: "/posts" },
+  { label: "專題", href: "/topics" },
 ];
 
 export const contentMenu: MenuItem[] = [

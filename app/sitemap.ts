@@ -1,9 +1,13 @@
 import { MetadataRoute } from "next";
 import { getAllPostSlugs } from "@/lib/wordpress";
+import { getAllTopics } from "@/lib/topics";
 import { siteConfig } from "@/site.config";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const posts = await getAllPostSlugs();
+  const [posts, topics] = await Promise.all([
+    getAllPostSlugs(),
+    getAllTopics(),
+  ]);
 
   const staticUrls: MetadataRoute.Sitemap = [
     {
@@ -42,6 +46,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.5,
     },
+    {
+      url: `${siteConfig.site_domain}/topics`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
   ];
 
   const postUrls: MetadataRoute.Sitemap = posts.map((post) => ({
@@ -51,5 +61,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.5,
   }));
 
-  return [...staticUrls, ...postUrls];
+  const topicUrls: MetadataRoute.Sitemap = topics.map((topic) => ({
+    url: `${siteConfig.site_domain}/topics/${topic.slug}`,
+    lastModified: new Date(topic.date),
+    changeFrequency: "monthly",
+    priority: 0.6,
+  }));
+
+  return [...staticUrls, ...postUrls, ...topicUrls];
 }

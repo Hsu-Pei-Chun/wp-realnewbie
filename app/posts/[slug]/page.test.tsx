@@ -8,9 +8,19 @@ const getAllPostSlugs = vi.fn(async () => [
   { slug: "a", modified: "2026-01-01T00:00:00" },
 ]);
 
+const getPostBySlug = vi.fn(async (slug: string) =>
+  slug === "hello-world"
+    ? {
+        slug,
+        title: { rendered: "Hello" },
+        excerpt: { rendered: "<p>Hi</p>" },
+      }
+    : null
+);
+
 vi.mock("@/lib/wordpress", () => ({
   getAllPostSlugs,
-  getPostBySlug: vi.fn(),
+  getPostBySlug,
   getFeaturedMediaById: vi.fn(),
   getEmbeddedAuthor: vi.fn(),
   getEmbeddedCategory: vi.fn(),
@@ -23,5 +33,19 @@ describe("posts/[slug] generateStaticParams", () => {
 
     await expect(generateStaticParams()).resolves.toEqual([]);
     expect(getAllPostSlugs).not.toHaveBeenCalled();
+  });
+});
+
+// app/layout.tsx 對全站設了 alternates.canonical = "/"，子頁面沒覆寫就會繼承，
+// 讓 1200 篇文章在搜尋引擎眼中都變成「首頁的重複內容」。
+describe("posts/[slug] generateMetadata", () => {
+  it("points canonical at the post itself, not the inherited site root", async () => {
+    const { generateMetadata } = await import("./page");
+
+    const metadata = await generateMetadata({
+      params: Promise.resolve({ slug: "hello-world" }),
+    });
+
+    expect(metadata.alternates).toEqual({ canonical: "/posts/hello-world" });
   });
 });
