@@ -27,7 +27,7 @@ export function TopicCard({ topic }: { topic: TopicMeta }) {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <CardDescription className="text-sm leading-relaxed line-clamp-3">
+          <CardDescription className="topic-serif text-[0.9375rem] leading-[1.9] tracking-[0.01em] line-clamp-3">
             {topic.description}
           </CardDescription>
           <p className="text-sm text-muted-foreground">
