@@ -297,6 +297,7 @@
   --tw-prose-bold: hsl(var(--foreground));
   --tw-prose-links: hsl(var(--foreground));
   --tw-prose-code: hsl(var(--foreground));
+  --tw-prose-pre-code: hsl(var(--foreground));
   max-width: 32em;
   font-size: 1.15625rem; /* 18.5px @ 16px root */
   line-height: 2.05;
