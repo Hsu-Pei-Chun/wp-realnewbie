@@ -338,6 +338,34 @@
   scroll-margin-top: 6rem;
 }
 
+/*
+ * 引言（Markdown 的 >）：Tailwind Typography 預設會加彎引號、整段斜體、4px 色條。
+ * 中文沒有真正的斜體，瀏覽器只能把字硬傾斜；而且專題裡的引言多半是對話或示範
+ * 的句子，不是「一段引文」，自動加的頭尾引號反而把好幾句話框成同一句。
+ * 改成 1px 細線 + 正常字體，與 .topic-shell 其他區塊的框線規則一致。
+ */
+.topic-shell .topic-article blockquote {
+  margin-block: 2em;
+  padding-inline-start: 1.5em;
+  border-inline-start: 1px solid hsl(var(--border));
+  font-style: normal;
+  font-weight: inherit;
+  quotes: none;
+}
+
+.topic-shell .topic-article blockquote p:first-of-type::before,
+.topic-shell .topic-article blockquote p:last-of-type::after {
+  content: none;
+}
+
+.topic-shell .topic-article blockquote p {
+  margin-block: 0 0.8em;
+}
+
+.topic-shell .topic-article blockquote p:last-child {
+  margin-block-end: 0;
+}
+
 .topic-shell .topic-article strong {
   font-weight: 600;
 }
